@@ -1,0 +1,30 @@
+---
+title: testing
+author: twg
+date: '2021-12-04'
+slug: testing
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2021-12-04T13:33:58-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+Testing to see what's what
+
+```{r}
+library(tidyverse)
+ggplot(mtcars, aes(x = disp, y = mpg)) + 
+  geom_point()
+```
+
+And an image 
+
+![sample](bird.jpg)
