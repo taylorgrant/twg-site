@@ -22,7 +22,7 @@ image:
 projects: []
 ---
 
-{{% toc %}}
+
 
 
 
@@ -71,7 +71,7 @@ tibble(type = rep(c('a','b'), each = 4),
 
 ## Faceting pie charts and donut plots 
 
-Of course no one likes pie charts, but occasionally someone wants one. A single pie chart is simple to make in ggplot (see [here](http://www.sthda.com/english/wiki/ggplot2-pie-chart-quick-start-guide-r-software-and-data-visualization){target="_blank"}), but what if you want to facet your pie charts? 
+Of course no one likes pie charts, but occasionally someone wants one. A single pie chart is simple to make in ggplot (see [here](http://www.sthda.com/english/wiki/ggplot2-pie-chart-quick-start-guide-r-software-and-data-visualization)), but what if you want to facet your pie charts? 
 
 This was the old way of having to make pie charts with ggplot and it still works really well. Since we applied `theme_minimal()` to everything, we have to go back in and recolor the facet labels within the theme.
 
