@@ -15,13 +15,14 @@ image:
   focal_point: ''
   preview_only: yes
 projects: []
-output:
-  blogdown::html_page:
-    toc: true
+
 ---
 
+# Trying to see if this will happen now 
 
-# Testing to see what's what
+lorem ipsum
+
+## Testing to see what's what
 
 
 ```r
@@ -52,8 +53,10 @@ ggplot(mtcars, aes(x = disp, y = mpg)) +
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" />
 
-# Adding an image 
+##  Adding an image 
 
 And an image 
 
 ![sample](bird.jpg)
+
+### Let's see if this works 

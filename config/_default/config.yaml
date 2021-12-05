@@ -58,10 +58,12 @@ taxonomies:
   publication_type: publication_types
   author: authors
 markup:
-  _merge: deep
   goldmark:
     renderer:
       unsafe: true
+  tableOfContents:
+    startLevel: 1
+    endLevel: 3
 related:
   threshold: 80
   includeNewer: true
