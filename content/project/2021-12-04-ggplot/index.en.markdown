@@ -43,6 +43,7 @@ With grouped bar charts `position = "dodge"` is used and the `geom_text` functio
 
 
 ```r
+set.seed(23)
 tibble(type = rep(c('a','b'), each = 4),
          cat = rep(c('cat', 'dog', 'bird', 'snake'),2),
          n = sample(1:500, 8)) %>%
@@ -50,13 +51,13 @@ tibble(type = rep(c('a','b'), each = 4),
   mutate(frac = n/sum(n)) %>%
   ggplot(aes(x = cat, y = frac, group = type, 
              fill = type, label = scales::percent(frac))) + 
-  geom_bar(stat = "identity", position = "dodge") + 
+  geom_bar(stat = "identity", position = "dodge", width = .8) + 
   coord_flip(ylim = c(0,.6)) + 
   theme_twg() +
   hrbrthemes::scale_y_percent() +
   geom_text(aes(x = cat, y = frac, 
                 label = scales::percent(frac, accuracy = .1)),
-            position = position_dodge(1),
+            position = position_dodge(.85),
             hjust = -.2,
             size = 3.5) +
   scale_fill_manual(values = my_pal("bly")[c(2,1)], name = "") + 

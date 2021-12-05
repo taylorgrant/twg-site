@@ -15,9 +15,6 @@ image:
   focal_point: ''
   preview_only: yes
 projects: []
-output:
-  blogdown::html_page:
-    toc: true
 
 ---
 
