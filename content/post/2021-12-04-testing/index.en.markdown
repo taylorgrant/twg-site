@@ -13,11 +13,15 @@ featured: no
 image:
   caption: ''
   focal_point: ''
-  preview_only: no
+  preview_only: yes
 projects: []
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
-Testing to see what's what
+
+# Testing to see what's what
 
 
 ```r
@@ -47,6 +51,8 @@ ggplot(mtcars, aes(x = disp, y = mpg)) +
 ```
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" />
+
+# Adding an image 
 
 And an image 
 

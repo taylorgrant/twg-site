@@ -13,17 +13,23 @@ featured: no
 image:
   caption: ''
   focal_point: ''
-  preview_only: no
+  preview_only: yes
 projects: []
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
-Testing to see what's what
+
+# Testing to see what's what
 
 ```{r}
 library(tidyverse)
 ggplot(mtcars, aes(x = disp, y = mpg)) + 
   geom_point()
 ```
+
+# Adding an image 
 
 And an image 
 
