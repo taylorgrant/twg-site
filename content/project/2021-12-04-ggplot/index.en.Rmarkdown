@@ -90,6 +90,7 @@ Pie charts are generally not that helpful, but occasionally someone wants one. A
 This was the old way of having to make pie charts with ggplot and it still works really well. 
 
 ```{r, facet_pie}
+set.seed(23)
 tibble(type = rep(c('a','b', 'c'), each = 4),
          cat = rep(c('cat', 'dog', 'bird', 'snake'),3),
          n = sample(1:500, 12)) %>%
@@ -118,6 +119,7 @@ tibble(type = rep(c('a','b', 'c'), each = 4),
 Note that you can turn these pie charts into donut plots by adding `xlim(4,8)` within the code. The first number decides the thickness of the donut (larger = thicker); the second number dictates the size of the donut (smaller equals larger). 
 
 ```{r, facet_donut, echo = FALSE}
+set.seed(23)
 tibble(type = rep(c('a','b', 'c'), each = 4),
          cat = rep(c('cat', 'dog', 'bird', 'snake'),3),
          n = sample(1:500, 12)) %>%

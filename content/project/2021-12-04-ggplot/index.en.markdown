@@ -76,6 +76,7 @@ This was the old way of having to make pie charts with ggplot and it still works
 
 
 ```r
+set.seed(23)
 tibble(type = rep(c('a','b', 'c'), each = 4),
          cat = rep(c('cat', 'dog', 'bird', 'snake'),3),
          n = sample(1:500, 12)) %>%
