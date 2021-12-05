@@ -18,6 +18,7 @@ projects: []
 
 ---
 
+{{% toc %}}
 # Trying to see if this will happen now 
 
 lorem ipsum
@@ -60,3 +61,5 @@ And an image
 ![sample](bird.jpg)
 
 ### Let's see if this works 
+
+trying this now

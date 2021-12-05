@@ -20,9 +20,9 @@ image:
   focal_point: ''
   preview_only: yes
 projects: []
-toc: true
 ---
 
+{{% toc %}}
 
 
 
