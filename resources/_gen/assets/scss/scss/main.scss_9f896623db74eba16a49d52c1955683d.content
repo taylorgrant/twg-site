@@ -9522,7 +9522,7 @@ div.chart {
   overflow-x: auto; }
 
 .article-container {
-  max-width: 1000px; }
+  max-width: 1200px; }
 
 /*link formatting*/
 :root {
