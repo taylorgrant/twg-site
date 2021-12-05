@@ -91,16 +91,16 @@ edit_page:
     post: false
     book: false
 show_related:
-  book: true
+  book: false
   page: false
   post: true
   project: true
-  publication: true
-  event: true
+  publication: false
+  event: false
 reading_time: true
-section_pager: false
+section_pager: true
 docs_section_pager: true
-sharing: true
+sharing: false
 copyright_license:
   enable: false
   allow_derivatives: false
@@ -121,18 +121,18 @@ projects:
   talk_view: 2
 breadcrumb:
   page_types:
-    book: true
+    book: false
 comments:
   provider: ''
   commentable:
-    post: true
-    book: true
-    project: true
-    publication: true
-    event: true
+    post: false
+    book: false
+    project: false
+    publication: false
+    event: false
   disqus:
     shortname: ''
-    show_count: true
+    show_count: false
   commento:
     url: ''
 search:

@@ -6,13 +6,13 @@
 main:
   - name: About
     url: '#about'
-    weight: 30
+    weight: 40
   - name: Snippets
     url: '#snippets'
-    weight: 10
+    weight: 20
   - name: Posts
     url: '#posts'
-    weight: 20
+    weight: 30
   # - name: Talks
   #   url: '#talks'
   #   weight: 40

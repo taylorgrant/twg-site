@@ -1,5 +1,5 @@
 ---
-bio: Rather than continuing to search StackOverflow, I'm adding to this
+# bio: Rather than continuing to search StackOverflow, I'm adding to this
 # education:
 #   courses:
 #   - course: PhD in Artificial Intelligence
