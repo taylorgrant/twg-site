@@ -2,6 +2,8 @@
   max-width: 1200px;
 }
 
+
+
 /*link formatting*/
 :root {
     --lightBlue: #478ca7;
@@ -78,4 +80,24 @@
 
 .hljs-selector-class{
    color: var(--lightGrey-code) !important;
+}
+
+#TableOfContents li a, .toc-top li a {
+	padding: 0rem 1rem;
+}
+
+#TableOfContents li a {
+  font-size: .75rem;
+}
+
+.toc-top li a {
+  font-size: 1rem;
+}
+
+#TableOfContents ul {
+  margin-bottom: 0;
+}
+
+#TableOfContents, .docs-toc-title {
+	border-left: 1px solid $sta-primary;
 }
