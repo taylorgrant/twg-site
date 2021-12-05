@@ -77,8 +77,6 @@ address_format: en-us
 highlight: true
 highlight_languages:
   - r
-  - python
-  - latex
 highlight_style: github
 math: true
 diagram: false
