@@ -10,7 +10,7 @@ weight: 10  # section position on page
 design:
   background:
     image: tower.png
-    image_darken: .3
+    image_darken: .8
     image_size: cover
     image_position: center
     image_parallax: true
