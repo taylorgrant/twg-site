@@ -22,7 +22,7 @@ image:
 projects: []
 ---
 
-{{% toc %}}
+
 
 ```{r , setup, include = FALSE}
 library(here)
