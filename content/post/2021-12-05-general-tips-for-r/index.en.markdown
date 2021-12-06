@@ -72,6 +72,24 @@ head(df)
 ## 5 5  5 5
 ```
 
+## Getting rid of NULL values within dataframe
+
+Occasionally, a datset will contain cells that, rather than simply being left empty, have been populated with 'NULL'. This can be a pain, especially when trying to determine how much data is missing. 
+
+This is a quick function to overwrite all 'NULL' values and then replace with NA. 
+
+
+```r
+#function 
+rm_null <- function(x){
+  str_replace_all(x, "NULL", "")
+}
+
+# apply to data
+df_clean <- df %>% mutate_all(rm_null)
+# replace with NA
+df_clean[df_clean == ""] <- NA
+```
 ## Plotting colors with hexcode labels 
 
 Here is a function that provides an easy way of seeing a color palette and retrieving the hexcodes. 
