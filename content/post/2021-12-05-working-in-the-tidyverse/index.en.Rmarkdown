@@ -1,0 +1,262 @@
+---
+title: Working in the tidyverse
+author: twg
+date: '2021-12-05'
+slug: working-in-the-tidyverse
+categories:
+  - tidyverse
+  - dplyr
+  - tidy
+tags:
+  - tidyverse
+  - dplyr
+  - tidy
+subtitle: ''
+summary: 'Tips and tricks for working in the tidyverse'
+authors: []
+lastmod: '2021-12-05T16:41:07-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include = FALSE}
+pacman::p_load(tidyverse, glue, knitr)
+```
+
+```{r setup-knitr, include = FALSE}
+opts_chunk$set(
+  eval = TRUE, # Default: TRUE
+  include = TRUE, # Default: TRUE
+  echo = TRUE, # Default: TRUE
+  width = getOption("width"),
+  fig.align = "center",
+  fig.width = 11.5, # Default: 7
+  fig.height = 5.75)
+```
+
+## Using setNames to change column names
+
+```{r}
+names <- c("name1", "name2", "name3", "name4")
+
+df <- tibble(
+  a = sample(letters, 4),
+  b = sample(1:100, 4),
+  c = sample(1:100, 4),
+  d = sample(letters, 4)
+)
+
+df %>% setNames(names)
+```
+
+## Using rename_at to rename specific columns 
+
+Occasionally, you'll only want to rename certain columns and the `rename_at` function offers this capability, in much the same way as `mutate_at` or `summarise_at`. 
+
+```{r}
+df <- tibble(
+  a = sample(letters, 4),
+  b = sample(1:100, 4),
+  c = sample(1:100, 4),
+  d = sample(letters, 4)
+)
+
+df %>% 
+  rename_at(vars(b,d), ~ paste0("pastedName_", .))
+```
+
+## Mutate and Summarise multiple columns 
+
+This is well documented [here](https://dplyr.tidyverse.org/reference/across.html), but a few examples are below. When using `across()` with we need to wrap the variables in quotes if we're mentioning multiple. And if we're using multiple functions they need to be put into a `list()`. To keep tabs on the results, name the function output. 
+
+```{r} 
+mtcars %>%
+  group_by(cyl) %>%
+  summarise(across(c("disp", "drat", "mpg"), list(mean = mean, sd = sd)))
+```
+
+The [helper functions](https://dplyr.tidyverse.org/reference/select_helpers.html) for `select()` are also useful for selecting variables. Though note that when using helpers such as `contains()` that you can only include one string. For instance, this will work.
+
+```{r}
+mtcars %>% 
+  summarise(across(contains("ar"), mean))
+```
+
+But this won't
+
+```{r}
+mtcars %>%
+  summarise(across(contains("ar|mp"), mean))
+```
+
+If you want to match across multiple strings, the `matches()` function will do the trick. 
+
+```{r}
+mtcars %>%
+  summarise(across(matches("ar|mp"), mean))
+```
+
+## Multiple left_joins using dplyr
+
+It's always possible to use multiple `left_join` functions, but the easiest way to do merge multiple data sets together may be to put everything into a list and then use the `Reduce` function. I had used `map` to work over a lot of data, so everything was in a list. I then took the data I wanted to use as my base and concatenated it to the list. 
+
+```{r, eval = FALSE}
+tmp <- c(list(df), original_list)
+```
+
+Then, using dplyr commands was able to join all of the data. In this case, my original list had 30 separate dataframes.
+
+```{r, eval = FALSE}
+mass_df <- tmp %>% Reduce(function(df1, df2), left_join(df1, df2), .)
+```
+
+The `left_join` command can be further defined to specify what we're joining by, or to select only specific columns that will be joined. 
+
+```{r, eval = FALSE}
+# using "matches" to pull out specific variables
+mass_df <- tmp %>% 
+  Reduce(function(df1, df2), left_join(df1, select(df2, matches("avar|bvar"))), .)
+```
+
+```{r, eval = FALSE}
+# specifying what the join is by
+mass_df <- tmp %>% Reduce(function(df1, df2), left_join(df1, df2, by = "index"), .)
+```
+
+## Calculating quantiles in tidy fashion 
+
+```{r}
+pacman::p_load(tidyverse)
+# set up quantiles we want 
+p <- c(.2, .4, .6, .8)
+# create list of functions; one for each quantile; and give names to each
+p_names <- map_chr(p, ~paste0('p_',.x*100))
+
+p_funs <- map(p, ~partial(quantile, probs = .x, na.rm = TRUE)) %>%
+  set_names(nm = p_names)
+
+mtcars %>% group_by(cyl) %>% 
+  summarise(across(mpg, tibble::lst(!!!p_funs))) %>% 
+  janitor::clean_names()
+
+```
+
+## Selection of multiple variables
+
+When using either `select()` or wanting to `mutate(across())` there are lots of helpers -- `starts_with()`, `ends_with()`, `contains()`, and `matches()` and probably some that I'm missing. 
+
+`contains()` only works on a single, specific request, whereas `matches()` allows for an OR. 
+
+```{r}
+tmp <- tibble(g1_letters = sample(letters, 5), 
+              g1_num = sample(1:600000, 5),
+              g2_letters = sample(letters, 5),
+              g2_num = sample(1:60000, 5),
+              h1_letters = sample(letters, 5),
+              h1_num = sample(1:60000, 5))
+
+# or statement
+tmp <- tmp %>% select(matches("g1|h1"))
+tmp
+```
+
+But we can also use the `intersect()` function to create an AND statement
+
+```{r}
+tmp <- tibble(g1_letters = sample(letters, 5), 
+              g1_num = sample(1:600000, 5),
+              g1_weighted = g1_num*.4,
+              g2_letters = sample(letters, 5),
+              g2_num = sample(1:60000, 5),
+              g2_weighted = g2_num*.4,
+              h1_letters = sample(letters, 5),
+              h1_num = sample(1:60000, 5),
+              h1_weighted = h1_num*.4)
+
+tmp %>% 
+  summarise(across(matches("num|weighted"), sum)) %>%
+  mutate(across(intersect(starts_with("g1"), contains("weighted")), 
+            ~ paste0(., "---->")))
+```
+
+## Piping into a t.test
+
+```{r}
+tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
+       group = c(rep("green", 100), rep("blue", 100))) %>%
+  t.test(a ~ group, data = ., var.equal = TRUE)
+```
+
+## Arranging within a group
+
+```{r}
+library(tidyverse)
+ToothGrowth %>%
+    group_by(supp) %>%
+    arrange(len, .by_group = TRUE)
+```
+
+## Using `cross` and `map` to paste
+
+The `cross()` function is similar to `expand.grid`. Here, we create a list and use `map` to paste it together where each in a separate list. 
+
+```{r}
+data <- list(qq = "Q",
+             q = 1:4,
+             hyphen = "-",
+             yr = 13:19)
+
+data %>%
+  cross() %>%
+  map(lift(paste0)) %>% 
+  head()
+```
+
+But we can use `setNames` and then reduce put it into a data.frame. 
+
+```{r}
+data <- list(qq = "Q",
+             q = 1:4,
+             hyphen = "-",
+             yr = 13:19)
+
+data %>%
+  cross() %>%
+  map(lift(paste0)) %>% 
+  map(setNames, c("QTR")) %>% 
+  reduce(bind_rows) %>%
+  head()
+```
+
+## Group indices within nested groups 
+
+Assume we have a data set with a nested group structures like so. 
+
+```{r}
+tibble(letter = rep(letters[1:2], each = 6),
+       state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
+                 rep(c(state.abb[c(25,38,43)]), each = 2)))
+```
+
+Our goal is to produce a repeating id for each state within each letter group, so that AL, AR, and CA would be 1, 2, 3 and MO, PA, and TX would also be 1, 2, 3. 
+
+But using the `group_indices()` function doesn't help us here (note I'm suppressing warnings because I have no idea how to use `group_by()` first with this function).
+```{r}
+tibble(letter = rep(letters[1:2], each = 6),
+       state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
+                 rep(c(state.abb[c(25,38,43)]), each = 2))) %>%
+  mutate(id1 = suppressWarnings(group_indices(., letter)),
+         id2 = suppressWarnings(group_indices(., state)))
+```
+But we can get to what we want by using `cumsum` and `!duplicated`...
+```{r}
+tibble(letter = rep(letters[1:2], each = 6),
+       state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
+                 rep(c(state.abb[c(25,38,43)]), each = 2))) %>%
+  group_by(letter) %>%
+  mutate(id = cumsum(!duplicated(state)))
+```
