@@ -32,8 +32,7 @@ Assume a data frame that has NAs and you want to set any NA to zero, it is strai
 df = tibble(
   x = c(1,NA,3,NA,5), 
   y = c(1:5), 
-  z = x ^ 2 + y) %>% 
-  data.frame()
+  z = x ^ 2 + y) 
 
 df[is.na(df)] <- 0
 
@@ -41,12 +40,14 @@ head(df)
 ```
 
 ```
-##   x y  z
-## 1 1 1  2
-## 2 0 2  0
-## 3 3 3 12
-## 4 0 4  0
-## 5 5 5 30
+## # A tibble: 5 × 3
+##       x     y     z
+##   <dbl> <int> <dbl>
+## 1     1     1     2
+## 2     0     2     0
+## 3     3     3    12
+## 4     0     4     0
+## 5     5     5    30
 ```
 
 We can also selectively choose the column to change by referencing it specifically 
@@ -55,8 +56,7 @@ We can also selectively choose the column to change by referencing it specifical
 df = tibble(
   x = c(1,NA,3,NA,5), 
   y = c(1,NA,3,NA,5),
-  z = 1:5) %>%
-  data.frame()
+  z = 1:5) 
 
 df$x[is.na(df$x)] <- 0
 
@@ -64,12 +64,36 @@ head(df)
 ```
 
 ```
-##   x  y z
-## 1 1  1 1
-## 2 0 NA 2
-## 3 3  3 3
-## 4 0 NA 4
-## 5 5  5 5
+## # A tibble: 5 × 3
+##       x     y     z
+##   <dbl> <dbl> <int>
+## 1     1     1     1
+## 2     0    NA     2
+## 3     3     3     3
+## 4     0    NA     4
+## 5     5     5     5
+```
+
+Or, within a dplyr pipe, we can use this, and this will work across the entire data frame 
+
+```r
+df = tibble(
+  x = c(1,NA,3,NA,5), 
+  y = c(1,NA,3,NA,5),
+  z = 1:5)
+
+df %>% mutate_all(~replace(., is.na(.), 0))
+```
+
+```
+## # A tibble: 5 × 3
+##       x     y     z
+##   <dbl> <dbl> <dbl>
+## 1     1     1     1
+## 2     0     0     2
+## 3     3     3     3
+## 4     0     0     4
+## 5     5     5     5
 ```
 
 ## Getting rid of NULL values within dataframe
@@ -85,8 +109,28 @@ rm_null <- function(x){
   str_replace_all(x, "NULL", "")
 }
 
+df = tibble(
+  x = c(1,NA,3,NA,5), 
+  y = c(1,"NULL",3,NA,5),
+  z = 1:5)
+
 # apply to data
 df_clean <- df %>% mutate_all(rm_null)
+df_clean
+```
+
+```
+## # A tibble: 5 × 3
+##   x     y     z    
+##   <chr> <chr> <chr>
+## 1 1     "1"   1    
+## 2 <NA>  ""    2    
+## 3 3     "3"   3    
+## 4 <NA>   <NA> 4    
+## 5 5     "5"   5
+```
+
+```r
 # replace with NA
 df_clean[df_clean == ""] <- NA
 ```

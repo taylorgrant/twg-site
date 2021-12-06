@@ -44,8 +44,7 @@ Assume a data frame that has NAs and you want to set any NA to zero, it is strai
 df = tibble(
   x = c(1,NA,3,NA,5), 
   y = c(1:5), 
-  z = x ^ 2 + y) %>% 
-  data.frame()
+  z = x ^ 2 + y) 
 
 df[is.na(df)] <- 0
 
@@ -57,12 +56,21 @@ We can also selectively choose the column to change by referencing it specifical
 df = tibble(
   x = c(1,NA,3,NA,5), 
   y = c(1,NA,3,NA,5),
-  z = 1:5) %>%
-  data.frame()
+  z = 1:5) 
 
 df$x[is.na(df$x)] <- 0
 
 head(df)
+```
+
+Or, within a dplyr pipe, we can use this, and this will work across the entire data frame 
+```{r}
+df = tibble(
+  x = c(1,NA,3,NA,5), 
+  y = c(1,NA,3,NA,5),
+  z = 1:5)
+
+df %>% mutate_all(~replace(., is.na(.), 0))
 ```
 
 ## Getting rid of NULL values within dataframe
@@ -71,14 +79,20 @@ Occasionally, a datset will contain cells that, rather than simply being left em
 
 This is a quick function to overwrite all 'NULL' values and then replace with NA. 
 
-```{r, eval = FALSE}
+```{r}
 #function 
 rm_null <- function(x){
   str_replace_all(x, "NULL", "")
 }
 
+df = tibble(
+  x = c(1,NA,3,NA,5), 
+  y = c(1,"NULL",3,NA,5),
+  z = 1:5)
+
 # apply to data
 df_clean <- df %>% mutate_all(rm_null)
+df_clean
 # replace with NA
 df_clean[df_clean == ""] <- NA
 
