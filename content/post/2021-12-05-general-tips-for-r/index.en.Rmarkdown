@@ -1,0 +1,134 @@
+---
+title: General Tips for R
+author: twg
+date: '2021-12-05'
+slug: general-tips-for-r
+categories:
+  - R
+tags:
+  - R
+subtitle: ''
+summary: 'Tips and Tricks for R and RStudio'
+authors: []
+lastmod: '2021-12-05T22:08:17-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(tidyverse, here, knitr, vcdExtra, spotifyr)
+```
+
+```{r setup-knitr, include = FALSE}
+opts_chunk$set(
+  eval = TRUE, # Default: TRUE
+  include = TRUE, # Default: TRUE
+  echo = TRUE, # Default: TRUE
+  width = getOption("width"),
+  fig.align = "center",
+  fig.width = 11.5, # Default: 7
+  fig.height = 5.75)
+```
+
+
+## Plotting colors with hexcode labels 
+
+Here is a function that provides an easy way of seeing a color palette and retrieving the hexcodes. 
+
+```{r, pal, warning = FALSE, message=FALSE}
+show_pal <- function(pal, labels = TRUE, label_size = 1, label_color = "#000000") {
+  library(gplots)
+  pal <- gplots::col2hex(pal)
+  n <- length(pal)
+  n_col <- ceiling(sqrt(n))
+  n_row <- ceiling(n / n_col)
+  m <- matrix(0, n_col, n_row)
+  m[n + 1] <- 1
+  m <- t(m)
+  pal <- c(pal, rep(NA, n_row * n_col - length(pal)))
+  pal <- matrix(pal, ncol = n_col, byrow = TRUE)
+  plot(c(0, dim(pal)[2]), c(0, -dim(pal)[1]), type = "n", xlab = "", ylab = "",
+       axes = FALSE)
+  rect(col(pal) - 1, -row(pal) + 1, col(pal), -row(pal), col = pal, lwd = 3, border = "white")
+  if (labels) text(col(pal) - 0.5, -row(pal) + 0.5, pal, cex = label_size, col = label_color)
+}
+
+# load a palette 
+pal <- RColorBrewer::brewer.pal(n = 9, name = 'PuBu')
+show_pal(pal)
+```
+
+## Finding all functions in a package
+
+This is especially useful when using a dev version of a package. Often, there are github files, but it's sometimes easier to just use `asNamespace` to see functions. 
+
+For example, let's look at the functions available within the spotifyR package. 
+
+```{r}
+library(spotifyr)
+fns <- unclass(lsf.str(envir = asNamespace("spotifyr"), all = T))
+
+fns
+```
+
+## Getting the names of datasets within a package
+
+If in RStudio, you can simply use `data(package = "package_name")` and a new window will open up with a list. 
+
+Or by using the `data()` function we can find datasets and information about each. 
+
+```{r}
+d <- data(package = "dplyr")
+# names can be pulled 
+d$results[, 'Item']
+```
+
+While it's probably not necessary to do this, it's also possible to pull the dimensions for the promised data. 
+
+```{r}
+d <- data(package = "dplyr")
+# assign 
+nm <- d$results[, 'Item']
+# call the promised data
+data(list = nm, package = "dplyr")
+# get dimensions
+lapply(mget(nm), dim)
+```
+
+The `vcdExtra` package actually does all of the above very nicely. 
+
+```{r}
+vcdExtra::datasets("dplyr")
+```
+
+## Loading a dataset from a package without loading package itself
+
+I want a dataset from a package, but loading that package sometimes interferes with functions from another package. Load only the dataset with 
+
+```{r, eval = FALSE}
+data(Howell1, package = "rethinking")
+```
+
+## Loading all functions within a folder
+
+The `R.utils` package also has a command for this, but this is a simple way to source all of your functions at once. 
+
+```{r eval = FALSE}
+# set directory location, or use here() rather than glue
+# load functions
+file.sources = list.files(path = glue(dir, "functions"), pattern="*.R")
+sapply(glue("{dir}functions/{file.sources}"), source, .GlobalEnv)
+```
+
+## Editing a package function
+
+If there is a function that is failing for some reason, it can be edited with the `trace()` function.
+
+```{r, eval = FALSE}
+trace("[function_name]", edit = TRUE)
+```
