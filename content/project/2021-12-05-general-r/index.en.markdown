@@ -6,7 +6,7 @@ slug: general-r
 categories:
   - R
 tags:
-  - regex
+  - R
 subtitle: ''
 summary: 'Generally useful tips and tricks for R and RStudio'
 authors: []
