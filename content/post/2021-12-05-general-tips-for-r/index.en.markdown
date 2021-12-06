@@ -24,6 +24,54 @@ projects: []
 
 
 
+## Setting NAs to Zero 
+
+Assume a data frame that has NAs and you want to set any NA to zero, it is straightforward to do so. 
+
+```r
+df = tibble(
+  x = c(1,NA,3,NA,5), 
+  y = c(1:5), 
+  z = x ^ 2 + y) %>% 
+  data.frame()
+
+df[is.na(df)] <- 0
+
+head(df)
+```
+
+```
+##   x y  z
+## 1 1 1  2
+## 2 0 2  0
+## 3 3 3 12
+## 4 0 4  0
+## 5 5 5 30
+```
+
+We can also selectively choose the column to change by referencing it specifically 
+
+```r
+df = tibble(
+  x = c(1,NA,3,NA,5), 
+  y = c(1,NA,3,NA,5),
+  z = 1:5) %>%
+  data.frame()
+
+df$x[is.na(df$x)] <- 0
+
+head(df)
+```
+
+```
+##   x  y z
+## 1 1  1 1
+## 2 0 NA 2
+## 3 3  3 3
+## 4 0 NA 4
+## 5 5  5 5
+```
+
 ## Plotting colors with hexcode labels 
 
 Here is a function that provides an easy way of seeing a color palette and retrieving the hexcodes. 
