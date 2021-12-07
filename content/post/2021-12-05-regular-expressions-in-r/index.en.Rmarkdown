@@ -54,6 +54,18 @@ gsub(".*\\T", "", stamp)
 gsub("\\T.*", "", stamp) 
 ```
 
+## Extracting before or after the first occurrence of symbol or delimeter
+
+```{r}
+string <- "THIS_IS_A_STRING_WITH_A-DASH-SECOND-DASH"
+# extract everything after first "-"
+sub(".*?-", "", string)
+# extract everything up to the first "-"
+stringr::str_extract(string, "[^-]+")
+# or using sub
+sub("-.*", "", string)
+```
+
 ## Extract the last occurrence in string with multiple occurrences
 
 ```{r}

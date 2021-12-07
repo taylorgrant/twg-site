@@ -48,6 +48,37 @@ gsub("\\T.*", "", stamp)
 ## [1] "2017-10-16"
 ```
 
+## Extracting before or after the first occurrence of symbol or delimeter
+
+
+```r
+string <- "THIS_IS_A_STRING_WITH_A-DASH-SECOND-DASH"
+# extract everything after first "-"
+sub(".*?-", "", string)
+```
+
+```
+## [1] "DASH-SECOND-DASH"
+```
+
+```r
+# extract everything up to the first "-"
+stringr::str_extract(string, "[^-]+")
+```
+
+```
+## [1] "THIS_IS_A_STRING_WITH_A"
+```
+
+```r
+# or using sub
+sub("-.*", "", string)
+```
+
+```
+## [1] "THIS_IS_A_STRING_WITH_A"
+```
+
 ## Extract the last occurrence in string with multiple occurrences
 
 
@@ -166,7 +197,7 @@ dat %>%
   theme_twg()
 ```
 
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-8-1.png" width="1104" style="display: block; margin: auto;" />
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-9-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Counting words in a string
 
