@@ -47,10 +47,21 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 c         9    78 a    
-## 2 p        74     4 w    
-## 3 n        87     8 u    
-## 4 l         2    61 o
+## 1 i         6    87 h    
+## 2 u        35    16 u    
+## 3 a         9    21 z    
+## 4 p       100    27 i
+```
+
+## piping and dplyr verbs with lists and purrr 
+
+Assume a list with data.frames and I want to use a dplyr verb (or apply any function) within it
+
+
+```r
+list_object %>% 
+  map(~ clean_names(.)) %>% 
+  map(~ mutate(., new_var = colA + colB))
 ```
 
 ## Using rename_at to rename specific columns 
@@ -74,10 +85,10 @@ df %>%
 ## # A tibble: 4 × 4
 ##   a     pastedName_b     c pastedName_d
 ##   <chr>        <int> <int> <chr>       
-## 1 o               87    64 v           
-## 2 z               45    76 l           
-## 3 j               29    88 u           
-## 4 t               20    41 i
+## 1 s               55    48 r           
+## 2 w               39    59 p           
+## 3 y               68    77 v           
+## 4 g               80    96 c
 ```
 
 ## Mutate and Summarise multiple columns 
@@ -220,11 +231,11 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 p          362388 q            4476
-## 2 g           24763 g           13974
-## 3 l          188127 y           13895
-## 4 q          339255 k           51834
-## 5 r           42666 s           39125
+## 1 n          297168 p            8063
+## 2 x          378890 m           34907
+## 3 m          323023 r           54227
+## 4 z          294167 k           59622
+## 5 p          214967 l           42996
 ```
 
 But we can also use the `intersect()` function to create an AND statement
@@ -251,7 +262,7 @@ tmp %>%
 ## # A tibble: 1 × 6
 ##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
 ##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
-## 1 1523891 609556.4----> 154702      61881. 173043      69217.
+## 1 2025852 810340.8----> 113347      45339. 156748      62699.
 ```
 
 ## Piping into a t.test
@@ -268,13 +279,13 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 15.88, df = 198, p-value < 2.2e-16
+## t = 14.99, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##   9.368624 12.025324
+##   8.79244 11.45629
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            60.35729            49.66031
+##            59.90064            49.77628
 ```
 
 ## Arranging within a group

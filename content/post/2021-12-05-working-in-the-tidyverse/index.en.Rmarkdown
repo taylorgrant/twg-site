@@ -53,6 +53,16 @@ df <- tibble(
 df %>% setNames(names)
 ```
 
+## piping and dplyr verbs with lists and purrr 
+
+Assume a list with data.frames and I want to use a dplyr verb (or apply any function) within it
+
+```{r, eval = FALSE}
+list_object %>% 
+  map(~ clean_names(.)) %>% 
+  map(~ mutate(., new_var = colA + colB))
+```
+
 ## Using rename_at to rename specific columns 
 
 Occasionally, you'll only want to rename certain columns and the `rename_at` function offers this capability, in much the same way as `mutate_at` or `summarise_at`. 
