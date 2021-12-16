@@ -23,6 +23,11 @@ projects: []
 
 
 
+## Keyboard Shortcuts for Mac
+
+Pipe operator: `Cmd` + `Shift` + `m`
+Assignment operator: `Option` + `-`
+Rename all instances of variable: `Option`+`Shift`+`Cmd`+`m` (Code > Rename in Scope)
 
 ## Setting NAs to Zero 
 
