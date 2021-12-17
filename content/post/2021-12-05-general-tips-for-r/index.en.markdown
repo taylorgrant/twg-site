@@ -25,8 +25,8 @@ projects: []
 
 ## Keyboard Shortcuts for Mac
 
-Pipe operator: `Cmd` + `Shift` + `m`
-Assignment operator: `Option` + `-`
+Pipe operator (%>%): `Cmd` + `Shift` + `m` <br>
+Assignment operator (<-): `Option` + `-` <br>
 Rename all instances of variable: `Option`+`Shift`+`Cmd`+`m` (Code > Rename in Scope)
 
 ## Setting NAs to Zero 
