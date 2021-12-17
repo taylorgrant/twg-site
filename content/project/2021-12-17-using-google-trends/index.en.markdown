@@ -39,7 +39,7 @@ For example, if I run a two query search for the topics below - "soy milk" and "
 
 But if I'm interested in trends, I'm not solely interested in the level form popularity of a query. Instead, I may be interested in actual trend for the search, which is far more informative as to the changes in attention or interest of a topic over time. Yes, almond milk may be more popular than soy milk, but is interest in it declining or increasing over time, and to what extent are those changes more or less intense than, for example, soy milk? 
 
-Rather then looking at the level form results, if we instead standardize our data using z-scores all series are on the same scale, and we no longer need a reference category. Our results are consistent, regardless of the other search terms or topics included in our queries. I can now run as many queries, with any number of terms/topics, and I can always get them onto the same scaling. 
+Rather then looking at the level form results, if we instead standardize our data using z-scores all series are on the same scale and we no longer need a reference category. Our results are consistent, regardless of the other search terms or topics included in our queries. I can now run as many queries, with any number of terms/topics, and I can always get them onto the same scaling. 
 
 Below is an example. First, we run a search for a single search query - "soy milk". Then we'll run a second trend search with two queries - "soy milk" and "almond milk". Because "almond milk" is a more popular search, the level form results of "soy milk are considerably dampened. 
 
@@ -68,7 +68,7 @@ soy1 %>%
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/img2-1.png" width="1104" style="display: block; margin: auto;" />
 
-When we place the results of each search on the same plot we can see how the presence of "almond milk" as the reference group pushes down the results of the 2 term search. But while the levels are different, the week-to-week changes in interest are consistent. And, they're effectively equivalent to each other - the 1 term search has more variance, but that's only because the mean level is larger. We can see this when we standardize our data (value - mean(series)/sd(series)).
+When we place the results of each search on the same plot we can see how the presence of "almond milk" as the reference group pushes down the results of the 2 term search. But while the levels are different, indicating search popularity, the week-to-week changes in interest are consistent. And, they're effectively equivalent to each other - the single term search has more variance, but that's only because the mean level is larger. We can see this when we standardize our data (value - mean(series)/sd(series)).
 
 
 ```r
