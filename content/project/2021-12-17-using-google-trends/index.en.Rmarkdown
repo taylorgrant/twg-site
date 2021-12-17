@@ -1,0 +1,177 @@
+---
+title: Using Google Trends
+author: twg
+date: '2021-12-17'
+slug: using-google-trends
+categories:
+  - trends
+  - datasets
+  - google
+tags:
+  - trends
+  - datasets
+  - google
+subtitle: ''
+summary: 'Standardizing google trends data to see changes in interest across time'
+authors: []
+lastmod: '2021-12-17T11:44:55-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(tidyverse, here, knitr, gtrendsR, janitor)
+
+soy_trends <- readRDS("~/R/twg-site/static/data/soy_trends.rds")
+```
+
+```{r setup-knitr, include = FALSE}
+opts_chunk$set(
+  eval = TRUE, # Default: TRUE
+  include = TRUE, # Default: TRUE
+  echo = TRUE, # Default: TRUE
+  width = getOption("width"),
+  fig.align = "center",
+  fig.width = 11.5, # Default: 7
+  fig.height = 5.75)
+```
+
+The [gtrendsR](https://github.com/PMassicotte/gtrendsR) package allows the user to easily query the Google Trends API and extract relevant data. But one of the issues with Google Trends has always been that the user is limited to 5 queries at a time, with the results scaled on a relative 0-100 scaling. Swap out/in a new term and the results for the other queries will also change relative to the new term, particularly if the new term is the most popular. 
+
+The workaround suggested for this was always to include the same reference term in the search, and then just drop it from the analysis afterwards. This way, all values are scaled consistently against that reference term (for example [here](https://towardsdatascience.com/using-google-trends-at-scale-1c8b902b6bfa) using "france" as the reference term included). This can work, but inclusion of popular terms can also swamp the results for other terms that are potentially niche. 
+
+For example, if run a two query search for the topics below - "soy milk" and "almond milk" - I can see that almond milk is far more popular. 
+
+```{r, echo = FALSE, img1}
+soy_trends$soy_comp %>% 
+  filter(group == '2 term') %>% 
+  ggplot(aes(x = date, y = hits, group = keyword, col = keyword)) + 
+  geom_line()
+```
+
+But if I'm interested in trends, I'm not solely interested in the level form popularity of a query. Instead, I may be interested in actual trend for the search, which is far more informative as to the changes in attention or interest of a topic over time. Yes, almond milk may be more popular than soy milk, but is interest in it declining or increasing over time, and to what extent are those changes more or less intense than, for example, soy milk? 
+
+Rather then looking at the level form results, if we instead standardize our data using z-scores all series are on the same scale, and we no longer need a reference category. Our results are consistent, regardless of the other search terms or topics included in our queries. I can now run as many queries, with any number of terms/topics, and I can always get them onto the same scaling. 
+
+Below is an example. First, we run a search for a single search query - "soy milk". Then we'll run a second trend search with two queries - "soy milk" and "almond milk". Because "almond milk" is a more popular search, the level form results of "soy milk are considerably dampened. 
+
+### Query the trends API 
+
+```{r, eval = FALSE}
+pacman::p_load(tidyverse, janitor, here, glue, gtrendsR)
+
+soy1 <- gtrend(keyword = "soy milk", geo = "US", 
+               time = "today 12-m", gprop = "web")$interest_over_time %>% 
+  mutate(group = "1 term")
+
+soy2 <- gtrend(keyword = c("soy milk", "almond milk"), geo = "US", 
+               time = "today 12-m", gprop = "web")$interest_over_time %>% 
+  mutate(group = "2 term")
+
+soy1 %>% 
+  bind_rows(filter(soy2, keyword == "soy milk")) %>% 
+  ggplot(aes(x = date, y = hits, group = group, col = group)) +
+  geom_line() +
+  labs(x = NULL, y = NULL, 
+       title = "Google Trends results for Soy Milk",
+       subtitle = "`2 term` also included Almond Milk as a term")
+
+```
+
+```{r, echo = FALSE, img2}
+soy_trends$soy_comp %>% 
+  filter(keyword == "soy milk") %>% 
+  ggplot(aes(x = date, y = hits, group = group, col = group)) + 
+  geom_line() +
+  labs(x = NULL, y = NULL, 
+       title = "Google Trends results for Soy Milk",
+       subtitle = "`2 term` also included Almond Milk as a term")
+```
+
+When we place the results of each search on the same plot we can see how the presence of "almond milk" as the reference group pushes down the results of the 2 term search. But while the levels are different, the week-to-week changes in interest are consistent. And, they're effectively equivalent to each other - the 1 term search has more variance, but that's only because the mean level is larger. We can see this when we standardize our data (value - mean(series)/sd(series)).
+
+```{r, eval = FALSE}
+soy1 %>% 
+  bind_rows(filter(soy2, keyword == "soy milk")) %>% 
+  group_by(group) %>% 
+  mutate(z_hit = scale(hits)) %>% 
+  ggplot(aes(x = date, y = z_hit, group = group, col = group)) + 
+  geom_line()
+
+```
+
+```{r, echo = FALSE, img3}
+soy_trends$soy_comp %>% 
+  filter(keyword == "soy milk") %>% 
+  group_by(group) %>% 
+  mutate(z_hit = scale(hits)) %>% 
+  ggplot(aes(x = date, y = z_hit, group = group, col = group)) + 
+  geom_line()
+```
+
+### Category trends
+
+Let's look at change in interest over time across the plant-based milk category. We'll run multiple searches for various milk types and we'll also include a category reference for "plant based milk" to see if the broad category search is experiencing the same changes over time. 
+
+Because trend data is noisy at a weekly level, we'll compute a 5-week moving average, which we'll then standardize. 
+
+```{r, eval = FALSE}
+soy_a <- gtrends(keyword = c("soy milk", "almond milk", "coconut milk", "rice milk"), 
+                geo = "US", 
+                time = "today+5-y", 
+                gprop = 'web')$interest_over_time
+
+soy_b <- gtrends(keyword = c("oat milk", "plant based milk"), 
+                geo = "US", 
+                time = "today+5-y", 
+                gprop = 'web')$interest_over_time
+
+soy_full <- bind_rows(soy_a, soy_b) %>% 
+  group_by(keyword) %>%
+  filter(date >= "2020-01-01") %>%
+  mutate(ma5 = zoo::rollmean(hits, k = 5, fill = NA),
+         zma = scale(ma5))
+
+soy_full %>% 
+  ggplot(aes(x = date, y = zma, group = keyword, fill = keyword)) + 
+  geom_area(stat = "identity",
+            color = 'black',
+            size = .15,
+            alpha = 0.85) 
+```
+
+```{r, echo = FALSE, warning = FALSE, img5}
+soy_trends$soy_full %>% 
+  mutate(date = as.Date(date)) %>% 
+  ggplot(aes(x = date, y = zma, group = keyword, fill = keyword)) + 
+  geom_area(stat = "identity",
+            color = 'black',
+            size = .15,
+            alpha = 0.85) +
+  scale_fill_manual(values = rev(my_pal("solr")[c(1,3,4,5,7,8)]),
+                    name = NULL) +
+  scale_x_date(date_breaks = "3 months") +
+  theme_twg(grid = "Y") +
+  labs(x = NULL, y = "Rolling 5-Week Change in Search Activity (z-score, stacked)",
+       title = "Searches for plant-based milks are declining",
+       caption = "Source: Google")
+```
+
+### Interpreting the results
+
+Interpretation is now based on the period to period change in search with the y-axis capturing the magnitude of the increase or decline in search interest. The plot is an area plot, which is similar to a stacked bar chart - the results for each are not additive. 
+
+We can see that plant based milk searches peak in January's as people make New Year's resolutions. Searches then decline by mid-Spring of the year. In 2020, searches stabilized to a pretty standard level, but there's been more volatility in 2021. Oat milk has had some large positive shifts in interest, while just about every other type of milk has seen declines in search interest in the last three quarters of the year. Since summer, only Oat milk and the general "plant based milk" searches have seen increasing interest (as well as Almond milk getting a little bump in the last part of the year.)
+
+
+
+
+ 
+
+
+ 
