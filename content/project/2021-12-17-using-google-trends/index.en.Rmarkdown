@@ -47,7 +47,7 @@ The [gtrendsR](https://github.com/PMassicotte/gtrendsR) package allows the user 
 
 The workaround suggested for this was always to include the same reference term in the search, and then just drop it from the analysis afterwards. This way, all values are scaled consistently against that reference term (for example [here](https://towardsdatascience.com/using-google-trends-at-scale-1c8b902b6bfa) using "france" as the reference term included). This can work, but inclusion of popular terms can also swamp the results for other terms that are potentially niche. 
 
-For example, if run a two query search for the topics below - "soy milk" and "almond milk" - I can see that almond milk is far more popular. 
+For example, if I run a two query search for the topics below - "soy milk" and "almond milk" - I can see that almond milk is far more popular. 
 
 ```{r, echo = FALSE, img1}
 soy_trends$soy_comp %>% 
@@ -168,7 +168,9 @@ soy_trends$soy_full %>%
 
 Interpretation is now based on the period to period change in search with the y-axis capturing the magnitude of the increase or decline in search interest. The plot is an area plot, which is similar to a stacked bar chart - the results for each are not additive. 
 
-We can see that plant based milk searches peak in January's as people make New Year's resolutions. Searches then decline by mid-Spring of the year. In 2020, searches stabilized to a pretty standard level, but there's been more volatility in 2021. Oat milk has had some large positive shifts in interest, while just about every other type of milk has seen declines in search interest in the last three quarters of the year. Since summer, only Oat milk and the general "plant based milk" searches have seen increasing interest (as well as Almond milk getting a little bump in the last part of the year.)
+In 2020, the left end of the graph picks up a positive shift in interest in January as people make their New Year's resolutions. There's another large bump in interest in mid-spring before interest stabilizes in the summer. By winter 2020, interest was declining for just about every type of plant-based milk as people were probably much more interested in their holiday calories over health. 
+
+2021 sees the same shift in interest after New Year's, but rather than stabilizing in the summer like in 2020, the 2021 search trends are going negative for almost every type of milk With the exception of Oat Milk and broad "plant based" searches all other milk types are underwater. Whether this is due to people having more knowledge about the categoryand needing to search less often or if it's a loss of interest in the products/category is not answered by trends data. 
 
 
 
