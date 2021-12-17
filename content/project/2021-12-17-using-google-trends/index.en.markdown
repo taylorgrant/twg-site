@@ -27,6 +27,8 @@ projects: []
 
 
 
+{{% toc %}}
+
 The [gtrendsR](https://github.com/PMassicotte/gtrendsR) package allows the user to easily query the Google Trends API and extract relevant data. But one of the issues with Google Trends has always been that the user is limited to 5 queries at a time, with the results scaled on a relative 0-100 scaling. Swap out/in a new term and the results for the other queries will also change relative to the new term, particularly if the new term is the most popular. 
 
 The workaround suggested for this was always to include the same reference term in the search, and then just drop it from the analysis afterwards. This way, all values are scaled consistently against that reference term (for example [here](https://towardsdatascience.com/using-google-trends-at-scale-1c8b902b6bfa) using "france" as the reference term included). This can work, but inclusion of popular terms can also swamp the results for other terms that are potentially niche. 
