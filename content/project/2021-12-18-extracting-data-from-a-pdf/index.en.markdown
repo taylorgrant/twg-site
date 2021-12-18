@@ -10,14 +10,14 @@ tags:
   - data ingest
   - pdf
 subtitle: ''
-summary: 'An example of how to read in and use data from a pdf'
+summary: 'An example of how to read in and clean data from a pdf'
 authors: []
 lastmod: '2021-12-18T10:26:07-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
-  preview_only: no
+  preview_only: yes
 projects: []
 
 ---
