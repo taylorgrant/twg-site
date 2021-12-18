@@ -9521,8 +9521,11 @@ div.chart {
   margin-bottom: 1rem;
   overflow-x: auto; }
 
+.article-project {
+  max-width: 900px; }
+
 .article-container {
-  max-width: 1000px; }
+  max-width: 1200px; }
 
 /*link formatting*/
 :root {
