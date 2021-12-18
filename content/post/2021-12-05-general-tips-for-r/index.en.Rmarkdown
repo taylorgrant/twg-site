@@ -20,12 +20,7 @@ projects: []
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-pacman::p_load(tidyverse, here, knitr, vcdExtra, spotifyr)
-```
-
-```{r setup-knitr, include = FALSE}
-opts_chunk$set(
+knitr::opts_chunk$set(
   eval = TRUE, # Default: TRUE
   include = TRUE, # Default: TRUE
   echo = TRUE, # Default: TRUE
@@ -33,7 +28,10 @@ opts_chunk$set(
   fig.align = "center",
   fig.width = 11.5, # Default: 7
   fig.height = 5.75)
+
+pacman::p_load(tidyverse, here, knitr, vcdExtra, spotifyr)
 ```
+
 
 ## Keyboard Shortcuts for Mac
 

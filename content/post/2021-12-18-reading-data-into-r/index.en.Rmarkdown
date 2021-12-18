@@ -1,0 +1,116 @@
+---
+title: Reading data into R
+author: twg
+date: '2021-12-18'
+slug: reading-data-into-r
+categories:
+  - broom
+  - data
+  - rvest
+tags:
+  - broom
+  - data
+  - rvest
+subtitle: ''
+summary: 'Methods to get data into R'
+authors: []
+lastmod: '2021-12-18T09:23:05-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  eval = TRUE, # Default: TRUE
+  include = TRUE, # Default: TRUE
+  echo = TRUE, # Default: TRUE
+  warning = FALSE,
+  message = FALSE,
+  width = getOption("width"),
+  fig.align = "center",
+  fig.width = 11.5, # Default: 7
+  fig.height = 5.75)
+
+pacman::p_load(tidyverse, here, rvest, readxl)
+```
+
+## Reading in multiple files
+
+Using the `purrr` package with csv. If excel, just change read function to `readxl::read_excel` 
+
+```{r, eval = FALSE}
+data_path <- "path_to_data"   # path to the data
+files <- dir(data_path, pattern = "*.csv") # get file names
+
+data <- files %>%
+  # read in all the files, appending the path before the filename
+  map_dfr(~ read_csv(file.path(data_path, .)))
+data
+```
+
+## Reading in multiple sheets from single workbook 
+
+```{r, eval = FALSE}
+source <- "../data/file_name.xlsx"
+# Extract the sheet names
+sheets <- readxl::excel_sheets(source) 
+# iterate through each, assign name of sheet raead
+sheets %>%
+  purrr::map(function(sheet){ # iterate through each sheet name
+  assign(x = sheet,
+         value = readxl::read_xlsx(path = source, sheet = sheet),
+         envir = .GlobalEnv)
+})
+```
+
+
+## Built in data sets 
+
+There are so many packages that come with datasets, it can be hard to keep track of all of them. While there isn't any one site that keeps track of all of them, Vincent Arel-Bundock has built out a pretty detailed composite of a lot of them [here](https://vincentarelbundock.github.io/Rdatasets/datasets.html). And for any package in R, you can see the datasets included using any of the methods outlined [here](https://taylorgrant.netlify.app/post/general-tips-for-r/#getting-the-names-of-datasets-within-a-package).
+
+## Reading in csv from online
+
+Straightforward. Remember if it's from github to use the url to the raw data. 
+
+```{r, cache = TRUE}
+read_csv("https://raw.githubusercontent.com/fivethirtyeight/nfl-elo-game/master/data/nfl_games.csv") %>% tail()
+```
+
+## Reading in xls or xlsx from online 
+
+For excel, use the functionality of the `httr` package to write to a tempfile and then read in  
+
+```{r, cache = TRUE}
+url <- "https://www2.census.gov/programs-surveys/demo/tables/geographic-mobility/2019/state-to-state-migration/State_to_State_Migrations_Table_2019.xls"
+httr::GET(url, httr::write_disk(tf <- tempfile(fileext = ".xls")))
+df <- readxl::read_excel(tf,skip=6)
+
+head(df)
+```
+
+## Reading in a zip file
+
+```{r, eval = FALSE}
+# create temporary directory for data
+ifelse(!dir.exists("data/unzipped"), dir.create("data/unzipped"), "Directory already exists...")
+# specify zip URL 
+url <- "http://seanlahman.com/files/database/baseballdatabank-2017.1.zip"
+# put zip contents into temp file
+tmp <- tempfile()
+download.file(url, destfile = tmp)
+unzip(tmp, exdir = "data/unzipped/.")
+```
+
+We can keep the unzipped contents in a separate folder if the data is large and time consuming to download. 
+
+```{r eval = FALSE} 
+path_unzip <- "data/unzipped/data_archive.zip"
+ifelse(!file.exists(path_unzip), 
+       download.file(url, path_unzip, mode = "wb"),
+       "file already exists")
+```
+
