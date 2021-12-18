@@ -9522,7 +9522,7 @@ div.chart {
   overflow-x: auto; }
 
 .article-project {
-  margin-left: 160px;
+  margin-left: 120px;
   text-align: justify;
   max-width: 900px; }
 
