@@ -4,13 +4,11 @@ author: twg
 date: '2021-12-18'
 slug: reading-data-into-r
 categories:
-  - broom
-  - data
-  - rvest
+  - data ingest
+  - purrr
 tags:
-  - broom
-  - data
-  - rvest
+  - data ingest
+  - purrr
 subtitle: ''
 summary: 'Methods to get data into R'
 authors: []
