@@ -9521,6 +9521,11 @@ div.chart {
   margin-bottom: 1rem;
   overflow-x: auto; }
 
+.article-project {
+  max-width: 1000px;
+  padding: 0 20px 0 20px;
+  margin: 0 auto 0 auto; }
+
 .article-container {
   max-width: 1200px; }
 

@@ -19,9 +19,12 @@ image:
   focal_point: ''
   preview_only: no
 projects: []
+
 ---
 
 
+
+{{% toc %}}
 
 Using the `pdftools` package to read in pdf data. In this case, reading in a pdf of [survey data](https://assets.morningconsult.com/wp-uploads/2021/10/18170121/2110046_crosstabs_MC_ENTERTAINMENT_PRESTIGE_TV_Adults_v1_DM-1-1.pdf) from Morning Consult. 
 
