@@ -9522,6 +9522,7 @@ div.chart {
   overflow-x: auto; }
 
 .article-project {
+  left: 150px;
   max-width: 900px; }
 
 .article-container {
