@@ -1,0 +1,267 @@
+---
+title: Extracting data from a pdf
+author: twg
+date: '2021-12-18'
+slug: extracting-data-from-a-pdf
+categories:
+  - data ingest
+  - pdf
+tags:
+  - data ingest
+  - pdf
+subtitle: ''
+summary: 'An example of how to read in and use data from a pdf'
+authors: []
+lastmod: '2021-12-18T10:26:07-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  eval = TRUE, # Default: TRUE
+  include = TRUE, # Default: TRUE
+  echo = TRUE, # Default: TRUE
+  width = getOption("width"),
+  fig.align = "center",
+  fig.width = 11.5, # Default: 7
+  fig.height = 5.75)
+
+pacman::p_load(tidyverse, here, janitor, glue, pdftools)
+```
+
+Using the `pdftools` package to read in pdf data. In this case, reading in a pdf of [survey data](https://assets.morningconsult.com/wp-uploads/2021/10/18170121/2110046_crosstabs_MC_ENTERTAINMENT_PRESTIGE_TV_Adults_v1_DM-1-1.pdf) from Morning Consult. 
+
+## Reading the data 
+
+The first thing to do is use the `pdf_text()` function from the pdftools package to read the pdf into our environment. The pdf can either be downloaded first, or we can just use the url. Regardless, `pdf_text()` reads in the entire pdf.  
+
+```{r, eval = FALSE}
+pacman::p_load(tidyverse, janitor, here, glue, pdftools)
+url <- "https://assets.morningconsult.com/wp-uploads/2021/10/18170121/2110046_crosstabs_MC_ENTERTAINMENT_PRESTIGE_TV_Adults_v1_DM-1-1.pdf"
+
+tmp <- pdftools::pdf_text("~/Desktop/streaming.pdf")
+head(tmp)
+```
+
+```{r, echo = FALSE}
+tmp <- pdftools::pdf_text(here("static", "data", "streaming.pdf"))
+head(tmp)
+```
+
+As the [original post](https://ropensci.org/blog/2016/03/01/pdftools-and-jeroen/) for pdftools says, the pdf format is pretty dumb. It doesn't understand tabular format, it's just text that's been strategically placed in order to approximate a table. When pdftools reads in a pdf, it reads in the text (while trying to preserve spacing and formatting), but it will then be up to us to decide how we parse what we want. That said, pdftools does preserve spacing pretty well, and it retains paging. This means that if we want to get data out of a specific page, we can simply call the page number by direct reference. If our pdf has a consistent structure and format, then we can write a function to read in all pages.  
+
+```{r}
+cat(tmp[7]) 
+```
+
+## Cleaning the data
+
+In order to get the data into a workable format, we'll have to use regex to add delimiters that identify the location of each column. With a pdf that is consistently formatted, this is relatively easy. 
+
+Each pdf will be different, but the process is generally the same. We'll first pick a representative page, isolate it, and then start working through it. The first thing to do is to split on the newline `\n` so that we can isolate specific rows of data. Below, we can see that the first lines identify the table, but the table itself doesn't start until line 8. 
+
+```{r}
+# which page to read in ##
+tmp_pg <- tmp[7]
+# split on the newline \n ##
+tmp_table <- str_split(tmp_pg, "\n", simplify = TRUE)
+tmp_table[1:10] 
+```
+
+With a pdf like this, the goal is to write a function that reads in all pages, so we need to identify where the table data starts and stops. Here, we've identified the start as the line containing the term "Demographic" and the table stops when we see the line containing "Continued" or "Note:" (note that we're setting the boundary on "Demographic" so that it doesn't potentially pick up "Demographics").  
+
+```{r}
+# which page to read in #
+tmp_pg <- tmp[7]
+# split on the newline \n #
+tmp_table <- str_split(tmp_pg, "\n", simplify = TRUE)
+# determine where the data stops and starts # 
+tbl_start <- which(str_detect(tmp_table, "Demographic\\b")) # set boundary
+  tbl_stop <- which(str_detect(tmp_table, "Continued|Note:")) # two endings depending on the page
+# pull the table number # 
+table_num <- tmp_table[,2]
+# keep rows between our start and stop #  
+tbl1 <- tmp_table[,(tbl_start+1):(tbl_stop-1)]
+head(tbl1)
+```
+
+After isolating our table data, it's time to add delimiters. The delimiters will identify the location of each column in every row. If these are inconsistent then the table will not hold it's form.   
+
+```{r}
+# which page to read in #
+tmp_pg <- tmp[7]
+# split on the newline \n #
+tmp_table <- str_split(tmp_pg, "\n", simplify = TRUE)
+# determine where the data stops and starts # 
+tbl_start <- which(str_detect(tmp_table, "Demographic\\b")) # set boundary
+  tbl_stop <- which(str_detect(tmp_table, "Continued|Note:")) # two endings depending on the page
+# pull the table number # 
+table_num <- tmp_table[,2]
+# keep rows between our start and stop #  
+tbl1 <- tmp_table[,(tbl_start+1):(tbl_stop-1)]
+# get rid of white space # 
+tbl1 <- str_trim(tbl1)
+# any time there are 2 spaces, add delimiter # 
+tbl2 <- str_replace_all(tbl1, "\\s{2,}", "|")
+# if % with space, add delimiter after
+tbl2 <- str_replace_all(tbl2, "% ", "%|")
+# if closing parentheses, add delimiter after
+tbl2 <- str_replace_all(tbl2, "\\) ", ")|")
+head(tbl2)
+```
+
+It looks as if our delimiters are consistent across our would be rows, so now we can use the `textConnection()` function to tell R that our cleaned data should be read in as a text file. We then use `read.csv()` and specify our delimiter. 
+
+```{r}
+## which page to read in ##
+tmp_pg <- tmp[7]
+## split on the newline \n ##
+tmp_table <- str_split(tmp_pg, "\n", simplify = TRUE)
+## determine where the data stops and starts ## 
+tbl_start <- which(str_detect(tmp_table, "Demographic\\b")) # set boundary
+  tbl_stop <- which(str_detect(tmp_table, "Continued|Note:")) # two endings depending on the page
+## pull the table number ## 
+table_num <- tmp_table[,2]
+## keep rows between our start and stop ##  
+tbl1 <- tmp_table[,(tbl_start+1):(tbl_stop-1)]
+## get rid of white space ## 
+tbl1 <- str_trim(tbl1)
+## any time there are 2 spaces, add delimiter ## 
+tbl2 <- str_replace_all(tbl1, "\\s{2,}", "|")
+tbl2 <- str_replace_all(tbl2, "% ", "%|")
+tbl2 <- str_replace_all(tbl2, "\\) ", ")|")
+## define table as text connection and read in with read.csv 
+text_con <- textConnection(tbl2)
+data_table <- read.csv(text_con, sep = "|", header = FALSE)
+head(data_table)
+```
+
+Now, we'll just write a function to strip out all punctuation and convert our data to numeric. 
+
+```{r}
+# which page to read in #
+tmp_pg <- tmp[7]
+# split on the newline \n #
+tmp_table <- str_split(tmp_pg, "\n", simplify = TRUE)
+# determine where the data stops and starts # 
+tbl_start <- which(str_detect(tmp_table, "Demographic\\b")) # set boundary
+  tbl_stop <- which(str_detect(tmp_table, "Continued|Note:")) # two endings depending on the page
+# pull the table number # 
+table_num <- tmp_table[,2]
+# keep rows between our start and stop #  
+tbl1 <- tmp_table[,(tbl_start+1):(tbl_stop-1)]
+# get rid of white space # 
+tbl1 <- str_trim(tbl1)
+# any time there are 2 spaces, add delimiter # 
+tbl2 <- str_replace_all(tbl1, "\\s{2,}", "|")
+tbl2 <- str_replace_all(tbl2, "% ", "%|")
+tbl2 <- str_replace_all(tbl2, "\\) ", ")|")
+# define table as text connection and read in with read.csv 
+text_con <- textConnection(tbl2)
+data_table <- read.csv(text_con, sep = "|", header = FALSE)
+
+# function to strip out the punctuation
+stripPunct <- function(x) as.numeric(str_replace_all(x, "%|\\(|\\)", ""))
+# clean up and set as numeric # 
+data_table <- data_table %>% 
+  mutate(across(V2:ncol(.), stripPunct)) %>% 
+  mutate(table_num = str_trim(table_num)) %>% 
+  relocate(table_num) %>% 
+  as_tibble()
+head(data_table)
+```
+
+The one thing that's missing are the column names. With Morning Consult data, column names are sometimes broken up into two lines, which makes it very, very difficult to programmatically pull them out consistently. Instead, what we'll do is isolate the pages for a specific question, and pull the names for that question. We'll then set our names, making sure to cover two columns with each name (percentage and respondent count). 
+
+```{r}
+set_responses <- function(res) {
+  ## set the names for table ## 
+  response_count <- length(res) # how many colnames
+  app <- c("_pct", "_n")
+  # rep(app, response_count)
+  nms <- c('Question', "Demographics", paste0(rep(res, each = 2), rep(app, response_count)), "Total")
+  return(nms)
+}
+```
+
+### Put it all together
+
+The MC survey we've been working with asks a question about the reputation of a variety of different streaming services. The question format is the same across 10 different providers and the data can be found from pages 3 through 42. We can use the function below to get all of that data and put it into a tidy datset. normally, we would keep the whole dataset, but instead, we'll add the provider names and pull out the opinions of Adults. It looks as if Netflix is seen as the best provider.
+
+```{r}
+set_responses <- function(res) {
+  # set the names for data table # 
+  response_count <- length(res)
+  app <- c("_pct", "_n")
+  rep(app, response_count)
+  nms <- c('Question', "Demographics", paste0(rep(res, each = 2), rep(app, response_count)), "Total")
+  return(nms)
+}
+
+tidy_mc <- function(page) {
+  
+  # function to strip out the punctuation
+  stripPunct <- function(x) suppressWarnings(as.numeric(str_replace_all(x, "%|\\(|\\)", "")))
+  
+  # which page to read in #
+  tmp_pg <- tmp[page]
+  # split on the newline \n #
+  tmp_table <- str_split(tmp_pg, "\n", simplify = TRUE)
+  # determine where the data stops and starts # 
+  tbl_start <- which(str_detect(tmp_table, "Demographic\\b")) # set boundary
+  tbl_stop <- which(str_detect(tmp_table, "Continued|Note:")) # two endings depending on the page
+  # pull the table number # 
+  table_num <- tmp_table[,2]
+  # keep rows between our start and stop #  
+  tbl1 <- tmp_table[,(tbl_start+1):(tbl_stop-1)]
+  # get rid of white space # 
+  tbl1 <- str_trim(tbl1)
+  # any time there are 2 spaces, add delimiter # 
+  tbl2 <- str_replace_all(tbl1, "\\s{2,}", "|")
+  tbl2 <- str_replace_all(tbl2, "% ", "%|")
+  tbl2 <- str_replace_all(tbl2, "\\) ", ")|")
+  # define table as text connection and read in with read.csv 
+  text_con <- textConnection(tbl2)
+  data_table <- read.csv(text_con, sep = "|", header = FALSE)
+  
+  # clean up and set as numeric # 
+  data_table <- data_table %>% 
+    mutate(across(V2:ncol(.), stripPunct)) %>% 
+    mutate(table_num = str_trim(table_num)) %>% 
+    relocate(table_num) # new dplyr 1.0 functions
+}
+
+pages <- 3:42
+title <- "Thinking about the quality of each streaming service, what do you consider the reputation of each?"
+resp <- c("Above average", "Average", "Below average", "Don't know")
+lvls <- c("Above average", "Average", "Below average", "Don't know")
+# set the responses 
+nms <- set_responses(resp)
+## get the data and set responses
+df <- pages %>% 
+  map_dfr(tidy_mc) %>% 
+  set_names(nms) %>% 
+  mutate(Question = case_when(Question == "Table MCEN6_1" ~ "Netflix",
+                              Question == "Table MCEN6_2" ~ "Hulu",
+                              Question == "Table MCEN6_3" ~ "HBO Max",
+                              Question == "Table MCEN6_4" ~ "Disney+",
+                              Question == "Table MCEN6_5" ~ "Apple TV+",
+                              Question == "Table MCEN6_6" ~ "Paramount+",
+                              Question == "Table MCEN6_7" ~ "Amazon Prime Video",
+                              Question == "Table MCEN6_8" ~ "Peacock+",
+                              Question == "Table MCEN6_9" ~ "Showtime",
+                              Question == "Table MCEN6_10" ~ "Starz")) %>% 
+  filter(Demographics == "Adults") %>% 
+  distinct(Question, Demographics, .keep_all = TRUE)
+
+df %>% 
+  knitr::kable(caption = title)
+```
+
+
+
