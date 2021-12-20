@@ -205,12 +205,25 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 
 ## Piping into a cor.test
 
+### Method 1 (no group_by)
 Using the [exposition pipe](https://magrittr.tidyverse.org/reference/exposition.html) from the `magrittr` package.
 ```{r}
 library(magrittr)
 mtcars %$%
   cor.test(mpg, hp) %>% 
   broom::tidy()
+```
+
+### Method 2 (allows group_by)
+Using a `nest-map-unnest` workflow:
+
+```{r}
+mtcars %>% 
+  nest(data = -cyl) %>% 
+  mutate(test = map(data, ~ cor.test(.x$mpg, .x$hp)), # S3 list-col
+    tidied = map(test, broom::tidy)
+  ) %>% 
+  unnest(tidied)
 ```
 
 

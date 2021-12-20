@@ -47,10 +47,10 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 t        56    61 v    
-## 2 u        63    68 w    
-## 3 x        20    69 d    
-## 4 a        25    92 e
+## 1 u        95    26 v    
+## 2 e         5    74 t    
+## 3 n        90    88 d    
+## 4 j        64     2 w
 ```
 
 ## piping and dplyr verbs with lists and purrr 
@@ -85,10 +85,10 @@ df %>%
 ## # A tibble: 4 × 4
 ##   a     pastedName_b     c pastedName_d
 ##   <chr>        <int> <int> <chr>       
-## 1 w               70    12 c           
-## 2 c               44    81 k           
-## 3 r               28    59 o           
-## 4 x               69    14 t
+## 1 h               30    24 g           
+## 2 i               79    92 y           
+## 3 k               87    17 b           
+## 4 q               15    81 n
 ```
 
 ## Mutate and Summarise multiple columns 
@@ -231,11 +231,11 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 b          110232 k            7062
-## 2 e          146245 r           14231
-## 3 v          444181 v           48508
-## 4 w          511360 y           42964
-## 5 u          586930 x           38560
+## 1 r          187876 d           40171
+## 2 t          421251 c           30422
+## 3 z          299005 j           53223
+## 4 l          524604 b           35520
+## 5 a          175058 p           27780
 ```
 
 But we can also use the `intersect()` function to create an AND statement
@@ -260,9 +260,9 @@ tmp %>%
 
 ```
 ## # A tibble: 1 × 6
-##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
-##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
-## 1 1004156 401662.4----> 237794      95118. 169162      67665.
+##   g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
+##    <int> <chr>          <int>       <dbl>  <int>       <dbl>
+## 1 824422 329768.8----> 158322      63329. 117638      47055.
 ```
 
 ## Piping into a t.test
@@ -279,17 +279,18 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 14.239, df = 198, p-value < 2.2e-16
+## t = 14.552, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##   8.613452 11.382900
+##   9.581546 12.585430
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            59.91230            49.91413
+##            60.70843            49.62495
 ```
 
 ## Piping into a cor.test
 
+### Method 1 (no group_by)
 Using the [exposition pipe](https://magrittr.tidyverse.org/reference/exposition.html) from the `magrittr` package.
 
 ```r
@@ -304,6 +305,29 @@ mtcars %$%
 ##   estimate statistic     p.value parameter conf.low conf.high method alternative
 ##      <dbl>     <dbl>       <dbl>     <int>    <dbl>     <dbl> <chr>  <chr>      
 ## 1   -0.776     -6.74 0.000000179        30   -0.885    -0.586 Pears… two.sided
+```
+
+### Method 2 (allows group_by)
+Using a `nest-map-unnest` workflow:
+
+
+```r
+mtcars %>% 
+  nest(data = -cyl) %>% 
+  mutate(test = map(data, ~ cor.test(.x$mpg, .x$hp)), # S3 list-col
+    tidied = map(test, broom::tidy)
+  ) %>% 
+  unnest(tidied)
+```
+
+```
+## # A tibble: 3 × 11
+##     cyl data       test  estimate statistic p.value parameter conf.low conf.high
+##   <dbl> <list>     <lis>    <dbl>     <dbl>   <dbl>     <int>    <dbl>     <dbl>
+## 1     6 <tibble [… <hte…   -0.127    -0.286  0.786          5   -0.803     0.692
+## 2     4 <tibble [… <hte…   -0.524    -1.84   0.0984         9   -0.855     0.111
+## 3     8 <tibble [… <hte…   -0.284    -1.02   0.326         12   -0.708     0.291
+## # … with 2 more variables: method <chr>, alternative <chr>
 ```
 
 
