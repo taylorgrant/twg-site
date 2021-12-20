@@ -47,10 +47,10 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 i         6    87 h    
-## 2 u        35    16 u    
-## 3 a         9    21 z    
-## 4 p       100    27 i
+## 1 t        56    61 v    
+## 2 u        63    68 w    
+## 3 x        20    69 d    
+## 4 a        25    92 e
 ```
 
 ## piping and dplyr verbs with lists and purrr 
@@ -85,10 +85,10 @@ df %>%
 ## # A tibble: 4 × 4
 ##   a     pastedName_b     c pastedName_d
 ##   <chr>        <int> <int> <chr>       
-## 1 s               55    48 r           
-## 2 w               39    59 p           
-## 3 y               68    77 v           
-## 4 g               80    96 c
+## 1 w               70    12 c           
+## 2 c               44    81 k           
+## 3 r               28    59 o           
+## 4 x               69    14 t
 ```
 
 ## Mutate and Summarise multiple columns 
@@ -231,11 +231,11 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 n          297168 p            8063
-## 2 x          378890 m           34907
-## 3 m          323023 r           54227
-## 4 z          294167 k           59622
-## 5 p          214967 l           42996
+## 1 b          110232 k            7062
+## 2 e          146245 r           14231
+## 3 v          444181 v           48508
+## 4 w          511360 y           42964
+## 5 u          586930 x           38560
 ```
 
 But we can also use the `intersect()` function to create an AND statement
@@ -262,7 +262,7 @@ tmp %>%
 ## # A tibble: 1 × 6
 ##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
 ##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
-## 1 2025852 810340.8----> 113347      45339. 156748      62699.
+## 1 1004156 401662.4----> 237794      95118. 169162      67665.
 ```
 
 ## Piping into a t.test
@@ -279,14 +279,33 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 14.99, df = 198, p-value < 2.2e-16
+## t = 14.239, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##   8.79244 11.45629
+##   8.613452 11.382900
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            59.90064            49.77628
+##            59.91230            49.91413
 ```
+
+## Piping into a cor.test
+
+Using the [exposition pipe](https://magrittr.tidyverse.org/reference/exposition.html) from the `magrittr` package.
+
+```r
+library(magrittr)
+mtcars %$%
+  cor.test(mpg, hp) %>% 
+  broom::tidy()
+```
+
+```
+## # A tibble: 1 × 8
+##   estimate statistic     p.value parameter conf.low conf.high method alternative
+##      <dbl>     <dbl>       <dbl>     <int>    <dbl>     <dbl> <chr>  <chr>      
+## 1   -0.776     -6.74 0.000000179        30   -0.885    -0.586 Pears… two.sided
+```
+
 
 ## Arranging within a group
 

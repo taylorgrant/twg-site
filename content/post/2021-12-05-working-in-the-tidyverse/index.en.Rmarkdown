@@ -32,6 +32,8 @@ opts_chunk$set(
   eval = TRUE, # Default: TRUE
   include = TRUE, # Default: TRUE
   echo = TRUE, # Default: TRUE
+  warning = FALSE,
+  message = FALSE,
   width = getOption("width"),
   fig.align = "center",
   fig.width = 11.5, # Default: 7
@@ -200,6 +202,17 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
        group = c(rep("green", 100), rep("blue", 100))) %>%
   t.test(a ~ group, data = ., var.equal = TRUE)
 ```
+
+## Piping into a cor.test
+
+Using the [exposition pipe](https://magrittr.tidyverse.org/reference/exposition.html) from the `magrittr` package.
+```{r}
+library(magrittr)
+mtcars %$%
+  cor.test(mpg, hp) %>% 
+  broom::tidy()
+```
+
 
 ## Arranging within a group
 
