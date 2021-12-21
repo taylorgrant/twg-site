@@ -61,7 +61,7 @@ Updated as I find them...
 ## Covid
 - [Apple Mobility Data](https://www.apple.com/covid19/mobility) 
 - [Indeed Hiring Lab](https://www.hiringlab.org/) 
-- [State and Local Economic Tracker](https://tracktherecovery.org/){target='_blank'}
+- [State and Local Economic Tracker](https://tracktherecovery.org/)
 - [NYTimes](https://github.com/nytimes/covid-19-data) 
 
 ------------------
@@ -71,7 +71,7 @@ Updated as I find them...
 - [Cooperative Congressional Election Study](https://cces.gov.harvard.edu/) 
 - [Pew Research Center](https://www.people-press.org/) 
 - [Monmouth Polling](https://www.monmouth.edu/polling-institute/) 
-- [World Values Survey](http://www.worldvaluessurvey.org/wvs.jsp){target="_blank}
+- [World Values Survey](http://www.worldvaluessurvey.org/wvs.jsp)
 - [General Social Survey](https://gss.norc.org/) 
 - [Nationscape/Voter Surveys](https://www.voterstudygroup.org/data) 
 - [Harvard Dataverse](https://dataverse.harvard.edu/) 
@@ -110,7 +110,7 @@ Updated as I find them...
 
 ### Congressional Stock Transactions 
 - [Senate Stock Watcher](https://senatestockwatcher.com/) 
-- [House Stock Watcher](https://housestockwatcher.com/){target="blank"}
+- [House Stock Watcher](https://housestockwatcher.com/)
 
 ### Other
 - [Highway Statistics incl. Vehicle and Driver Registrations](https://www.fhwa.dot.gov/policyinformation/statistics/2018/) 
@@ -121,11 +121,11 @@ Updated as I find them...
 
 ## R Packages to Import Data
 - BLS data: [blscrapeR](https://cran.r-project.org/web/packages/blscrapeR/index.html) 
-- Stock data: [quantmod](https://github.com/joshuaulrich/quantmod){target="_blank}
-- BEA data: [bea](https://github.com/us-bea/bea.R){target="_blank}
+- Stock data: [quantmod](https://github.com/joshuaulrich/quantmod)
+- BEA data: [bea](https://github.com/us-bea/bea.R)
 - SEC Filings: [edgar](https://cran.r-project.org/package=edgar) 
   - SIC Codes: [edgarWebR](https://github.com/mwaldstein/edgarWebR) 
-- FRED data: [FredR](https://github.com/jcizel/FredR){target="_blank}
+- FRED data: [FredR](https://github.com/jcizel/FredR)
 - Census data (decennial and 5-year ACS): [tidycensus](https://walker-data.com/tidycensus/) 
 - Census data (full API): [censusapi](https://github.com/hrecht/censusapi) 
 - Census IPUMS microdata: [ipumsr](https://github.com/mnpopcenter/ipumsr) 
