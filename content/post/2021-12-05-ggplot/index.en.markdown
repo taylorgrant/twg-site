@@ -108,6 +108,32 @@ Note that you can turn these pie charts into donut plots by adding `xlim(4,8)` w
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/facet_donut-1.png" width="1104" style="display: block; margin: auto;" />
 
+## Adding unique lines to facets 
+
+We can either create a new dataframe with the specific names of the facets and the values, or we can use an in-block calculation using `data = .`. 
+
+
+```r
+mtcars %>%
+  rownames_to_column("model") %>%
+  group_by(model, cyl) %>%
+  summarize(avg = mean(mpg)) %>%
+  ggplot(aes(y=model, x = avg)) +
+  geom_point() +
+  geom_vline(
+    data = . %>%
+      group_by(cyl) %>%
+      summarise(line = mean(avg)),
+    aes(xintercept = line),
+    linetype = "dashed"
+    ) +
+  facet_wrap(~cyl, scales = "free_y", ncol = 1) + 
+  theme_twg() + 
+  labs(x = NULL, y = NULL)
+```
+
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/facet_line-1.png" width="1104" style="display: block; margin: auto;" />
+
 ## Using facet_grid to graph multiple groups in the same plot 
 
 Sometimes you want to make a point about how certain factors are always larger or smaller than another across multiple groups. It can all be plotted out on the same graph, but it's difficult to draw attention to the groupings - ggplot doesn't add space between groups on its own. But if we facet by group, we can gain a little breathing room between each group. And by using `facet_grid` we can rotate the graph. 
