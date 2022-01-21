@@ -428,3 +428,25 @@ tmp %>%
 ```
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/streaming-1.png" width="1104" style="display: block; margin: auto;" />
+
+## Splitting axis dates into two lines 
+
+Dates can take up quite a bit of space on an axis. But we can split out the month and year on separate lines. Here, `labels` can take a function that uses a simple ifelse logic. 
+
+
+```r
+tibble(date = seq.Date(as.Date("2018-01-01"), as.Date("2022-01-01"), by = "month"),
+      t = seq(0,10, length.out = 49), 
+      y = sin(t)) %>% 
+  ggplot(aes(x = date, y = y)) + 
+  geom_line(color = my_pal("bly")[2], size = 1) + 
+  scale_x_date(date_breaks = "3 months",
+               labels = function(x) ifelse(lubridate::month(x) == 1, 
+                                           paste0(lubridate::month(x,label=TRUE),"\n",lubridate::year(x)), 
+                                           months(x, TRUE))) + 
+  theme_twg() + 
+  labs(x = NULL, y = NULL)
+```
+
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-3-1.png" width="1104" style="display: block; margin: auto;" />
+
