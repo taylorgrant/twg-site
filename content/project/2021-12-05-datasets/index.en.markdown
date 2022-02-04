@@ -1,22 +1,19 @@
 ---
 title: Datasets
 author: twg
-date: '2021-12-05'
-slug: datasets
+date: '2022-02-04'
 categories:
   - datasets
 tags:
   - datasets
-subtitle: ''
-summary: 'Available datasets, updated as I find them'
-authors: []
+slug: datasets
+summary: Available datasets, updated as I find them
 lastmod: '2021-12-05T22:30:43-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 {{% toc %}}
@@ -83,6 +80,7 @@ Updated as I find them...
 ### General 
 - [US Census](https://www.census.gov/data.html) 
 - [Federal Reserve of St. Louis (FRED)](https://fred.stlouisfed.org/) 
+- [American Housing Survey](https://www.census.gov/programs-surveys/ahs/data.html)
 
 ### Labor
 - [Unemployment - Weekly Claims](https://oui.doleta.gov/unemploy/claims.asp) 
