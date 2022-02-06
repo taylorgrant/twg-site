@@ -90,8 +90,8 @@ mlb %>%
 
 DT is another html table, but it's far more interactive. Columns are sortable and filterable by default. We're going to convert the string columns to numeric so that we can use the DT format functions.  
 
-The DT table 
-```{r}
+The DT table won't render, but this code will work in R or in any HTML Rmarkdown doc. 
+```{r, eval = FALSE}
 mlb %>% 
   select(Name:AVG, `wRC+`, contains("WAR")) %>%
   select(-G19) %>%
@@ -126,9 +126,7 @@ mlb %>%
   # formatting numbers
   formatPercentage(c(10,11), digits = 1) %>% 
   formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
-  
-# # using widgetframe to use...
-# widgetframe::frameWidget(tbl1)
+
   
 ```
 
