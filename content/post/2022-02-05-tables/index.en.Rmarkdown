@@ -1,0 +1,70 @@
+---
+title: Tables
+author: twg
+date: '2022-02-05'
+slug: tables
+categories:
+  - tables
+  - DT
+  - GT
+  - kableExtra
+tags:
+  - tables
+  - DT
+  - GT
+  - kableExtra
+subtitle: ''
+summary: 'Building interesting tables with a few different packages'
+authors: []
+lastmod: '2022-02-05T09:52:17-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r, setup, include = FALSE}
+pacman::p_load(tidyverse, here, janitor, glue, knitr, showtext,
+               gt, DT, kableExtra)
+
+font_add_google("Raleway", "Raleway")
+showtext_auto()
+
+options("width" = 110)
+source(here::here("R", "theme_twg.R"))
+
+mlb <- readRDS(here("static", "data", "fg_stat.rds"))
+```
+
+```{r setup-knitr, include = FALSE}
+opts_chunk$set(
+  eval = TRUE, # Default: TRUE
+  include = TRUE, # Default: TRUE
+  echo = TRUE, # Default: TRUE
+  width = getOption("width"),
+  fig.align = "center",
+  fig.width = 11.5, # Default: 7
+  fig.height = 5.75)
+```
+
+Examples of building tables using three packages - [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html), [DT](https://rstudio.github.io/DT/), and [gt](https://gt.rstudio.com/). This will use the top 30 MLB hitters for 2021 from the FanGraphs leaderboard. 
+
+## kableExtra
+
+Starting with kable and kableExtra to make html tables. They're not interactive, but they look nice and require little code.  
+
+```{r}
+mlb %>% 
+  head(10) %>%
+  kbl(
+    # align = "lrc", # justification; by default numeric or right-justified
+    # format.args = list(big.mark = ",") # comma formatting if necessary 
+    ) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "responsive")) %>%
+  footnote(general = "Source: FanGraphs")
+```
+
+
+
