@@ -28,8 +28,27 @@ projects: []
 <script src="{{< blogdown/postref >}}index.en_files/kePrint/kePrint.js"></script>
 <link href="{{< blogdown/postref >}}index.en_files/lightable/lightable.css" rel="stylesheet" />
 <script src="{{< blogdown/postref >}}index.en_files/htmlwidgets/htmlwidgets.js"></script>
-<script src="{{< blogdown/postref >}}index.en_files/pymjs/pym.v1.js"></script>
-<script src="{{< blogdown/postref >}}index.en_files/widgetframe-binding/widgetframe.js"></script>
+<link href="{{< blogdown/postref >}}index.en_files/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/datatables-binding/datatables.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/jquery/jquery-3.6.0.min.js"></script>
+<link href="{{< blogdown/postref >}}index.en_files/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="{{< blogdown/postref >}}index.en_files/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/dt-core/js/jquery.dataTables.min.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/jszip/jszip.min.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/pdfmake/pdfmake.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/pdfmake/vfs_fonts.js"></script>
+<link href="{{< blogdown/postref >}}index.en_files/dt-ext-buttons/css/buttons.dataTables.min.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/dt-ext-buttons/js/dataTables.buttons.min.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/dt-ext-buttons/js/buttons.flash.min.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/dt-ext-buttons/js/buttons.html5.min.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/dt-ext-buttons/js/buttons.colVis.min.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/dt-ext-buttons/js/buttons.print.min.js"></script>
+<link href="{{< blogdown/postref >}}index.en_files/nouislider/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/nouislider/jquery.nouislider.min.js"></script>
+<link href="{{< blogdown/postref >}}index.en_files/selectize/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/selectize/selectize.min.js"></script>
+<link href="{{< blogdown/postref >}}index.en_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/crosstalk/js/crosstalk.min.js"></script>
 
 Building tables with three different packages - [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html), [DT](https://rstudio.github.io/DT/), and [gt](https://gt.rstudio.com/). These builds aren’t meant to be extravagant, but are baselines for html and static tables.
 
@@ -1749,10 +1768,12 @@ NA
 
 ## DT Datable
 
-DT is another html table, but it’s far more interactive. Columns are sortable and filterable by default. We’re going to convert the string columns to numeric so that we can use the DT format fuctions.
+DT is another html table, but it’s far more interactive. Columns are sortable and filterable by default. We’re going to convert the string columns to numeric so that we can use the DT format functions.
+
+The DT table
 
 ``` r
-tbl1 <- mlb %>% 
+mlb %>% 
   select(Name:AVG, `wRC+`, contains("WAR")) %>%
   select(-G19) %>%
   mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>%
@@ -1786,13 +1807,15 @@ tbl1 <- mlb %>%
   # formatting numbers
   formatPercentage(c(10,11), digits = 1) %>% 
   formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
-  
-# using widgetframe to use...
-widgetframe::frameWidget(tbl1)
 ```
 
-<div id="htmlwidget-1" style="width:100%;height:552px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index.en_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-1" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"577000\" data-max=\"3.4e+07\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"120\" data-max=\"162\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"526\" data-max=\"724\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"2\" data-max=\"48\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"64\" data-max=\"123\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"43\" data-max=\"113\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"47\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.057999999999999\" data-max=\"0.222\" data-scale=\"15\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.131\" data-max=\"0.313\" data-scale=\"15\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.078\" data-max=\"0.335\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.256\" data-max=\"0.372\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.247\" data-max=\"0.328\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"106\" data-max=\"170\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.3\" data-max=\"7.6\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"4.4\" data-max=\"6.9\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["Buttons"],"caption":"<caption>DT Version - MLB Table<\/caption>","fillContainer":true,"data":[["<a href=\"https://en.wikipedia.org/wiki/Trea_Turner\"target=\"_blank\">Trea Turner<\/a>","<a href=\"https://en.wikipedia.org/wiki/Vladimir_Guerrero_Jr.\"target=\"_blank\">Vladimir Guerrero Jr.<\/a>","<a href=\"https://en.wikipedia.org/wiki/Bryce_Harper\"target=\"_blank\">Bryce Harper<\/a>","<a href=\"https://en.wikipedia.org/wiki/Marcus_Semien\"target=\"_blank\">Marcus Semien<\/a>","<a href=\"https://en.wikipedia.org/wiki/Juan_Soto\"target=\"_blank\">Juan Soto<\/a>","<a href=\"https://en.wikipedia.org/wiki/Jose_Ramirez\"target=\"_blank\">Jose Ramirez<\/a>","<a href=\"https://en.wikipedia.org/wiki/Fernando_Tatis_Jr.\"target=\"_blank\">Fernando Tatis Jr.<\/a>","<a href=\"https://en.wikipedia.org/wiki/Carlos_Correa\"target=\"_blank\">Carlos Correa<\/a>","<a href=\"https://en.wikipedia.org/wiki/Starling_Marte\"target=\"_blank\">Starling Marte<\/a>","<a href=\"https://en.wikipedia.org/wiki/Aaron_Judge\"target=\"_blank\">Aaron Judge<\/a>","<a href=\"https://en.wikipedia.org/wiki/Bryan_Reynolds\"target=\"_blank\">Bryan Reynolds<\/a>","<a href=\"https://en.wikipedia.org/wiki/Brandon_Crawford\"target=\"_blank\">Brandon Crawford<\/a>","<a href=\"https://en.wikipedia.org/wiki/Tyler_O'Neill\"target=\"_blank\">Tyler O'Neill<\/a>","<a href=\"https://en.wikipedia.org/wiki/Cedric_Mullins_II\"target=\"_blank\">Cedric Mullins II<\/a>","<a href=\"https://en.wikipedia.org/wiki/Brandon_Lowe\"target=\"_blank\">Brandon Lowe<\/a>","<a href=\"https://en.wikipedia.org/wiki/Xander_Bogaerts\"target=\"_blank\">Xander Bogaerts<\/a>","<a href=\"https://en.wikipedia.org/wiki/Jose_Altuve\"target=\"_blank\">Jose Altuve<\/a>","<a href=\"https://en.wikipedia.org/wiki/Shohei_Ohtani\"target=\"_blank\">Shohei Ohtani<\/a>","<a href=\"https://en.wikipedia.org/wiki/Matt_Olson\"target=\"_blank\">Matt Olson<\/a>","<a href=\"https://en.wikipedia.org/wiki/Paul_Goldschmidt\"target=\"_blank\">Paul Goldschmidt<\/a>","<a href=\"https://en.wikipedia.org/wiki/Bo_Bichette\"target=\"_blank\">Bo Bichette<\/a>","<a href=\"https://en.wikipedia.org/wiki/Max_Muncy\"target=\"_blank\">Max Muncy<\/a>","<a href=\"https://en.wikipedia.org/wiki/Kyle_Tucker\"target=\"_blank\">Kyle Tucker<\/a>","<a href=\"https://en.wikipedia.org/wiki/Rafael_Devers\"target=\"_blank\">Rafael Devers<\/a>","<a href=\"https://en.wikipedia.org/wiki/Yoan_Moncada\"target=\"_blank\">Yoan Moncada<\/a>","<a href=\"https://en.wikipedia.org/wiki/Freddie_Freeman\"target=\"_blank\">Freddie Freeman<\/a>","<a href=\"https://en.wikipedia.org/wiki/J.T._Realmuto\"target=\"_blank\">J.T. Realmuto<\/a>","<a href=\"https://en.wikipedia.org/wiki/Jake_Cronenworth\"target=\"_blank\">Jake Cronenworth<\/a>","<a href=\"https://en.wikipedia.org/wiki/Manny_Machado\"target=\"_blank\">Manny Machado<\/a>","<a href=\"https://en.wikipedia.org/wiki/Nicky_Lopez\"target=\"_blank\">Nicky Lopez<\/a>"],["---","TOR","PHI","TOR","WSN","CLE","SDP","HOU","---","NYY","PIT","SFG","STL","BAL","TBR","BOS","HOU","LAA","OAK","STL","TOR","LAD","HOU","BOS","CHW","ATL","PHI","SDP","SDP","KCR"],[13000000,605400,27538462,18000000,8500000,9400000,1714286,11700000,12500000,10175000,601000,15200000,594700,577000,2500000,20000000,29000000,3000000,5000000,25333333,587800,9000000,624300,4575000,6800000,22359375,18048556,584900,34000000,597500],[148,161,141,162,151,152,130,148,120,148,159,138,138,159,149,144,146,158,156,158,159,144,140,156,144,159,134,152,153,151],[646,698,599,724,654,636,546,640,526,633,646,549,537,675,615,603,678,639,673,679,690,592,567,664,616,695,537,643,640,565],[28,48,35,45,29,36,42,26,12,39,24,24,34,30,39,23,31,46,39,31,29,36,30,38,14,31,17,21,28,2],[107,123,101,115,111,111,99,104,89,89,93,79,89,91,97,90,117,103,101,102,121,95,83,101,74,120,64,94,92,78],[77,111,84,102,95,103,97,92,55,98,90,90,80,59,99,79,83,100,111,99,102,94,92,113,61,83,73,71,106,43],[32,4,13,15,9,27,25,0,47,6,5,11,15,30,7,5,5,26,4,12,25,2,14,5,3,8,13,4,12,22],[0.063,0.123,0.167,0.091,0.222,0.113,0.114,0.117,0.082,0.118,0.116,0.102,0.071,0.087,0.111,0.103,0.097,0.15,0.131,0.099,0.058,0.14,0.093,0.093,0.136,0.122,0.089,0.086,0.098,0.087],[0.17,0.158,0.224,0.202,0.142,0.137,0.28,0.181,0.188,0.25,0.184,0.191,0.313,0.185,0.272,0.187,0.134,0.296,0.168,0.2,0.199,0.203,0.159,0.215,0.255,0.154,0.24,0.14,0.159,0.131],[0.208,0.29,0.305,0.273,0.221,0.272,0.328,0.205,0.148,0.256,0.22,0.224,0.274,0.228,0.277,0.198,0.211,0.335,0.269,0.221,0.186,0.278,0.263,0.259,0.148,0.203,0.176,0.194,0.211,0.078],[0.362,0.313,0.359,0.276,0.332,0.256,0.324,0.308,0.372,0.332,0.345,0.334,0.366,0.322,0.28,0.333,0.28,0.303,0.269,0.331,0.339,0.257,0.304,0.307,0.35,0.321,0.325,0.283,0.29,0.347],[0.328,0.311,0.309,0.265,0.313,0.266,0.282,0.279,0.31,0.287,0.302,0.298,0.286,0.291,0.247,0.295,0.278,0.257,0.271,0.294,0.298,0.249,0.294,0.279,0.263,0.3,0.263,0.266,0.278,0.3],[142,166,170,131,163,137,156,134,134,148,142,139,145,136,137,130,130,152,146,138,122,140,147,134,122,135,108,116,122,106],[3.6,0.4,4.5,7.6,4.9,3.6,null,null,3,null,3.2,0.3,null,null,null,6.8,3.5,null,3.9,3,null,4.7,null,5.9,5.6,3.9,5.7,null,3.2,null],[6.9,6.7,6.6,6.6,6.6,6.3,6.1,5.8,5.5,5.5,5.5,5.5,5.4,5.3,5.2,5.2,5.2,5.1,5,4.9,4.9,4.9,4.8,4.7,4.5,4.5,4.4,4.4,4.4,4.4],["https://en.wikipedia.org/wiki/Trea_Turner","https://en.wikipedia.org/wiki/Vladimir_Guerrero_Jr.","https://en.wikipedia.org/wiki/Bryce_Harper","https://en.wikipedia.org/wiki/Marcus_Semien","https://en.wikipedia.org/wiki/Juan_Soto","https://en.wikipedia.org/wiki/Jose_Ramirez","https://en.wikipedia.org/wiki/Fernando_Tatis_Jr.","https://en.wikipedia.org/wiki/Carlos_Correa","https://en.wikipedia.org/wiki/Starling_Marte","https://en.wikipedia.org/wiki/Aaron_Judge","https://en.wikipedia.org/wiki/Bryan_Reynolds","https://en.wikipedia.org/wiki/Brandon_Crawford","https://en.wikipedia.org/wiki/Tyler_O'Neill","https://en.wikipedia.org/wiki/Cedric_Mullins_II","https://en.wikipedia.org/wiki/Brandon_Lowe","https://en.wikipedia.org/wiki/Xander_Bogaerts","https://en.wikipedia.org/wiki/Jose_Altuve","https://en.wikipedia.org/wiki/Shohei_Ohtani","https://en.wikipedia.org/wiki/Matt_Olson","https://en.wikipedia.org/wiki/Paul_Goldschmidt","https://en.wikipedia.org/wiki/Bo_Bichette","https://en.wikipedia.org/wiki/Max_Muncy","https://en.wikipedia.org/wiki/Kyle_Tucker","https://en.wikipedia.org/wiki/Rafael_Devers","https://en.wikipedia.org/wiki/Yoan_Moncada","https://en.wikipedia.org/wiki/Freddie_Freeman","https://en.wikipedia.org/wiki/J.T._Realmuto","https://en.wikipedia.org/wiki/Jake_Cronenworth","https://en.wikipedia.org/wiki/Manny_Machado","https://en.wikipedia.org/wiki/Nicky_Lopez"]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th>Name<\/th>\n      <th>Team<\/th>\n      <th>Salary<\/th>\n      <th>G<\/th>\n      <th>PA<\/th>\n      <th>HR<\/th>\n      <th>R<\/th>\n      <th>RBI<\/th>\n      <th>SB<\/th>\n      <th>BB%<\/th>\n      <th>K%<\/th>\n      <th>ISO<\/th>\n      <th>BABIP<\/th>\n      <th>AVG<\/th>\n      <th>wRC+<\/th>\n      <th>WAR19<\/th>\n      <th>WAR<\/th>\n      <th>link<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Bfrtip","buttons":[{"extend":"collection","buttons":["csv","excel","pdf"],"text":"Download"}],"pageLength":20,"columnDefs":[{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatCurrency(data, \"$\", 0, 3, \",\", \".\", true);\n  }"},{"targets":9,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 1, 3, \",\", \".\");\n  }"},{"targets":10,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 1, 3, \",\", \".\");\n  }"},{"visible":false,"targets":17},{"className":"dt-right","targets":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"lengthMenu":[10,20,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+
+``` r
+# # using widgetframe to use...
+# widgetframe::frameWidget(tbl1)
+```
 
 ## gt Tables
 
@@ -1955,13 +1978,13 @@ mlb %>%
   )
 ```
 
-<div id="nbmofanmyi" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="fhhytorkxa" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 html {
   font-family: 'Open Sans';
 }
 
-#nbmofanmyi .gt_table {
+#fhhytorkxa .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -1986,7 +2009,7 @@ html {
   border-left-color: #D3D3D3;
 }
 
-#nbmofanmyi .gt_heading {
+#fhhytorkxa .gt_heading {
   background-color: #F3F3F3;
   text-align: center;
   border-bottom-color: #F3F3F3;
@@ -1998,7 +2021,7 @@ html {
   border-right-color: #D3D3D3;
 }
 
-#nbmofanmyi .gt_title {
+#fhhytorkxa .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2008,7 +2031,7 @@ html {
   border-bottom-width: 0;
 }
 
-#nbmofanmyi .gt_subtitle {
+#fhhytorkxa .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2018,13 +2041,13 @@ html {
   border-top-width: 0;
 }
 
-#nbmofanmyi .gt_bottom_border {
+#fhhytorkxa .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#nbmofanmyi .gt_col_headings {
+#fhhytorkxa .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2039,7 +2062,7 @@ html {
   border-right-color: #D3D3D3;
 }
 
-#nbmofanmyi .gt_col_heading {
+#fhhytorkxa .gt_col_heading {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2059,7 +2082,7 @@ html {
   overflow-x: hidden;
 }
 
-#nbmofanmyi .gt_column_spanner_outer {
+#fhhytorkxa .gt_column_spanner_outer {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2071,15 +2094,15 @@ html {
   padding-right: 4px;
 }
 
-#nbmofanmyi .gt_column_spanner_outer:first-child {
+#fhhytorkxa .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#nbmofanmyi .gt_column_spanner_outer:last-child {
+#fhhytorkxa .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#nbmofanmyi .gt_column_spanner {
+#fhhytorkxa .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2091,7 +2114,7 @@ html {
   width: 100%;
 }
 
-#nbmofanmyi .gt_group_heading {
+#fhhytorkxa .gt_group_heading {
   padding: 6px;
   color: #333333;
   background-color: #F3F3F3;
@@ -2113,7 +2136,7 @@ html {
   vertical-align: middle;
 }
 
-#nbmofanmyi .gt_empty_group_heading {
+#fhhytorkxa .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #F3F3F3;
@@ -2128,15 +2151,15 @@ html {
   vertical-align: middle;
 }
 
-#nbmofanmyi .gt_from_md > :first-child {
+#fhhytorkxa .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#nbmofanmyi .gt_from_md > :last-child {
+#fhhytorkxa .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#nbmofanmyi .gt_row {
+#fhhytorkxa .gt_row {
   padding-top: 6px;
   padding-bottom: 6px;
   padding-left: 5px;
@@ -2155,7 +2178,7 @@ html {
   overflow-x: hidden;
 }
 
-#nbmofanmyi .gt_stub {
+#fhhytorkxa .gt_stub {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2167,7 +2190,7 @@ html {
   padding-left: 12px;
 }
 
-#nbmofanmyi .gt_summary_row {
+#fhhytorkxa .gt_summary_row {
   color: #333333;
   background-color: #F3F3F3;
   text-transform: inherit;
@@ -2177,7 +2200,7 @@ html {
   padding-right: 5px;
 }
 
-#nbmofanmyi .gt_first_summary_row {
+#fhhytorkxa .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2187,7 +2210,7 @@ html {
   border-top-color: #D3D3D3;
 }
 
-#nbmofanmyi .gt_grand_summary_row {
+#fhhytorkxa .gt_grand_summary_row {
   color: #333333;
   background-color: #F3F3F3;
   text-transform: inherit;
@@ -2197,7 +2220,7 @@ html {
   padding-right: 5px;
 }
 
-#nbmofanmyi .gt_first_grand_summary_row {
+#fhhytorkxa .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2207,11 +2230,11 @@ html {
   border-top-color: #D3D3D3;
 }
 
-#nbmofanmyi .gt_striped {
+#fhhytorkxa .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#nbmofanmyi .gt_table_body {
+#fhhytorkxa .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2220,7 +2243,7 @@ html {
   border-bottom-color: #D3D3D3;
 }
 
-#nbmofanmyi .gt_footnotes {
+#fhhytorkxa .gt_footnotes {
   color: #333333;
   background-color: #F3F3F3;
   border-bottom-style: none;
@@ -2234,13 +2257,13 @@ html {
   border-right-color: #D3D3D3;
 }
 
-#nbmofanmyi .gt_footnote {
+#fhhytorkxa .gt_footnote {
   margin: 0px;
   font-size: 10px;
   padding: 4px;
 }
 
-#nbmofanmyi .gt_sourcenotes {
+#fhhytorkxa .gt_sourcenotes {
   color: #333333;
   background-color: #F3F3F3;
   border-bottom-style: none;
@@ -2254,41 +2277,41 @@ html {
   border-right-color: #D3D3D3;
 }
 
-#nbmofanmyi .gt_sourcenote {
+#fhhytorkxa .gt_sourcenote {
   font-size: 10px;
   padding: 4px;
 }
 
-#nbmofanmyi .gt_left {
+#fhhytorkxa .gt_left {
   text-align: left;
 }
 
-#nbmofanmyi .gt_center {
+#fhhytorkxa .gt_center {
   text-align: center;
 }
 
-#nbmofanmyi .gt_right {
+#fhhytorkxa .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#nbmofanmyi .gt_font_normal {
+#fhhytorkxa .gt_font_normal {
   font-weight: normal;
 }
 
-#nbmofanmyi .gt_font_bold {
+#fhhytorkxa .gt_font_bold {
   font-weight: bold;
 }
 
-#nbmofanmyi .gt_font_italic {
+#fhhytorkxa .gt_font_italic {
   font-style: italic;
 }
 
-#nbmofanmyi .gt_super {
+#fhhytorkxa .gt_super {
   font-size: 65%;
 }
 
-#nbmofanmyi .gt_footnote_marks {
+#fhhytorkxa .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;

@@ -88,10 +88,11 @@ mlb %>%
 
 ## DT Datable
 
-DT is another html table, but it's far more interactive. Columns are sortable and filterable by default. We're going to convert the string columns to numeric so that we can use the DT format fuctions.  
+DT is another html table, but it's far more interactive. Columns are sortable and filterable by default. We're going to convert the string columns to numeric so that we can use the DT format functions.  
 
+The DT table 
 ```{r}
-tbl1 <- mlb %>% 
+mlb %>% 
   select(Name:AVG, `wRC+`, contains("WAR")) %>%
   select(-G19) %>%
   mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>%
@@ -126,8 +127,8 @@ tbl1 <- mlb %>%
   formatPercentage(c(10,11), digits = 1) %>% 
   formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
   
-# using widgetframe to use...
-widgetframe::frameWidget(tbl1)
+# # using widgetframe to use...
+# widgetframe::frameWidget(tbl1)
   
 ```
 
