@@ -6,15 +6,15 @@ slug: tables
 categories:
   - tables
   - DT
-  - GT
+  - gt
   - kableExtra
 tags:
   - tables
   - DT
-  - GT
+  - gt
   - kableExtra
 subtitle: ''
-summary: 'Building interesting tables with a few different packages'
+summary: 'Building clean tables with a few different packages'
 authors: []
 lastmod: '2022-02-05T09:52:17-08:00'
 featured: no
@@ -35,7 +35,8 @@ showtext_auto()
 options("width" = 110)
 source(here::here("R", "theme_twg.R"))
 
-mlb <- readRDS(here("static", "data", "fg_stat.rds"))
+mlb <- readRDS(here("static", "data", "fg_stat.rds")) %>% 
+  mutate(Team = ifelse(Team == "- - -", "---", Team))
 ```
 
 ```{r setup-knitr, include = FALSE}
@@ -49,22 +50,247 @@ opts_chunk$set(
   fig.height = 5.75)
 ```
 
-Examples of building tables using three packages - [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html), [DT](https://rstudio.github.io/DT/), and [gt](https://gt.rstudio.com/). This will use the top 30 MLB hitters for 2021 from the FanGraphs leaderboard. 
+Building tables with three different packages -  [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html), [DT](https://rstudio.github.io/DT/), and [gt](https://gt.rstudio.com/). These builds aren't meant to be extravagant, but are baselines for html and static tables. 
 
 ## kableExtra
 
-Starting with kable and kableExtra to make html tables. They're not interactive, but they look nice and require little code.  
+Starting with knitr and kableExtra to make html tables. They're not interactive, but they look nice and require little code. Also, they don't paginate, which is a pain. In this case, I've added links to each player's wikipedia page using the `cell_spec()` function and then specifying `kbl("html", escape = FALSE)`. 
 
+Some watchouts: 
+
+- Table Height - if you limit the height of the table, the horizontal scroll (if it's necessary) is at the bottom of the table; it's not persistent at the base of the table. 
+- Justification - by default, numeric columns are right-justified. This data has two columns, BB% and K% that are strings and need to be justified. But, you can't specify specific columns, it's a vector of "l", "c", or "r". Column headers follow the justification.  
+
+_The escape symbol '\\\' is showing up in the Salary column b/c some strange interference from DT and/or possibly widgetframe._
 ```{r}
 mlb %>% 
-  head(10) %>%
-  kbl(
-    # align = "lrc", # justification; by default numeric or right-justified
-    # format.args = list(big.mark = ",") # comma formatting if necessary 
+  select(Name:AVG, `wRC+`, contains("WAR")) %>%
+  select(-G19) %>%
+  # formattable adds dollar sign and keeps it numeric
+  mutate(Salary = formattable::currency(Salary, digits = 0L)) %>% 
+  # setting up the URL, new_tab is FALSE by default
+  mutate(Name = cell_spec(Name, "html", 
+                          link = paste0("https://en.wikipedia.org/wiki/", 
+                                        str_replace_all(Name, " ", "_")), 
+                          new_tab = TRUE)) %>%
+  rename(`2019` = WAR19, `2021` = WAR) %>%
+  # table
+  kbl("html", escape = FALSE,
+    align = c("l","l",rep("r",15)), # justification; by default numeric or right-justified
+    # format.args = list(big.mark = ",") # comma formatting if necessary
     ) %>% 
+  # added styling with kableExtra
   kable_styling(bootstrap_options = c("striped", "hover", "responsive")) %>%
-  footnote(general = "Source: FanGraphs")
+  add_header_above(c(" " = 15, "WAR" = 2)) %>%
+  footnote(general = "Source: FanGraphs") %>%
+  scroll_box(width = "100%", height = "600px")  # set height of table
 ```
 
+## DT Datable
 
+DT is another html table, but it's far more interactive. Columns are sortable and filterable by default. We're going to convert the string columns to numeric so that we can use the DT format fuctions.  
+
+```{r}
+tbl1 <- mlb %>% 
+  select(Name:AVG, `wRC+`, contains("WAR")) %>%
+  select(-G19) %>%
+  mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>%
+  # create a link to player's wiki 
+  mutate(
+    link = paste0("https://en.wikipedia.org/wiki/", 
+                                        str_replace_all(Name, " ", "_")),
+    Name = paste0('<a href="',link,'"target="_blank">',Name,"</a>")) %>%
+  DT::datatable(
+    fillContainer = TRUE, # make it scrollable
+    escape = FALSE, # for links to work
+    caption = "DT Version - MLB Table",
+    class = "display",
+    filter = 'top',
+    rownames = FALSE,
+    extensions = "Buttons", 
+    options = list(
+      dom = "Bfrtip",
+      buttons = list( # download data
+        list(
+        extend = "collection",
+        buttons = c("csv", "excel", "pdf"),
+        text = "Download"
+        )),
+      pageLength = 20, # how many rows per page
+      columnDefs = list(
+        list(
+          visible = FALSE, targets = 17) # hiding a column
+        ))
+    ) %>% 
+  # formatting numbers
+  formatPercentage(c(10,11), digits = 1) %>% 
+  formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
+  
+# using widgetframe to use...
+widgetframe::frameWidget(tbl1)
+  
+```
+
+## gt Tables 
+
+Last, gt tables, which are static but very customizable, and they are great for presentations and decks. also, because gt allows you rename columns in the table, we are allowed to have multiple columns with the same name, which generally isn't allowed in other tables. 
+
+It's also very easy to add imagery and symbols into the tables.  
+
+```{r}
+# arrows for fun
+up_arrow <- "<span style=\"color:green\">&#9650;</span>"
+down_arrow <- "<span style=\"color:red\">&#9660;</span>"
+
+mlb %>% 
+  select(Name:AVG, `wRC+`, contains("WAR")) %>% 
+  mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>% 
+  # set up table
+  gt(rowname_col = "Name") %>% 
+  # title and subtitle
+  tab_header( 
+    title = md("**gt Table: MLB Table**"),
+    subtitle = "Top 30 by fWAR"
+  ) %>%
+  # caption 
+  tab_source_note( # adding source note
+    source_note = md("*Source: FanGraphs*") 
+  ) %>% 
+  # create rowname groupings 
+  tab_row_group(
+    label = md("Mega Salary (Over $10MM)"),
+    rows = Salary > 10e6
+  ) %>% 
+  tab_row_group(
+    label = "Market-Value (3-$10MM)",
+    rows = (Salary > 3e6 & Salary <= 10e6)
+  ) %>% 
+  tab_row_group(
+    label = "Great Deal (1-$3MM)",
+    row = (Salary >= 1e6 & Salary <= 3e6)
+    ) %>% 
+  tab_row_group(
+    label = "Highway Robbery (< $1MM)",
+    row = (Salary < 1e6)
+    ) %>%
+  # reorder groups 
+  row_group_order(
+    groups = c("Mega Salary (Over $10MM)", "Market-Value (3-$10MM)",
+               "Great Deal (1-$3MM)", "Highway Robbery (< $1MM)")
+  ) %>% 
+  # add spanner over WAR
+  tab_spanner(
+    label = "WAR",
+    columns = matches("WAR")
+  ) %>% 
+  # add spanner over WAR
+  tab_spanner(
+    label = "Games",
+    columns = c("G19", "G")
+  ) %>%
+  # format columns
+  fmt_currency(
+    columns = "Salary",
+    currency = "USD",
+    sep_mark = ",",
+    suffixing = TRUE, # cut down, e.g, $1M or $650K
+    use_subunits = FALSE
+    ) %>% 
+  fmt_percent(
+    columns = matches("BB%|K%"),
+    decimals = 1
+  ) %>% 
+  # styling the table --------------------------- 
+  opt_table_font(
+    font = list(
+      google_font("Open Sans")
+    )
+  ) %>%
+  # aligning the title and subtitle left
+  tab_style( 
+    style = cell_text(align = 'left',
+                      weight = 'bold',
+                      size = px(18)),
+    locations = cells_title(c("title"))
+  ) %>%
+  # alignment of spanner
+  tab_style(
+    style = cell_text(weight = "bold",
+                      size = px(13),
+                      align = "center"),
+    locations = list(
+      cells_column_spanners(matches("WAR|Games")))
+  ) %>%
+  # bolding groups and columns 
+  tab_style(
+    style = cell_text(weight = 'bold',
+                      size = px(13)),
+    locations = list(
+      cells_column_labels(
+        columns = everything()),
+      cells_row_groups(groups = TRUE))
+  ) %>%
+  # align column headers 
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = list(
+      cells_column_labels(
+        columns = everything()
+      ))
+  ) %>%
+  # indenting the stub (more room for the identifiers)
+  tab_style( 
+    style = cell_text(indent = px(8),
+                      size = px(12)),
+    locations = cells_stub()
+  ) %>%
+   # font size in table
+  tab_style(
+    style = cell_text(size = px(12)),
+    locations = cells_body(
+      columns = everything())
+  ) %>%
+   # font alignment
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(
+      columns = !contains("Name"))
+  ) %>% 
+  # adding red/green arrows based on WAR
+  text_transform(
+    locations = list(
+      cells_body(columns = "WAR",
+                 rows = WAR > WAR19)
+    ),
+    fn = function(x) paste(x, up_arrow)
+  ) %>%
+  text_transform(
+    locations = list(
+      cells_body(columns = "WAR",
+                 rows = WAR < WAR19)
+    ),
+    fn = function(x) paste(x, down_arrow)
+  ) %>%
+  # rename columns if necessary
+  cols_label(
+    G19 = "2019", G = "2021",
+    WAR19 = "2019", WAR = "2021"
+  ) %>%
+  # hide columne for space
+  cols_hide(
+    columns = 'ISO'
+  ) %>% 
+  # final options
+  tab_options(
+    table.background.color = "#F3F3F3",
+    data_row.padding = px(6),
+    row_group.padding = px(6),
+    source_notes.font.size = px(10),
+    footnotes.font.size = px(10),
+    footnotes.marks = "LETTERS",
+    table.font.names = "Open Sans"
+  )
+  
+  
+```
 
