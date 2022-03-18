@@ -1,26 +1,23 @@
 ---
 title: Working in the tidyverse
 author: twg
-date: '2021-12-05'
-slug: working-in-the-tidyverse
+date: '2022-03-18'
 categories:
-  - tidyverse
   - dplyr
   - tidy
+  - tidyverse
 tags:
-  - tidyverse
   - dplyr
   - tidy
-subtitle: ''
-summary: 'Tips and tricks for working in the tidyverse'
-authors: []
+  - tidyverse
+slug: working-in-the-tidyverse
+summary: Tips and tricks for working in the tidyverse
 lastmod: '2021-12-05T16:41:07-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 ```{r setup, include = FALSE}
@@ -55,6 +52,32 @@ df <- tibble(
 df %>% setNames(names)
 ```
 
+## Using map to create named lists
+
+```{r}
+fn <- function(x) {
+  paste0('test-',x)
+}
+input <- LETTERS[1:3]
+input %>% set_names() %>% map(fn)
+```
+
+## Using rename_with to rename specific columns 
+
+Occasionally, you'll only want to rename certain columns and the `rename_with` function offers this capability.
+
+```{r}
+df <- tibble(
+  maa_1 = sample(letters, 4),
+  maa_2 = sample(1:100, 4),
+  ma_3 = sample(1:100, 4),
+  ma_4 = sample(letters, 4)
+)
+
+df %>% 
+  rename_with(~str_replace_all(., "maa", "ma"), contains("maa"))
+```
+
 ## piping and dplyr verbs with lists and purrr 
 
 Assume a list with data.frames and I want to use a dplyr verb (or apply any function) within it
@@ -65,21 +88,6 @@ list_object %>%
   map(~ mutate(., new_var = colA + colB))
 ```
 
-## Using rename_at to rename specific columns 
-
-Occasionally, you'll only want to rename certain columns and the `rename_at` function offers this capability, in much the same way as `mutate_at` or `summarise_at`. 
-
-```{r}
-df <- tibble(
-  a = sample(letters, 4),
-  b = sample(1:100, 4),
-  c = sample(1:100, 4),
-  d = sample(letters, 4)
-)
-
-df %>% 
-  rename_at(vars(b,d), ~ paste0("pastedName_", .))
-```
 
 ## Mutate and Summarise multiple columns 
 

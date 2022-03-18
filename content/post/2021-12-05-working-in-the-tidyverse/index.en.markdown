@@ -1,26 +1,23 @@
 ---
 title: Working in the tidyverse
 author: twg
-date: '2021-12-05'
-slug: working-in-the-tidyverse
+date: '2022-03-18'
 categories:
-  - tidyverse
   - dplyr
   - tidy
+  - tidyverse
 tags:
-  - tidyverse
   - dplyr
   - tidy
-subtitle: ''
-summary: 'Tips and tricks for working in the tidyverse'
-authors: []
+  - tidyverse
+slug: working-in-the-tidyverse
+summary: Tips and tricks for working in the tidyverse
 lastmod: '2021-12-05T16:41:07-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 
@@ -47,10 +44,59 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 u        95    26 v    
-## 2 e         5    74 t    
-## 3 n        90    88 d    
-## 4 j        64     2 w
+## 1 l        17    60 l    
+## 2 t        67    45 o    
+## 3 v        50    24 a    
+## 4 p        13    68 c
+```
+
+## Using map to create named lists
+
+
+```r
+fn <- function(x) {
+  paste0('test-',x)
+}
+input <- LETTERS[1:3]
+input %>% set_names() %>% map(fn)
+```
+
+```
+## $A
+## [1] "test-A"
+## 
+## $B
+## [1] "test-B"
+## 
+## $C
+## [1] "test-C"
+```
+
+## Using rename_with to rename specific columns 
+
+Occasionally, you'll only want to rename certain columns and the `rename_with` function offers this capability.
+
+
+```r
+df <- tibble(
+  maa_1 = sample(letters, 4),
+  maa_2 = sample(1:100, 4),
+  ma_3 = sample(1:100, 4),
+  ma_4 = sample(letters, 4)
+)
+
+df %>% 
+  rename_with(~str_replace_all(., "maa", "ma"), contains("maa"))
+```
+
+```
+## # A tibble: 4 × 4
+##   ma_1   ma_2  ma_3 ma_4 
+##   <chr> <int> <int> <chr>
+## 1 o        77    45 h    
+## 2 l        89    14 s    
+## 3 w        11    31 a    
+## 4 h        69    49 r
 ```
 
 ## piping and dplyr verbs with lists and purrr 
@@ -64,32 +110,6 @@ list_object %>%
   map(~ mutate(., new_var = colA + colB))
 ```
 
-## Using rename_at to rename specific columns 
-
-Occasionally, you'll only want to rename certain columns and the `rename_at` function offers this capability, in much the same way as `mutate_at` or `summarise_at`. 
-
-
-```r
-df <- tibble(
-  a = sample(letters, 4),
-  b = sample(1:100, 4),
-  c = sample(1:100, 4),
-  d = sample(letters, 4)
-)
-
-df %>% 
-  rename_at(vars(b,d), ~ paste0("pastedName_", .))
-```
-
-```
-## # A tibble: 4 × 4
-##   a     pastedName_b     c pastedName_d
-##   <chr>        <int> <int> <chr>       
-## 1 h               30    24 g           
-## 2 i               79    92 y           
-## 3 k               87    17 b           
-## 4 q               15    81 n
-```
 
 ## Mutate and Summarise multiple columns 
 
@@ -231,11 +251,11 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 r          187876 d           40171
-## 2 t          421251 c           30422
-## 3 z          299005 j           53223
-## 4 l          524604 b           35520
-## 5 a          175058 p           27780
+## 1 y          312099 r           23304
+## 2 q          132826 t           33912
+## 3 h          469426 x           24339
+## 4 g          547285 d           30132
+## 5 v          546847 w           42732
 ```
 
 But we can also use the `intersect()` function to create an AND statement
@@ -260,9 +280,9 @@ tmp %>%
 
 ```
 ## # A tibble: 1 × 6
-##   g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
-##    <int> <chr>          <int>       <dbl>  <int>       <dbl>
-## 1 824422 329768.8----> 158322      63329. 117638      47055.
+##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
+##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
+## 1 1737296 694918.4----> 200533      80213.  88567      35427.
 ```
 
 ## Piping into a t.test
@@ -279,13 +299,13 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 14.552, df = 198, p-value < 2.2e-16
+## t = 13.294, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##   9.581546 12.585430
+##   7.987597 10.770090
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            60.70843            49.62495
+##            60.12565            50.74681
 ```
 
 ## Piping into a cor.test
@@ -322,11 +342,11 @@ mtcars %>%
 
 ```
 ## # A tibble: 3 × 11
-##     cyl data       test  estimate statistic p.value parameter conf.low conf.high
-##   <dbl> <list>     <lis>    <dbl>     <dbl>   <dbl>     <int>    <dbl>     <dbl>
-## 1     6 <tibble [… <hte…   -0.127    -0.286  0.786          5   -0.803     0.692
-## 2     4 <tibble [… <hte…   -0.524    -1.84   0.0984         9   -0.855     0.111
-## 3     8 <tibble [… <hte…   -0.284    -1.02   0.326         12   -0.708     0.291
+##     cyl data     test    estimate statistic p.value parameter conf.low conf.high
+##   <dbl> <list>   <list>     <dbl>     <dbl>   <dbl>     <int>    <dbl>     <dbl>
+## 1     6 <tibble> <htest>   -0.127    -0.286  0.786          5   -0.803     0.692
+## 2     4 <tibble> <htest>   -0.524    -1.84   0.0984         9   -0.855     0.111
+## 3     8 <tibble> <htest>   -0.284    -1.02   0.326         12   -0.708     0.291
 ## # … with 2 more variables: method <chr>, alternative <chr>
 ```
 
