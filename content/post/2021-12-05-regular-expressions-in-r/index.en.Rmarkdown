@@ -1,24 +1,21 @@
 ---
 title: Regular Expressions in R
 author: twg
-date: '2021-12-05'
-slug: regular-expressions-in-r
+date: '2022-04-24'
 categories:
   - regex
   - strings
 tags:
   - regex
   - strings
-subtitle: ''
-summary: 'Working with strings and regex'
-authors: []
+slug: regular-expressions-in-r
+summary: Working with strings and regex
 lastmod: '2021-12-05T22:10:16-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 ```{r, setup, include = FALSE}
@@ -52,6 +49,22 @@ stamp <- "2017-10-16T12:45:04PM"
 gsub(".*\\T", "", stamp) 
 # date: extract everything before the T
 gsub("\\T.*", "", stamp) 
+```
+
+## Extracting everything up to the Nth occurrence
+
+```{r}
+string <- "abc-def-ghi-jkl-mno"
+
+# up to 1st (not including it) 
+sub("^(([^-]*-){0}[^-]*).*", "\\1", string)
+
+# up to the 2nd (not including it)
+sub("^(([^-]*-){1}[^-]*).*", "\\1", string)
+
+# up to 3rd (not including it)
+sub("^(([^-]*-){2}[^-]*).*", "\\1", string)
+
 ```
 
 ## Extracting before or after the first occurrence of symbol or delimeter

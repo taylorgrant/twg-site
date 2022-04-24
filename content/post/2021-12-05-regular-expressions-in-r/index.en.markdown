@@ -1,24 +1,21 @@
 ---
 title: Regular Expressions in R
 author: twg
-date: '2021-12-05'
-slug: regular-expressions-in-r
+date: '2022-04-24'
 categories:
   - regex
   - strings
 tags:
   - regex
   - strings
-subtitle: ''
-summary: 'Working with strings and regex'
-authors: []
+slug: regular-expressions-in-r
+summary: Working with strings and regex
 lastmod: '2021-12-05T22:10:16-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 
@@ -46,6 +43,38 @@ gsub("\\T.*", "", stamp)
 
 ```
 ## [1] "2017-10-16"
+```
+
+## Extracting everything up to the Nth occurrence
+
+
+```r
+string <- "abc-def-ghi-jkl-mno"
+
+# up to 1st (not including it) 
+sub("^(([^-]*-){0}[^-]*).*", "\\1", string)
+```
+
+```
+## [1] "abc"
+```
+
+```r
+# up to the 2nd (not including it)
+sub("^(([^-]*-){1}[^-]*).*", "\\1", string)
+```
+
+```
+## [1] "abc-def"
+```
+
+```r
+# up to 3rd (not including it)
+sub("^(([^-]*-){2}[^-]*).*", "\\1", string)
+```
+
+```
+## [1] "abc-def-ghi"
 ```
 
 ## Extracting before or after the first occurrence of symbol or delimeter
@@ -209,7 +238,7 @@ dat %>%
   theme_twg()
 ```
 
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-10-1.png" width="1104" style="display: block; margin: auto;" />
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-11-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Counting words in a string
 
