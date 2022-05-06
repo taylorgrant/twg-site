@@ -1,0 +1,125 @@
+---
+title: Reticulate
+author: twg
+date: '2022-05-06'
+slug: reticulate
+categories:
+  - reticulate
+  - python
+  - R
+tags:
+  - reticulate
+  - python
+  - R
+subtitle: ''
+summary: 'Using reticulate within R'
+authors: []
+lastmod: '2022-05-06T10:01:16-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+A simple reference on using the `reticulate` package within R. Things make sense in real time and then coming back to it later and I've lost all memory of what I've done or how I've done it. 
+
+Assuming that [miniconda](https://rstudio.github.io/reticulate/reference/install_miniconda.html) has been installed.  
+
+## Creating a Conda environment
+
+Create new Rstudio project and then within that project create a new conda environment
+
+
+```r
+library(reticulate)
+conda_create("twg-site")
+```
+
+Reticulate seems to have an aggressive habit of forcing a specific python version within the environment. And what's interesting, is that I don't have an environmental variable that points to a specific python version. But if I use the `Sys.getenv('RETICULATE_PYTHON')` function for it I find that the python version is set somewhere: /usr/bin/python3 
+
+So, when we call `py_config()` to see which version is being used, it's always this base python3, which isn't that helpful.  
+
+
+```r
+library(reticulate)
+reticulate::py_config()
+```
+
+```
+## python:         /usr/bin/python3
+## libpython:      /Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/config-3.8-darwin/libpython3.8.dylib
+## pythonhome:     /Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8:/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8
+## version:        3.8.2 (default, Dec 21 2020, 15:06:04)  [Clang 12.0.0 (clang-1200.0.32.29)]
+## numpy:           [NOT FOUND]
+## 
+## NOTE: Python version was forced by RETICULATE_PYTHON
+```
+
+If we use the `conda_list()` function we can see the various conda environments that have been set up. So what we want to do is create our own .Renviron file within our project to ensure that the proper environment is called every time. This way, we know that packages downloaded for a specific project can be found again.
+
+
+```r
+conda_list()
+```
+
+```
+##           name                                                               python
+## 1         base                   /Users/taylor_grant/Library/r-miniconda/bin/python
+## 2 r-reticulate /Users/taylor_grant/Library/r-miniconda/envs/r-reticulate/bin/python
+## 3      top2vec      /Users/taylor_grant/Library/r-miniconda/envs/top2vec/bin/python
+## 4     twg-site     /Users/taylor_grant/Library/r-miniconda/envs/twg-site/bin/python
+```
+
+Now create an .Renviron file with the proper directory location
+
+
+```r
+usethis::edit_r_environ(scope = 'project')
+
+# this opens the new file then add this, save, and restart
+RETICULATE_PYTHON=/Users/taylor_grant/Library/r-miniconda/envs/twg-site/bin/python
+```
+
+On restart, the correct conda environment will be found. 
+
+## Installing packages 
+
+Installing packages is very easy via the `conda_install()` function. There are essentially three arguments - the conda environment, e.g., "twg-site", the package to install, and whether to use pip or the conda channels. By default, it uses conda channels.
+
+
+
+```r
+reticulate::conda_install("twg-site", "statsmodels", pip = TRUE)
+```
+
+You can specify specific package versions to install by including the package version, e.g., `conda_install("twg-site", top2vec=="1.0.26", pip = TRUE)`
+
+## Removing packages 
+
+Just as easy, use the `conda_remove()` function. 
+
+
+```r
+reticulate::conda_remove("twg-site", "statsmodels", pip = TRUE)
+```
+
+## Working in Python 
+
+To switch to python, simply call 
+
+
+```r
+reticulate::repl_python()
+```
+
+You can exit the environment by typing `exit` in the command line. 
+
+Within R you can call objects created in python with by specifying `py$` much like you would call a column from a data frame. 
+
+For the rest see [calling_python](https://rstudio.github.io/reticulate/articles/calling_python.html)
+
+
