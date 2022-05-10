@@ -122,7 +122,7 @@ Interpretation is now based on the period to period change in search with the y-
 
 In 2020, the left end of the graph picks up a positive shift in interest in January as people make their New Year's resolutions. There's another large bump in interest in mid-spring before interest stabilizes in the summer. By winter 2020, interest was declining for just about every type of plant-based milk as people were probably much more interested in their holiday calories over health. 
 
-2021 sees the same shift in interest after New Year's, but rather than stabilizing in the summer like in 2020, the 2021 search trends are going negative for almost every type of milk With the exception of Oat Milk and broad "plant based" searches all other milk types are underwater. Whether this is due to people having more knowledge about the category and needing to search less often or if it's a loss of interest in the products/category is not answered by trends data, but it would be interesting to see the velocity of category growh in the back half of 2021.  
+2021 sees the same shift in interest after New Year's, but rather than stabilizing in the summer like in 2020, the 2021 search trends are going negative for almost every type of milk, with the exception of Oat Milk and broad "plant based" searches all other milk types are underwater. Whether this is due to people having more knowledge about the category and needing to search less often or if it's a loss of interest in the products/category is not answered by trends data, but it would be interesting to see the velocity of category growth in the back half of 2021.  
 
 
 
