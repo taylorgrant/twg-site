@@ -142,6 +142,28 @@ gsub(".*quick (.+) jumped.*", "\\1", string)
 ## [1] "brown fox"
 ```
 
+## Extract hashtags and @handles
+
+
+```r
+string <- c("I can't believe @user said #hashtag and #hashtag2")
+str_extract_all(string, "@\\w+")
+```
+
+```
+## [[1]]
+## [1] "@user"
+```
+
+```r
+str_extract_all(string, "#\\w+")
+```
+
+```
+## [[1]]
+## [1] "#hashtag"  "#hashtag2"
+```
+
 ## Splitting and pulling data after symbols. 
 
 There are also pure regex ways of achieving the same ends, but `stringr` is so easy. 
@@ -238,7 +260,7 @@ dat %>%
   theme_twg()
 ```
 
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-11-1.png" width="1104" style="display: block; margin: auto;" />
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-12-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Counting words in a string
 
