@@ -157,20 +157,18 @@ Our returned data frame contains the url of where MOAT is keeping all the images
 
 
 ```r
-head(xfi) %>% 
-  knitr::kable()
+head(xfi)
 ```
 
 
-
-|first_seen |last_seen  |type |screenshot                                                                                              | first_year| last_year|floor_month |colors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |data     |
-|:----------|:----------|:----|:-------------------------------------------------------------------------------------------------------|----------:|---------:|:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------|
-|2018-03-22 |2022-05-22 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/52/11/2b/52112b451a1e0142e7233d181d9fee12.jpg |       2018|      2022|2018-03-01  |Lab               , Lab               , Lab               , Lab               , Lab               , #20211F           , #E6E7EA           , #C9CAC7           , #9C9598           , #1C110C           , 90                , 225               , 80                , 334.285714285714  , 18.75             , 0.0606060606060606, 0.0170940170940171, 0.0148514851485149, 0.0448717948717949, 0.571428571428571 , 0.129411764705882 , 0.917647058823529 , 0.792156862745098 , 0.611764705882353 , 0.109803921568627 , 62615             , 62300             , 40802             , 30242             , 12541                              |5  , Lab |
-|2018-03-27 |2022-04-15 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/34/71/5c/34715c153b3dcb1f5a3e78e9ee2852e2.jpg |       2018|      2022|2018-03-01  |Lab                , Lab                , Lab                , Lab                , Lab                , #0B0503            , #D0D1CF            , #282725            , #84442B            , #9F9DA2            , 15                 , 90                 , 40                 , 16.8539325842697   , 264                , 0.727272727272727  , 0.00956937799043062, 0.075              , 0.674242424242424  , 0.0308641975308642 , 0.0431372549019608 , 0.819607843137255  , 0.156862745098039  , 0.517647058823529  , 0.635294117647059  , 311164             , 295982             , 145948             , 101896             , 82510 |5  , Lab |
-|2018-03-28 |2022-05-27 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/d3/07/e7/d307e741a47587613cb64ebc003e85e8.jpg |       2018|      2022|2018-03-01  |Lab               , Lab               , Lab               , Lab               , Lab               , #ECEDF1           , #000000           , #0B0B0B           , #788896           , #959698           , 228               , 0                 , 0                 , 208               , 220               , 0.020746887966805 , 0                 , 0                 , 0.2               , 0.0197368421052632, 0.945098039215686 , 0                 , 0.0431372549019608, 0.588235294117647 , 0.596078431372549 , 15932             , 8717              , 3746              , 1390              , 1215                               |5  , Lab |
-|2018-03-29 |2022-05-10 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/44/ee/c4/44eec4b28149c9008aac7b5e030689d6.jpg |       2018|      2022|2018-03-01  |Lab                , Lab                , Lab                , Lab                , Lab                , #222220            , #E1E2E4            , #918383            , #CECFCD            , #381E15            , 60                 , 220                , 0                  , 90                 , 15.4285714285714   , 0.0588235294117647 , 0.0131578947368421 , 0.096551724137931  , 0.00966183574879227, 0.625              , 0.133333333333333  , 0.894117647058824  , 0.568627450980392  , 0.811764705882353  , 0.219607843137255  , 196697             , 99812              , 86541              , 81541              , 35409 |5  , Lab |
-|2018-06-28 |2022-04-27 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/09/a2/00/09a2005d8d128a8e13fe3b57816238d7.jpg |       2018|      2022|2018-06-01  |Lab               , Lab               , Lab               , Lab               , Lab               , #EAEBEE           , #0D0D0D           , #999A9C           , #2E2E30           , #385266           , 225               , 0                 , 220               , 240               , 206.086956521739  , 0.0168067226890756, 0                 , 0.0192307692307692, 0.0416666666666667, 0.450980392156863 , 0.933333333333333 , 0.0509803921568627, 0.611764705882353 , 0.188235294117647 , 0.4               , 23129             , 8594              , 4726              , 1679              , 872                                |5  , Lab |
-|2018-11-21 |2022-04-07 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/7d/fd/d2/7dfdd25f0a81804907d49e7a9abe33d4.jpg |       2018|      2022|2018-11-01  |Lab               , Lab               , Lab               , Lab               , Lab               , #FEFEFE           , #E8EEF1           , #565556           , #229FDB           , #999999           , 0                 , 200               , 300               , 199.459459459459  , 0                 , 0                 , 0.037344398340249 , 0.0116279069767442, 0.844748858447489 , 0                 , 0.996078431372549 , 0.945098039215686 , 0.337254901960784 , 0.858823529411765 , 0.6               , 156862            , 22715             , 18573             , 6610              , 3740                               |5  , Lab |
+|first_seen |last_seen  |type |screenshot                                                                                              |
+|:----------|:----------|:----|:-------------------------------------------------------------------------------------------------------|
+|2018-03-22 |2022-05-22 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/52/11/2b/52112b451a1e0142e7233d181d9fee12.jpg |
+|2018-03-27 |2022-04-15 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/34/71/5c/34715c153b3dcb1f5a3e78e9ee2852e2.jpg |
+|2018-03-28 |2022-05-27 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/d3/07/e7/d307e741a47587613cb64ebc003e85e8.jpg |
+|2018-03-29 |2022-05-10 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/44/ee/c4/44eec4b28149c9008aac7b5e030689d6.jpg |
+|2018-06-28 |2022-04-27 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/09/a2/00/09a2005d8d128a8e13fe3b57816238d7.jpg |
+|2018-11-21 |2022-04-07 |img  |https://moatsearch-data.s3.amazonaws.com/creative_screens/7d/fd/d2/7dfdd25f0a81804907d49e7a9abe33d4.jpg |
 
 ## Extracting colors from our data
 
@@ -229,7 +227,7 @@ xfi %>%
   expand_limits(y=-2)
 ```
 
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-7-1.png" width="1104" style="display: block; margin: auto;" />
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-8-1.png" width="1104" style="display: block; margin: auto;" />
 
 From the plot, we can see just how many different colors are being used, and since we're in an ordered fashion, we can use the wheel to identify display assets with stranger color usage. For instance, we see green suddenly show up in plot 34, and when we call it, we find that it's a regional ad that's co-branded with the Philadelphia Eagles.  
 
@@ -238,13 +236,13 @@ From the plot, we can see just how many different colors are being used, and sin
 image_ggplot(image_read(xfi$screenshot[34]))
 ```
 
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-8-1.png" width="1104" style="display: block; margin: auto;" />
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-9-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Comparing to another brand 
 
 As a point of comparison, let's compare the Xfinity color wheel to that of T-Mobile's 2022 digital assets. 
 
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-9-1.png" width="1104" style="display: block; margin: auto;" />
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-10-1.png" width="1104" style="display: block; margin: auto;" />
 
 
 

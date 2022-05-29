@@ -165,8 +165,14 @@ xfi <- 0:10 %>%
 
 Our returned data frame contains the url of where MOAT is keeping all the images, the first date the ad was seen in-market, the last data it was seen, as well as the display type (static image or HTML5). 
 
-```{r}
-head(xfi) %>% 
+```{r, eval = FALSE}
+head(xfi)
+```
+
+```{r, echo = FALSE}
+xfi %>% 
+  select(first_seen, last_seen, type, screenshot) %>%
+  head() %>%
   knitr::kable()
 ```
 
