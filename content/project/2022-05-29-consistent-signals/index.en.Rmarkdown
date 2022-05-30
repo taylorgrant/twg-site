@@ -107,7 +107,7 @@ params = list(
 res <- httr::GET(url = 'https://moat.com/creatives/advertiser/xfinity', httr::add_headers(.headers=headers), query = params, httr::set_cookies(.cookies = cookies))
 ```
 
-Our `cookies` should remain consistent, so those can just be loaded once. Within the `headers` object we can see the base url and the path containing the brand we're searching for. For this use case, the `params` object is the one of interest. We can see that we our GET request started on page "0" and that it returned data on 42 pieces of creative. Since we're only going to focus on one brand at a time, we're going to write a function that will iterate over a series of pages, and extract data from the 42 assets on each page. Additionally, if we run this codeas is it will return an error. This is because there are two devices in our `params`, if we delete "mobile" and keep only desktop, it will work. 
+Our `cookies` should remain consistent, so those can just be loaded once. Within the `headers` object we can see the base url and the path containing the brand we're searching for. For this use case, the `params` object is the one of interest. We can see that we our GET request started on page "0" and that it returned data on 42 pieces of creative. Since we're only going to focus on one brand at a time, we're going to write a function that will iterate over a series of pages, and extract data from the 42 assets on each page. Additionally, if we run this code as is it will return an error. This is because there are two devices in our `params`, if we delete "mobile" and keep only desktop, it will work. 
 
 After running a single GET request and seeing how our data is structured and the variable names we're interested in, we can write a function that will iterate over multiple pages and extract the relevant data into a data frame. 
 
@@ -234,7 +234,7 @@ xfi %>%
 
 From the plot, we can see just how many different colors are being used, and since we're in an ordered fashion, we can use the wheel to identify display assets with stranger color usage. For instance, we see green suddenly show up in plot 34, and when we call it, we find that it's a regional ad that's co-branded with the Philadelphia Eagles.  
 
-```{r}
+```{r, out.width = "60%"}
 image_ggplot(image_read(xfi$screenshot[34]))
 ```
 
