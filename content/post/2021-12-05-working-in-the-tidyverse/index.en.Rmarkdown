@@ -234,7 +234,6 @@ mtcars %>%
   unnest(tidied)
 ```
 
-
 ## Arranging within a group
 
 ```{r}
@@ -304,3 +303,12 @@ tibble(letter = rep(letters[1:2], each = 6),
   group_by(letter) %>%
   mutate(id = cumsum(!duplicated(state)))
 ```
+
+## Normalize function
+
+This has nothing to do with the tidyverse, but just want to put it here
+
+```{r, eval = FALSE}
+norm <- function(x) (x - min(x)) / (max(x) - min(x))
+```
+

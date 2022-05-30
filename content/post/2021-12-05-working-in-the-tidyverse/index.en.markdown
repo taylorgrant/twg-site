@@ -44,10 +44,10 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 l        17    60 l    
-## 2 t        67    45 o    
-## 3 v        50    24 a    
-## 4 p        13    68 c
+## 1 y        17     6 n    
+## 2 f        18    58 v    
+## 3 n        76    44 a    
+## 4 l        68    90 f
 ```
 
 ## Using map to create named lists
@@ -93,10 +93,10 @@ df %>%
 ## # A tibble: 4 × 4
 ##   ma_1   ma_2  ma_3 ma_4 
 ##   <chr> <int> <int> <chr>
-## 1 o        77    45 h    
-## 2 l        89    14 s    
-## 3 w        11    31 a    
-## 4 h        69    49 r
+## 1 k        14    11 m    
+## 2 n         6    13 t    
+## 3 e         3    48 c    
+## 4 q        22    66 f
 ```
 
 ## piping and dplyr verbs with lists and purrr 
@@ -251,11 +251,11 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 y          312099 r           23304
-## 2 q          132826 t           33912
-## 3 h          469426 x           24339
-## 4 g          547285 d           30132
-## 5 v          546847 w           42732
+## 1 k           45784 j           52561
+## 2 c          245978 k           51565
+## 3 h          558572 z           17753
+## 4 u          425357 l           23738
+## 5 v           52628 g           48035
 ```
 
 But we can also use the `intersect()` function to create an AND statement
@@ -282,7 +282,7 @@ tmp %>%
 ## # A tibble: 1 × 6
 ##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
 ##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
-## 1 1737296 694918.4----> 200533      80213.  88567      35427.
+## 1 1483192 593276.8----> 150165       60066 109512      43805.
 ```
 
 ## Piping into a t.test
@@ -299,13 +299,13 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 13.294, df = 198, p-value < 2.2e-16
+## t = 15.335, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##   7.987597 10.770090
+##   9.391906 12.163867
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            60.12565            50.74681
+##            60.09306            49.31518
 ```
 
 ## Piping into a cor.test
@@ -349,7 +349,6 @@ mtcars %>%
 ## 3     8 <tibble> <htest>   -0.284    -1.02   0.326         12   -0.708     0.291
 ## # … with 2 more variables: method <chr>, alternative <chr>
 ```
-
 
 ## Arranging within a group
 
@@ -531,3 +530,13 @@ tibble(letter = rep(letters[1:2], each = 6),
 ## 11 b      TX        3
 ## 12 b      TX        3
 ```
+
+## Normalize function
+
+This has nothing to do with the tidyverse, but just want to put it here
+
+
+```r
+norm <- function(x) (x - min(x)) / (max(x) - min(x))
+```
+
