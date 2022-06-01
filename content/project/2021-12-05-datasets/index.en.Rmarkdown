@@ -1,7 +1,7 @@
 ---
 title: Datasets
 author: twg
-date: '2022-02-04'
+date: '2022-06-01'
 categories:
   - datasets
 tags:
@@ -42,7 +42,8 @@ Updated as I find them...
 - US Popular Baby Names [babynamer R package](https://github.com/abresler/babynamer) 
 - [AwesomeData](https://github.com/awesomedata/awesome-public-datasets) 
 - [Cryptic Crossword Clues](https://cryptics.eigenfoo.xyz/) 
-- [Formula1 Racing Results](https://ergast.com/mrd/query/) 
+- [Formula1 Racing Results](https://ergast.com/mrd/query/)
+- [K-12 School Shootings](https://www.chds.us/ssdb/)
 
 ------------------
 
