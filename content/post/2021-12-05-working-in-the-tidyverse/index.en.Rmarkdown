@@ -37,6 +37,22 @@ opts_chunk$set(
   fig.height = 5.75)
 ```
 
+## Converting named list to dataframe keeping column with the names
+
+This is using the `data.table` package
+
+```{r}
+# named list
+ll <- mtcars %>%
+    group_by(cyl) %>%
+    group_map(~ head(.x, 1L)) %>% 
+  set_names(c("Mazda", "Honda", "Suzuki"))
+ll
+
+data.table::rbindlist(ll, idcol = 'make') %>% tibble()
+
+```
+
 ## Using setNames to change column names
 
 ```{r}
