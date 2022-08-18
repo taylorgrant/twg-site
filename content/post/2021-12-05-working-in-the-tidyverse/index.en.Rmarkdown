@@ -39,6 +39,8 @@ opts_chunk$set(
 
 ## Writing files to Google Sheets
 
+This requires authorization, hopefully the Oauth token can be auto-refreshed. 
+
 ```{r, eval = FALSE}
 # write this to Google Sheets 
 pacman::p_load(googlesheets4, googledrive)

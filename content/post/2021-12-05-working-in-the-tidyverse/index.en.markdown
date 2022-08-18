@@ -1,7 +1,7 @@
 ---
 title: Working in the tidyverse
 author: twg
-date: '2022-03-18'
+date: '2022-08-18'
 categories:
   - dplyr
   - tidy
@@ -23,6 +23,22 @@ image:
 
 
 
+
+## Writing files to Google Sheets
+
+This requires authorization, hopefully the Oauth token can be auto-refreshed. 
+
+
+```r
+# write this to Google Sheets 
+pacman::p_load(googlesheets4, googledrive)
+# if want to write multiple sheets
+my_df <- list(df_name1 = df1, df_name2 = df2)
+ss4 <- googlesheets4::gs4_create(
+  "SHEET NAME",
+  sheets = my_df
+)
+```
 
 ## Converting named list to dataframe keeping column with the names
 
@@ -91,10 +107,10 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 e        44    25 t    
-## 2 v        94    10 x    
-## 3 f        42     8 l    
-## 4 a        32    41 f
+## 1 o        19    14 b    
+## 2 z        67    68 j    
+## 3 v        89    17 o    
+## 4 n        39    75 x
 ```
 
 ## Using map to create named lists
@@ -140,10 +156,10 @@ df %>%
 ## # A tibble: 4 × 4
 ##   ma_1   ma_2  ma_3 ma_4 
 ##   <chr> <int> <int> <chr>
-## 1 h        33    54 a    
-## 2 t        31    79 k    
-## 3 m        30     9 e    
-## 4 c        75     1 n
+## 1 n        69    72 d    
+## 2 h        80    51 j    
+## 3 p        56    95 g    
+## 4 y        20    50 r
 ```
 
 ## piping and dplyr verbs with lists and purrr 
@@ -298,11 +314,11 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 l          407879 q           37859
-## 2 f          461764 z           44902
-## 3 n          373960 v           52976
-## 4 s          108511 h           24549
-## 5 g          262664 u           57596
+## 1 z           76856 r           31018
+## 2 k          397954 v           53471
+## 3 w          403952 s           14812
+## 4 n          343763 n           32075
+## 5 l          282357 u           18862
 ```
 
 But we can also use the `intersect()` function to create an AND statement
@@ -327,9 +343,9 @@ tmp %>%
 
 ```
 ## # A tibble: 1 × 6
-##    g1_num g1_weighted g2_num g2_weighted h1_num h1_weighted
-##     <int> <chr>        <int>       <dbl>  <int>       <dbl>
-## 1 1611670 644668----> 158565       63426 140703      56281.
+##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
+##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
+## 1 1441807 576722.8----> 133628      53451. 129546      51818.
 ```
 
 ## Piping into a t.test
@@ -346,13 +362,13 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 15.112, df = 198, p-value < 2.2e-16
+## t = 13.353, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##   9.066973 11.788516
+##   7.942389 10.694722
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            59.85624            49.42849
+##            59.68944            50.37088
 ```
 
 ## Piping into a cor.test
@@ -369,9 +385,10 @@ mtcars %$%
 
 ```
 ## # A tibble: 1 × 8
-##   estimate statistic     p.value parameter conf.low conf.high method alternative
-##      <dbl>     <dbl>       <dbl>     <int>    <dbl>     <dbl> <chr>  <chr>      
-## 1   -0.776     -6.74 0.000000179        30   -0.885    -0.586 Pears… two.sided
+##   estimate statistic     p.value parameter conf.low conf.high method     alter…¹
+##      <dbl>     <dbl>       <dbl>     <int>    <dbl>     <dbl> <chr>      <chr>  
+## 1   -0.776     -6.74 0.000000179        30   -0.885    -0.586 Pearson's… two.si…
+## # … with abbreviated variable name ¹​alternative
 ```
 
 ### Method 2 (allows group_by)
@@ -389,12 +406,14 @@ mtcars %>%
 
 ```
 ## # A tibble: 3 × 11
-##     cyl data     test    estimate statistic p.value parameter conf.low conf.high
-##   <dbl> <list>   <list>     <dbl>     <dbl>   <dbl>     <int>    <dbl>     <dbl>
-## 1     6 <tibble> <htest>   -0.127    -0.286  0.786          5   -0.803     0.692
-## 2     4 <tibble> <htest>   -0.524    -1.84   0.0984         9   -0.855     0.111
-## 3     8 <tibble> <htest>   -0.284    -1.02   0.326         12   -0.708     0.291
-## # … with 2 more variables: method <chr>, alternative <chr>
+##     cyl data     test    estimate stati…¹ p.value param…² conf.…³ conf.…⁴ method
+##   <dbl> <list>   <list>     <dbl>   <dbl>   <dbl>   <int>   <dbl>   <dbl> <chr> 
+## 1     6 <tibble> <htest>   -0.127  -0.286  0.786        5  -0.803   0.692 Pears…
+## 2     4 <tibble> <htest>   -0.524  -1.84   0.0984       9  -0.855   0.111 Pears…
+## 3     8 <tibble> <htest>   -0.284  -1.02   0.326       12  -0.708   0.291 Pears…
+## # … with 1 more variable: alternative <chr>, and abbreviated variable names
+## #   ¹​statistic, ²​parameter, ³​conf.low, ⁴​conf.high
+## # ℹ Use `colnames()` to see all variable names
 ```
 
 ## Arranging within a group
@@ -423,6 +442,7 @@ ToothGrowth %>%
 ##  9  16.5 OJ      0.5
 ## 10  17.6 OJ      0.5
 ## # … with 50 more rows
+## # ℹ Use `print(n = ...)` to see more rows
 ```
 
 ## Using `cross` and `map` to paste
