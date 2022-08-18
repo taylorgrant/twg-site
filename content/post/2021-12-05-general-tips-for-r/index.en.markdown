@@ -22,7 +22,6 @@ projects: []
 
 
 
-
 ## Keyboard Shortcuts for Mac
 
 Pipe operator (%>%): `Cmd` + `Shift` + `m` <br>
@@ -131,7 +130,7 @@ df_clean
 ## 1 1     "1"   1    
 ## 2 <NA>  ""    2    
 ## 3 3     "3"   3    
-## 4 <NA>   <NA> 4    
+## 4 <NA>  <NA>  4    
 ## 5 5     "5"   5
 ```
 
@@ -139,6 +138,29 @@ df_clean
 # replace with NA
 df_clean[df_clean == ""] <- NA
 ```
+
+## Finding NULL values in a list 
+
+
+```r
+# are there any 
+any(sapply(list(1, NULL, 3), is.null))
+```
+
+```
+## [1] TRUE
+```
+
+```r
+# where is it 
+which(sapply(list(1, NULL, 3), is.null))
+```
+
+```
+## [1] 2
+```
+
+
 ## Plotting colors with hexcode labels 
 
 Here is a function that provides an easy way of seeing a color palette and retrieving the hexcodes. 
@@ -278,7 +300,7 @@ lapply(mget(nm), dim)
 ## [1] 87 14
 ## 
 ## $storms
-## [1] 10010    13
+## [1] 11859    13
 ```
 
 The `vcdExtra` package actually does all of the above very nicely. 
@@ -294,7 +316,7 @@ vcdExtra::datasets("dplyr")
 ## 2 band_instruments2 data.frame      3x2     Band membership
 ## 3      band_members data.frame      3x2     Band membership
 ## 4          starwars data.frame    87x14 Starwars characters
-## 5            storms data.frame 10010x13   Storm tracks data
+## 5            storms data.frame 11859x13   Storm tracks data
 ```
 
 ## Loading a dataset from a package without loading package itself
