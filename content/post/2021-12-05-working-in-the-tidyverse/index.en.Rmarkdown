@@ -1,7 +1,7 @@
 ---
 title: Working in the tidyverse
 author: twg
-date: '2022-03-18'
+date: '2022-08-18'
 categories:
   - dplyr
   - tidy
@@ -35,6 +35,19 @@ opts_chunk$set(
   fig.align = "center",
   fig.width = 11.5, # Default: 7
   fig.height = 5.75)
+```
+
+## Writing files to Google Sheets
+
+```{r, eval = FALSE}
+# write this to Google Sheets 
+pacman::p_load(googlesheets4, googledrive)
+# if want to write multiple sheets
+my_df <- list(df_name1 = df1, df_name2 = df2)
+ss4 <- googlesheets4::gs4_create(
+  "SHEET NAME",
+  sheets = my_df
+)
 ```
 
 ## Converting named list to dataframe keeping column with the names
