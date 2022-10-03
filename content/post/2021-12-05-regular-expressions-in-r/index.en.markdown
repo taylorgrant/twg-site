@@ -239,6 +239,21 @@ str_sub(st, 5, 10)
 
 ## Programmatically inserting line breaks 
 
+The second bit of code below works, but can also run into issues - such as when it splits on the word "in" and then tries to add a line break to the word "thing." 
+
+May be better just to use this: 
+
+
+```r
+string <- "This is a very long string that should have a line break added to it programatically"
+add_break <- function(x) gsub("(.{45,}?)\\s", "\\1\n", x) # {45,} is the number of characters
+add_break(string)
+```
+
+```
+## [1] "This is a very long string that should have a\nline break added to it programatically"
+```
+
 This is convenient when working with lots of data and using `walk()` functions to make lots of graphs. 
 
 ```r
@@ -260,7 +275,7 @@ dat %>%
   theme_twg()
 ```
 
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-12-1.png" width="1104" style="display: block; margin: auto;" />
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-13-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Counting words in a string
 
