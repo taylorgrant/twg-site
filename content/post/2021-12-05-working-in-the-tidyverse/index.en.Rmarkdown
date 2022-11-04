@@ -1,7 +1,7 @@
 ---
 title: Working in the tidyverse
 author: twg
-date: '2022-08-18'
+date: '2022-11-04'
 categories:
   - dplyr
   - tidy
@@ -50,6 +50,12 @@ ss4 <- googlesheets4::gs4_create(
   "SHEET NAME",
   sheets = my_df
 )
+```
+
+## Removing empty tibble from a list of tibbles
+
+```{r, eval = FALSE}
+Filter(nrow, my_list)
 ```
 
 ## Converting named list to dataframe keeping column with the names
