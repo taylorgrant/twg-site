@@ -1,28 +1,25 @@
 ---
 title: Tidy Data
 author: twg
-date: '2021-12-05'
-slug: tidy-data
+date: '2022-11-21'
 categories:
+  - pivot
   - R
   - tidy
   - tidyverse
-  - pivot
 tags:
+  - pivot
   - R
   - tidy
   - tidyverse
-  - pivot
-subtitle: ''
-summary: 'Getting data into tidy format - both long and wide'
-authors: []
+slug: tidy-data
+summary: Getting data into tidy format - both long and wide
 lastmod: '2021-12-05T22:12:02-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 
@@ -45,15 +42,15 @@ head(relig_income)
 
 ```
 ## # A tibble: 6 × 11
-##   religion           `<$10k` `$10-20k` `$20-30k` `$30-40k` `$40-50k` `$50-75k` `$75-100k` `$100-150k` `>150k`
-##   <chr>                <dbl>     <dbl>     <dbl>     <dbl>     <dbl>     <dbl>      <dbl>       <dbl>   <dbl>
-## 1 Agnostic                27        34        60        81        76       137        122         109      84
-## 2 Atheist                 12        27        37        52        35        70         73          59      74
-## 3 Buddhist                27        21        30        34        33        58         62          39      53
-## 4 Catholic               418       617       732       670       638      1116        949         792     633
-## 5 Don’t know/refused      15        14        15        11        10        35         21          17      18
-## 6 Evangelical Prot       575       869      1064       982       881      1486        949         723     414
-## # … with 1 more variable: Don't know/refused <dbl>
+##   religion           `<$10k` `$10-20k` `$20-30k` `$30-40k` `$40-50k` `$50-75k` $75-1…¹ $100-…² `>150k` Don't…³
+##   <chr>                <dbl>     <dbl>     <dbl>     <dbl>     <dbl>     <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+## 1 Agnostic                27        34        60        81        76       137     122     109      84      96
+## 2 Atheist                 12        27        37        52        35        70      73      59      74      76
+## 3 Buddhist                27        21        30        34        33        58      62      39      53      54
+## 4 Catholic               418       617       732       670       638      1116     949     792     633    1489
+## 5 Don’t know/refused      15        14        15        11        10        35      21      17      18     116
+## 6 Evangelical Prot       575       869      1064       982       881      1486     949     723     414    1529
+## # … with abbreviated variable names ¹​`$75-100k`, ²​`$100-150k`, ³​`Don't know/refused`
 ```
 
 ```r
@@ -89,21 +86,21 @@ head(billboard)
 
 ```
 ## # A tibble: 6 × 79
-##   artist   track    date.entered   wk1   wk2   wk3   wk4   wk5   wk6   wk7   wk8   wk9  wk10  wk11  wk12  wk13
-##   <chr>    <chr>    <date>       <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-## 1 2 Pac    Baby Do… 2000-02-26      87    82    72    77    87    94    99    NA    NA    NA    NA    NA    NA
-## 2 2Ge+her  The Har… 2000-09-02      91    87    92    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
-## 3 3 Doors… Krypton… 2000-04-08      81    70    68    67    66    57    54    53    51    51    51    51    47
-## 4 3 Doors… Loser    2000-10-21      76    76    72    69    67    65    55    59    62    61    61    59    61
-## 5 504 Boyz Wobble … 2000-04-15      57    34    25    17    17    31    36    49    53    57    64    70    75
-## 6 98^0     Give Me… 2000-08-19      51    39    34    26    26    19     2     2     3     6     7    22    29
-## # … with 63 more variables: wk14 <dbl>, wk15 <dbl>, wk16 <dbl>, wk17 <dbl>, wk18 <dbl>, wk19 <dbl>,
-## #   wk20 <dbl>, wk21 <dbl>, wk22 <dbl>, wk23 <dbl>, wk24 <dbl>, wk25 <dbl>, wk26 <dbl>, wk27 <dbl>,
-## #   wk28 <dbl>, wk29 <dbl>, wk30 <dbl>, wk31 <dbl>, wk32 <dbl>, wk33 <dbl>, wk34 <dbl>, wk35 <dbl>,
-## #   wk36 <dbl>, wk37 <dbl>, wk38 <dbl>, wk39 <dbl>, wk40 <dbl>, wk41 <dbl>, wk42 <dbl>, wk43 <dbl>,
-## #   wk44 <dbl>, wk45 <dbl>, wk46 <dbl>, wk47 <dbl>, wk48 <dbl>, wk49 <dbl>, wk50 <dbl>, wk51 <dbl>,
-## #   wk52 <dbl>, wk53 <dbl>, wk54 <dbl>, wk55 <dbl>, wk56 <dbl>, wk57 <dbl>, wk58 <dbl>, wk59 <dbl>,
-## #   wk60 <dbl>, wk61 <dbl>, wk62 <dbl>, wk63 <dbl>, wk64 <dbl>, wk65 <dbl>, wk66 <lgl>, wk67 <lgl>, …
+##   artist  track date.ent…¹   wk1   wk2   wk3   wk4   wk5   wk6   wk7   wk8   wk9  wk10  wk11  wk12  wk13  wk14
+##   <chr>   <chr> <date>     <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1 2 Pac   Baby… 2000-02-26    87    82    72    77    87    94    99    NA    NA    NA    NA    NA    NA    NA
+## 2 2Ge+her The … 2000-09-02    91    87    92    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+## 3 3 Door… Kryp… 2000-04-08    81    70    68    67    66    57    54    53    51    51    51    51    47    44
+## 4 3 Door… Loser 2000-10-21    76    76    72    69    67    65    55    59    62    61    61    59    61    66
+## 5 504 Bo… Wobb… 2000-04-15    57    34    25    17    17    31    36    49    53    57    64    70    75    76
+## 6 98^0    Give… 2000-08-19    51    39    34    26    26    19     2     2     3     6     7    22    29    36
+## # … with 62 more variables: wk15 <dbl>, wk16 <dbl>, wk17 <dbl>, wk18 <dbl>, wk19 <dbl>, wk20 <dbl>,
+## #   wk21 <dbl>, wk22 <dbl>, wk23 <dbl>, wk24 <dbl>, wk25 <dbl>, wk26 <dbl>, wk27 <dbl>, wk28 <dbl>,
+## #   wk29 <dbl>, wk30 <dbl>, wk31 <dbl>, wk32 <dbl>, wk33 <dbl>, wk34 <dbl>, wk35 <dbl>, wk36 <dbl>,
+## #   wk37 <dbl>, wk38 <dbl>, wk39 <dbl>, wk40 <dbl>, wk41 <dbl>, wk42 <dbl>, wk43 <dbl>, wk44 <dbl>,
+## #   wk45 <dbl>, wk46 <dbl>, wk47 <dbl>, wk48 <dbl>, wk49 <dbl>, wk50 <dbl>, wk51 <dbl>, wk52 <dbl>,
+## #   wk53 <dbl>, wk54 <dbl>, wk55 <dbl>, wk56 <dbl>, wk57 <dbl>, wk58 <dbl>, wk59 <dbl>, wk60 <dbl>,
+## #   wk61 <dbl>, wk62 <dbl>, wk63 <dbl>, wk64 <dbl>, wk65 <dbl>, wk66 <lgl>, wk67 <lgl>, wk68 <lgl>, …
 ```
 
 ```r
@@ -145,21 +142,21 @@ head(who)
 
 ```
 ## # A tibble: 6 × 60
-##   country     iso2  iso3   year new_sp_m014 new_sp_m1524 new_sp_m2534 new_sp_m3544 new_sp_m4554 new_sp_m5564
-##   <chr>       <chr> <chr> <int>       <int>        <int>        <int>        <int>        <int>        <int>
-## 1 Afghanistan AF    AFG    1980          NA           NA           NA           NA           NA           NA
-## 2 Afghanistan AF    AFG    1981          NA           NA           NA           NA           NA           NA
-## 3 Afghanistan AF    AFG    1982          NA           NA           NA           NA           NA           NA
-## 4 Afghanistan AF    AFG    1983          NA           NA           NA           NA           NA           NA
-## 5 Afghanistan AF    AFG    1984          NA           NA           NA           NA           NA           NA
-## 6 Afghanistan AF    AFG    1985          NA           NA           NA           NA           NA           NA
-## # … with 50 more variables: new_sp_m65 <int>, new_sp_f014 <int>, new_sp_f1524 <int>, new_sp_f2534 <int>,
-## #   new_sp_f3544 <int>, new_sp_f4554 <int>, new_sp_f5564 <int>, new_sp_f65 <int>, new_sn_m014 <int>,
-## #   new_sn_m1524 <int>, new_sn_m2534 <int>, new_sn_m3544 <int>, new_sn_m4554 <int>, new_sn_m5564 <int>,
-## #   new_sn_m65 <int>, new_sn_f014 <int>, new_sn_f1524 <int>, new_sn_f2534 <int>, new_sn_f3544 <int>,
-## #   new_sn_f4554 <int>, new_sn_f5564 <int>, new_sn_f65 <int>, new_ep_m014 <int>, new_ep_m1524 <int>,
-## #   new_ep_m2534 <int>, new_ep_m3544 <int>, new_ep_m4554 <int>, new_ep_m5564 <int>, new_ep_m65 <int>,
-## #   new_ep_f014 <int>, new_ep_f1524 <int>, new_ep_f2534 <int>, new_ep_f3544 <int>, new_ep_f4554 <int>, …
+##   country    iso2  iso3   year new_s…¹ new_s…² new_s…³ new_s…⁴ new_s…⁵ new_s…⁶ new_s…⁷ new_s…⁸ new_s…⁹ new_s…˟
+##   <chr>      <chr> <chr> <int>   <int>   <int>   <int>   <int>   <int>   <int>   <int>   <int>   <int>   <int>
+## 1 Afghanist… AF    AFG    1980      NA      NA      NA      NA      NA      NA      NA      NA      NA      NA
+## 2 Afghanist… AF    AFG    1981      NA      NA      NA      NA      NA      NA      NA      NA      NA      NA
+## 3 Afghanist… AF    AFG    1982      NA      NA      NA      NA      NA      NA      NA      NA      NA      NA
+## 4 Afghanist… AF    AFG    1983      NA      NA      NA      NA      NA      NA      NA      NA      NA      NA
+## 5 Afghanist… AF    AFG    1984      NA      NA      NA      NA      NA      NA      NA      NA      NA      NA
+## 6 Afghanist… AF    AFG    1985      NA      NA      NA      NA      NA      NA      NA      NA      NA      NA
+## # … with 46 more variables: new_sp_f3544 <int>, new_sp_f4554 <int>, new_sp_f5564 <int>, new_sp_f65 <int>,
+## #   new_sn_m014 <int>, new_sn_m1524 <int>, new_sn_m2534 <int>, new_sn_m3544 <int>, new_sn_m4554 <int>,
+## #   new_sn_m5564 <int>, new_sn_m65 <int>, new_sn_f014 <int>, new_sn_f1524 <int>, new_sn_f2534 <int>,
+## #   new_sn_f3544 <int>, new_sn_f4554 <int>, new_sn_f5564 <int>, new_sn_f65 <int>, new_ep_m014 <int>,
+## #   new_ep_m1524 <int>, new_ep_m2534 <int>, new_ep_m3544 <int>, new_ep_m4554 <int>, new_ep_m5564 <int>,
+## #   new_ep_m65 <int>, new_ep_f014 <int>, new_ep_f1524 <int>, new_ep_f2534 <int>, new_ep_f3544 <int>,
+## #   new_ep_f4554 <int>, new_ep_f5564 <int>, new_ep_f65 <int>, newrel_m014 <int>, newrel_m1524 <int>, …
 ```
 
 ```r
@@ -173,13 +170,13 @@ who %>% pivot_longer(
 
 ```
 ## # A tibble: 5 × 6
-##   country          iso2  iso3   year name         count
-##   <chr>            <chr> <chr> <int> <chr>        <int>
-## 1 Greenland        GL    GRL    2004 new_ep_m014     NA
-## 2 Estonia          EE    EST    1994 new_sn_m1524    NA
-## 3 Pakistan         PK    PAK    2008 new_sn_m65      NA
-## 4 China, Macao SAR MO    MAC    1994 new_sn_f65      NA
-## 5 Switzerland      CH    CHE    1994 newrel_f2534    NA
+##   country        iso2  iso3   year name         count
+##   <chr>          <chr> <chr> <int> <chr>        <int>
+## 1 Malawi         MW    MWI    1996 newrel_m4554    NA
+## 2 Azerbaijan     AZ    AZE    1997 new_sn_m014     NA
+## 3 Czech Republic CZ    CZE    2007 newrel_m4554    NA
+## 4 Gambia         GM    GMB    1990 newrel_f1524    NA
+## 5 Vanuatu        VU    VUT    2002 new_sp_m2534     2
 ```
 
 ```r
@@ -193,13 +190,13 @@ who %>% pivot_longer(
 
 ```
 ## # A tibble: 5 × 8
-##   country  iso2  iso3   year diagnosis gender age   count
-##   <chr>    <chr> <chr> <int> <chr>     <chr>  <chr> <int>
-## 1 Belarus  BY    BLR    2013 sp        f      2534     NA
-## 2 Tokelau  TK    TKL    2004 sn        f      5564     NA
-## 3 Georgia  GE    GEO    1999 ep        f      5564     NA
-## 4 Anguilla AI    AIA    1998 ep        m      5564     NA
-## 5 Nigeria  NG    NGA    2010 ep        f      5564     NA
+##   country                iso2  iso3   year diagnosis gender age   count
+##   <chr>                  <chr> <chr> <int> <chr>     <chr>  <chr> <int>
+## 1 New Caledonia          NC    NCL    1982 rel       f      2534     NA
+## 2 Serbia & Montenegro    YU    SCG    1989 rel       f      4554     NA
+## 3 Bosnia and Herzegovina BA    BIH    1982 sp        f      2534     NA
+## 4 Sierra Leone           SL    SLE    1991 rel       m      5564     NA
+## 5 Albania                AL    ALB    2009 sn        f      2534      3
 ```
 
 To take it even further, we can identify these newly created variables as factors and define them within the same function using the `names_ptypes` command. 
@@ -311,10 +308,10 @@ pnl
 ## # A tibble: 4 × 7
 ##       x     a     b     y1     y2    z1    z2
 ##   <int> <dbl> <dbl>  <dbl>  <dbl> <dbl> <dbl>
-## 1     1     1     0 -1.79   1.26      3    -2
-## 2     2     1     1 -0.673  0.712     3    -2
-## 3     3     0     1 -1.35  -2.54      3    -2
-## 4     4     0     1 -0.383 -1.38      3    -2
+## 1     1     1     0  0.450 -1.44      3    -2
+## 2     2     1     1 -1.15   1.64      3    -2
+## 3     3     0     1  1.90   0.986     3    -2
+## 4     4     0     1  1.54  -0.666     3    -2
 ```
 
 ```r
@@ -330,14 +327,14 @@ pnl %>%
 ## # A tibble: 8 × 6
 ##       x     a     b time       y     z
 ##   <int> <dbl> <dbl> <chr>  <dbl> <dbl>
-## 1     1     1     0 1     -1.79      3
-## 2     1     1     0 2      1.26     -2
-## 3     2     1     1 1     -0.673     3
-## 4     2     1     1 2      0.712    -2
-## 5     3     0     1 1     -1.35      3
-## 6     3     0     1 2     -2.54     -2
-## 7     4     0     1 1     -0.383     3
-## 8     4     0     1 2     -1.38     -2
+## 1     1     1     0 1      0.450     3
+## 2     1     1     0 2     -1.44     -2
+## 3     2     1     1 1     -1.15      3
+## 4     2     1     1 2      1.64     -2
+## 5     3     0     1 1      1.90      3
+## 6     3     0     1 2      0.986    -2
+## 7     4     0     1 1      1.54      3
+## 8     4     0     1 2     -0.666    -2
 ```
 
 ## pivot_wider()
@@ -405,6 +402,81 @@ fish_encounters %>% pivot_wider(
 ## 6 4848        1     1      1     1       0     0     0     0     0     0     0
 ```
 
+### Pivot Wider with Duplicated values
+
+Assume we have a data set that has some duplicated values - when we go to use `pivot_wider` we'll get a warning and our columns will be nested. 
+
+
+```r
+set.seed(1234)
+tibble::tibble(
+       cats = sample(1:10, 7),
+       dogs = sample(1:10, 7),
+       birds = sample(1:10, 7)) |>  
+  tidyr::pivot_longer(
+    cats:birds,
+    names_to = "animal", 
+    values_to = "hits") |> 
+  tidyr::pivot_wider(
+    names_from = animal,
+    values_from = hits
+  )
+```
+
+```
+## Warning: Values from `hits` are not uniquely identified; output will contain list-cols.
+## * Use `values_fn = list` to suppress this warning.
+## * Use `values_fn = {summary_fun}` to summarise duplicates.
+## * Use the following dplyr code to identify duplicates.
+##   {data} %>%
+##     dplyr::group_by(animal) %>%
+##     dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+##     dplyr::filter(n > 1L)
+```
+
+```
+## # A tibble: 1 × 3
+##   cats      dogs      birds    
+##   <list>    <list>    <list>   
+## 1 <int [7]> <int [7]> <int [7]>
+```
+
+We can work around this by identifying each row as unique, and then pivot. 
+
+
+```r
+set.seed(1234)
+tibble::tibble(
+       cats = sample(1:10, 7),
+       dogs = sample(1:10, 7),
+       birds = sample(1:10, 7)) |>  
+  tidyr::pivot_longer(
+    cats:birds,
+    names_to = "animal", 
+    values_to = "hits") |> 
+  dplyr::group_by(animal) |> 
+  dplyr::mutate(row = dplyr::row_number()) |> 
+  tidyr::pivot_wider(
+    names_from = animal,
+    values_from = hits
+  ) |> 
+  dplyr::select(-row)
+```
+
+```
+## # A tibble: 7 × 3
+##    cats  dogs birds
+##   <int> <int> <int>
+## 1    10     4     8
+## 2     6     2     4
+## 3     5     7     9
+## 4     4     6     5
+## 5     1     9    10
+## 6     8    10     3
+## 7     2     8     6
+```
+
+
 ### Aggregation 
 
 This is actually sort of bonkers. We can spread data and aggregate it, all at the same time. The warpbreaks dataset captures 9 experiments for 2 different types of wool and 3 levels of tension. There is no unique way of spreading the data. 
@@ -453,10 +525,14 @@ warpbreaks %>% pivot_wider(names_from = wool, values_from = breaks)
 ```
 
 ```
-## Warning: Values are not uniquely identified; output will contain list-cols.
+## Warning: Values from `breaks` are not uniquely identified; output will contain list-cols.
 ## * Use `values_fn = list` to suppress this warning.
-## * Use `values_fn = length` to identify where the duplicates arise
-## * Use `values_fn = {summary_fun}` to summarise duplicates
+## * Use `values_fn = {summary_fun}` to summarise duplicates.
+## * Use the following dplyr code to identify duplicates.
+##   {data} %>%
+##     dplyr::group_by(tension, wool) %>%
+##     dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+##     dplyr::filter(n > 1L)
 ```
 
 ```
@@ -507,16 +583,16 @@ production
 ## # A tibble: 45 × 4
 ##    product country  year production
 ##    <chr>   <chr>   <int>      <dbl>
-##  1 A       AI       2000      0.831
-##  2 A       AI       2001     -0.156
-##  3 A       AI       2002     -2.11 
-##  4 A       AI       2003     -0.987
-##  5 A       AI       2004      1.34 
-##  6 A       AI       2005      0.497
-##  7 A       AI       2006     -1.81 
-##  8 A       AI       2007      1.88 
-##  9 A       AI       2008     -0.108
-## 10 A       AI       2009     -1.22 
+##  1 A       AI       2000     -0.511
+##  2 A       AI       2001     -0.911
+##  3 A       AI       2002     -0.837
+##  4 A       AI       2003      2.42 
+##  5 A       AI       2004      0.134
+##  6 A       AI       2005     -0.491
+##  7 A       AI       2006     -0.441
+##  8 A       AI       2007      0.460
+##  9 A       AI       2008     -0.694
+## 10 A       AI       2009     -1.45 
 ## # … with 35 more rows
 ```
 
@@ -532,23 +608,23 @@ production %>% pivot_wider(
 
 ```
 ## # A tibble: 15 × 4
-##     year   A_AI     B_AI   B_EI
-##    <int>  <dbl>    <dbl>  <dbl>
-##  1  2000  0.831 -0.935    0.462
-##  2  2001 -0.156  1.30    -0.354
-##  3  2002 -2.11  -0.706   -1.29 
-##  4  2003 -0.987 -0.583    0.150
-##  5  2004  1.34  -0.119    0.251
-##  6  2005  0.497 -1.53     0.688
-##  7  2006 -1.81   0.985   -1.11 
-##  8  2007  1.88   0.216   -1.35 
-##  9  2008 -0.108  0.464   -0.607
-## 10  2009 -1.22   0.802    0.538
-## 11  2010 -1.01  -1.67    -0.505
-## 12  2011 -1.27  -0.199    0.583
-## 13  2012 -1.41   0.267    1.06 
-## 14  2013 -1.02   0.590   -0.144
-## 15  2014  0.200  0.00375 -0.169
+##     year    A_AI   B_AI   B_EI
+##    <int>   <dbl>  <dbl>  <dbl>
+##  1  2000 -0.511  -0.476 -1.11 
+##  2  2001 -0.911  -0.709 -1.25 
+##  3  2002 -0.837  -0.501 -0.524
+##  4  2003  2.42   -1.63  -0.497
+##  5  2004  0.134  -1.17  -1.81 
+##  6  2005 -0.491  -2.18  -0.582
+##  7  2006 -0.441  -1.34  -1.11 
+##  8  2007  0.460  -0.294 -1.01 
+##  9  2008 -0.694  -0.466 -0.162
+## 10  2009 -1.45    1.45   0.563
+## 11  2010  0.575  -1.07   1.65 
+## 12  2011 -1.02   -0.855 -0.773
+## 13  2012 -0.0151 -0.281  1.61 
+## 14  2013 -0.936  -0.994 -1.16 
+## 15  2014  1.10   -0.969  0.657
 ```
 
 ### Tidy Census data
@@ -688,8 +764,8 @@ world_bank_pop
 ##  8 AFG     SP.POP.GR… 3.49e0 4.25e0 4.72e0 4.82e0 4.47e+0 3.87e+0  3.23e+0  2.76e+0  2.51e+0  2.57e+0  2.81e+0
 ##  9 AGO     SP.URB.TO… 8.23e6 8.71e6 9.22e6 9.77e6 1.03e+7 1.09e+7  1.15e+7  1.21e+7  1.27e+7  1.33e+7  1.40e+7
 ## 10 AGO     SP.URB.GR… 5.44e0 5.59e0 5.70e0 5.76e0 5.75e+0 5.69e+0  4.92e+0  4.89e+0  4.87e+0  4.85e+0  4.83e+0
-## # … with 1,046 more rows, and 7 more variables: 2011 <dbl>, 2012 <dbl>, 2013 <dbl>, 2014 <dbl>, 2015 <dbl>,
-## #   2016 <dbl>, 2017 <dbl>
+## # … with 1,046 more rows, and 7 more variables: `2011` <dbl>, `2012` <dbl>, `2013` <dbl>, `2014` <dbl>,
+## #   `2015` <dbl>, `2016` <dbl>, `2017` <dbl>
 ```
 
 First, use `pivot_longer()` to start. 
@@ -887,21 +963,21 @@ data
 
 ```
 ##          date hour min second event
-## 1  2018-01-01   15  51     10     b
-## 2  2018-01-02   24  54     47     g
-## 3  2018-01-03    9  41     45     k
-## 4  2018-01-04    1   6     16     r
-## 5  2018-01-05   18  34      7     l
-## 6  2018-01-06    6  32     44     d
-## 7  2018-01-07   10  29     22     i
-## 8  2018-01-08    7  18      6     e
-## 9  2018-01-09   22   4     58     t
-## 10 2018-01-10   21  42     19     s
-## 11 2018-01-11    2  28     36     m
-## 12 2018-01-12   23  47     54     p
-## 13 2018-01-13   12  17      5     y
-## 14 2018-01-14   14  52      2     c
-## 15 2018-01-15   19  22      8     u
+## 1  2018-01-01   20  26      2     i
+## 2  2018-01-02   17  36     38     p
+## 3  2018-01-03    6  21     24     h
+## 4  2018-01-04   22  42     30     c
+## 5  2018-01-05   13  38     43     y
+## 6  2018-01-06   23   6      6     b
+## 7  2018-01-07    2   9     57     e
+## 8  2018-01-08   21  43     19     v
+## 9  2018-01-09   10  19     15     z
+## 10 2018-01-10   18  22     22     w
+## 11 2018-01-11    5  46     14     x
+## 12 2018-01-12   11  40     23     q
+## 13 2018-01-13   12  29     53     s
+## 14 2018-01-14    4  45     48     o
+## 15 2018-01-15    3  16      7     r
 ```
 
 ```r
@@ -910,21 +986,21 @@ data %>% unite(datetime, hour, min, second, sep = ":")
 
 ```
 ##          date datetime event
-## 1  2018-01-01 15:51:10     b
-## 2  2018-01-02 24:54:47     g
-## 3  2018-01-03  9:41:45     k
-## 4  2018-01-04   1:6:16     r
-## 5  2018-01-05  18:34:7     l
-## 6  2018-01-06  6:32:44     d
-## 7  2018-01-07 10:29:22     i
-## 8  2018-01-08   7:18:6     e
-## 9  2018-01-09  22:4:58     t
-## 10 2018-01-10 21:42:19     s
-## 11 2018-01-11  2:28:36     m
-## 12 2018-01-12 23:47:54     p
-## 13 2018-01-13  12:17:5     y
-## 14 2018-01-14  14:52:2     c
-## 15 2018-01-15  19:22:8     u
+## 1  2018-01-01  20:26:2     i
+## 2  2018-01-02 17:36:38     p
+## 3  2018-01-03  6:21:24     h
+## 4  2018-01-04 22:42:30     c
+## 5  2018-01-05 13:38:43     y
+## 6  2018-01-06   23:6:6     b
+## 7  2018-01-07   2:9:57     e
+## 8  2018-01-08 21:43:19     v
+## 9  2018-01-09 10:19:15     z
+## 10 2018-01-10 18:22:22     w
+## 11 2018-01-11  5:46:14     x
+## 12 2018-01-12 11:40:23     q
+## 13 2018-01-13 12:29:53     s
+## 14 2018-01-14  4:45:48     o
+## 15 2018-01-15   3:16:7     r
 ```
 
 ```r
