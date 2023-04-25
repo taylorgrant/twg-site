@@ -171,11 +171,11 @@ paste(strwrap(string, width = 80), collapse = "\n")
 
 And if using this on a column in a dataframe
 
-|
-## Counting words in a string
 ```{r, eval = FALSE}
 df |> dplyr::mutate(col = sapply(col, function(x) paste(strwrap(x, 20), collapse = "\n")))
 ```
+
+## Counting words in a string
 
 Working with strings and trying to count either words or occurrences. 
 
