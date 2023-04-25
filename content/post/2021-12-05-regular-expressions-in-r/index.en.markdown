@@ -1,7 +1,7 @@
 ---
 title: Regular Expressions in R
 author: twg
-date: '2022-10-03'
+date: '2023-04-24'
 categories:
   - regex
   - strings
@@ -237,7 +237,7 @@ str_sub(st, 5, 10)
 ## [1] "string"
 ```
 
-# Programmatically inserting a line break every N spaces
+## Programmatically inserting a line break every N spaces
 
 Found this useful when working with lots of data and using a function to parse the data and plot using ggplot. 
 
@@ -254,7 +254,9 @@ strfun(string, 8)
 ## [1] "As he crossed toward the pharmacy at the\ncorner he involuntarily turned his head because of\na burst of light that had ricocheted from\nhis temple..."
 ```
 
-# Adding line break after N characters 
+If you want to use characters instead... 
+
+## Adding line break after N characters 
 
 
 ```r
