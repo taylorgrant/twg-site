@@ -237,45 +237,35 @@ str_sub(st, 5, 10)
 ## [1] "string"
 ```
 
-## Programmatically inserting line breaks 
+# Programmatically inserting a line break every N spaces
 
-The second bit of code below works, but can also run into issues - such as when it splits on the word "in" and then tries to add a line break to the word "thing." 
+Found this useful when working with lots of data and using a function to parse the data and plot using ggplot. 
 
-May be better just to use this: 
+```r
+strfun <- function(str, n) {gsub(paste0("([^ ]+( +[^ ]+){",n-1,"}) +"),
+                              "\\1\n", str)}
+
+string <- "As he crossed toward the pharmacy at the corner he involuntarily turned his head because of a burst of light that had ricocheted from his temple..."
+
+strfun(string, 8)
+```
+
+```
+## [1] "As he crossed toward the pharmacy at the\ncorner he involuntarily turned his head because of\na burst of light that had ricocheted from\nhis temple..."
+```
+
+# Adding line break after N characters 
 
 
 ```r
-string <- "This is a very long string that should have a line break added to it programatically"
-add_break <- function(x) gsub("(.{45,}?)\\s", "\\1\n", x) # {45,} is the number of characters
-add_break(string)
+string <- "As he crossed toward the pharmacy at the corner he involuntarily turned his head because of a burst of light that had ricocheted from his temple..."
+
+paste(strwrap(string, width = 80), collapse = "\n")
 ```
 
 ```
-## [1] "This is a very long string that should have a\nline break added to it programatically"
+## [1] "As he crossed toward the pharmacy at the corner he involuntarily turned his\nhead because of a burst of light that had ricocheted from his temple..."
 ```
-
-This is convenient when working with lots of data and using `walk()` functions to make lots of graphs. 
-
-```r
-pacman::p_load(tidyverse)
-dat <- tibble(a = c("Suburban (just outside of urban/metro area)", "Small town (separate from suburban area, but within proximity)", 
-"Rural (far from large urban area)", "Urban (close to large metro area)", 
-"Other"),
-   val = 1:5)
-
-# function to add a line break in front of a word (based on count of spaces)
-add_break <- function(x) str_replace_all(x, word(x, str_count(x, "\\S+")/2 + 1), 
-                                         paste0("\n", word(x, str_count(x, "\\S+")/2 + 1)))
-
-dat %>% 
-  mutate(a = case_when(str_count(a, "\\S+") > 6 ~ add_break(a),
-                       TRUE ~ a)) %>%
-  ggplot(aes(x = val, y = a)) + 
-  geom_point(col = "blue") +
-  theme_twg()
-```
-
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-13-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Counting words in a string
 
