@@ -269,7 +269,14 @@ paste(strwrap(string, width = 80), collapse = "\n")
 ## [1] "As he crossed toward the pharmacy at the corner he involuntarily turned his\nhead because of a burst of light that had ricocheted from his temple..."
 ```
 
+And if using this on a column in a dataframe
+
+|
 ## Counting words in a string
+
+```r
+df |> dplyr::mutate(col = sapply(col, function(x) paste(strwrap(x, 20), collapse = "\n")))
+```
 
 Working with strings and trying to count either words or occurrences. 
 
