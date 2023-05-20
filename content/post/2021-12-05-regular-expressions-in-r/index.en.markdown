@@ -369,3 +369,36 @@ string$col[which(str_detect(string$col, "string\\b"))]
 ## [1] "string"
 ```
 
+## Extracting all @mentions 
+
+
+```r
+s <- tibble(text = "this is a string, @mention, with a mention")
+s |> 
+  mutate(mentions = sapply(str_extract_all(text, "@\\w+"), function(x) paste(x, collapse = ", ")),)
+```
+
+```
+## # A tibble: 1 × 2
+##   text                                       mentions
+##   <chr>                                      <chr>   
+## 1 this is a string, @mention, with a mention @mention
+```
+
+## Extracting urls into new column in tibble
+
+
+```r
+url_pattern <- "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+tibble(text = c("content with https://www.example.com url", "text in http://www.foo.com", "this string has no url")) |> mutate(url = str_extract(text, url_pattern))
+```
+
+```
+## # A tibble: 3 × 2
+##   text                                     url                    
+##   <chr>                                    <chr>                  
+## 1 content with https://www.example.com url https://www.example.com
+## 2 text in http://www.foo.com               http://www.foo.com     
+## 3 this string has no url                   <NA>
+```
+
