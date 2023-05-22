@@ -1,28 +1,25 @@
 ---
 title: Tidy Data
 author: twg
-date: '2021-12-05'
-slug: tidy-data
+date: '2022-11-21'
 categories:
+  - pivot
   - R
   - tidy
   - tidyverse
-  - pivot
 tags:
+  - pivot
   - R
   - tidy
   - tidyverse
-  - pivot
-subtitle: ''
-summary: 'Getting data into tidy format - both long and wide'
-authors: []
+slug: tidy-data
+summary: Getting data into tidy format - both long and wide
 lastmod: '2021-12-05T22:12:02-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 ```{r, setup, include = FALSE}
@@ -181,6 +178,48 @@ fish_encounters %>% pivot_wider(
   values_fill = list(seen = 0)
 ) %>% head()
 ```
+
+### Pivot Wider with Duplicated values
+
+Assume we have a data set that has some duplicated values - when we go to use `pivot_wider` we'll get a warning and our columns will be nested. 
+
+```{r}
+set.seed(1234)
+tibble::tibble(
+       cats = sample(1:10, 7),
+       dogs = sample(1:10, 7),
+       birds = sample(1:10, 7)) |>  
+  tidyr::pivot_longer(
+    cats:birds,
+    names_to = "animal", 
+    values_to = "hits") |> 
+  tidyr::pivot_wider(
+    names_from = animal,
+    values_from = hits
+  )
+```
+
+We can work around this by identifying each row as unique, and then pivot. 
+
+```{r}
+set.seed(1234)
+tibble::tibble(
+       cats = sample(1:10, 7),
+       dogs = sample(1:10, 7),
+       birds = sample(1:10, 7)) |>  
+  tidyr::pivot_longer(
+    cats:birds,
+    names_to = "animal", 
+    values_to = "hits") |> 
+  dplyr::group_by(animal) |> 
+  dplyr::mutate(row = dplyr::row_number()) |> 
+  tidyr::pivot_wider(
+    names_from = animal,
+    values_from = hits
+  ) |> 
+  dplyr::select(-row)
+```
+
 
 ### Aggregation 
 

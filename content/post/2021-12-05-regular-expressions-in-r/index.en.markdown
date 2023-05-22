@@ -1,7 +1,7 @@
 ---
 title: Regular Expressions in R
 author: twg
-date: '2022-04-24'
+date: '2023-04-24'
 categories:
   - regex
   - strings
@@ -237,30 +237,44 @@ str_sub(st, 5, 10)
 ## [1] "string"
 ```
 
-## Programmatically inserting line breaks 
+## Programmatically inserting a line break every N spaces
 
-This is convenient when working with lots of data and using `walk()` functions to make lots of graphs. 
+Found this useful when working with lots of data and using a function to parse the data and plot using ggplot. 
 
 ```r
-pacman::p_load(tidyverse)
-dat <- tibble(a = c("Suburban (just outside of urban/metro area)", "Small town (separate from suburban area, but within proximity)", 
-"Rural (far from large urban area)", "Urban (close to large metro area)", 
-"Other"),
-   val = 1:5)
+strfun <- function(str, n) {gsub(paste0("([^ ]+( +[^ ]+){",n-1,"}) +"),
+                              "\\1\n", str)}
 
-# function to add a line break in front of a word (based on count of spaces)
-add_break <- function(x) str_replace_all(x, word(x, str_count(x, "\\S+")/2 + 1), 
-                                         paste0("\n", word(x, str_count(x, "\\S+")/2 + 1)))
+string <- "As he crossed toward the pharmacy at the corner he involuntarily turned his head because of a burst of light that had ricocheted from his temple..."
 
-dat %>% 
-  mutate(a = case_when(str_count(a, "\\S+") > 6 ~ add_break(a),
-                       TRUE ~ a)) %>%
-  ggplot(aes(x = val, y = a)) + 
-  geom_point(col = "blue") +
-  theme_twg()
+strfun(string, 8)
 ```
 
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-12-1.png" width="1104" style="display: block; margin: auto;" />
+```
+## [1] "As he crossed toward the pharmacy at the\ncorner he involuntarily turned his head because of\na burst of light that had ricocheted from\nhis temple..."
+```
+
+If you want to use characters instead... 
+
+## Adding line break after N characters 
+
+
+```r
+string <- "As he crossed toward the pharmacy at the corner he involuntarily turned his head because of a burst of light that had ricocheted from his temple..."
+
+paste(strwrap(string, width = 80), collapse = "\n")
+```
+
+```
+## [1] "As he crossed toward the pharmacy at the corner he involuntarily turned his\nhead because of a burst of light that had ricocheted from his temple..."
+```
+
+And if using this on a column in a dataframe
+
+
+```r
+df |> dplyr::mutate(col = sapply(col, function(x) paste(strwrap(x, 20), collapse = "\n")))
+```
 
 ## Counting words in a string
 
@@ -353,5 +367,38 @@ string$col[which(str_detect(string$col, "string\\b"))]
 
 ```
 ## [1] "string"
+```
+
+## Extracting all @mentions 
+
+
+```r
+s <- tibble(text = "this is a string, @mention, with a mention")
+s |> 
+  mutate(mentions = sapply(str_extract_all(text, "@\\w+"), function(x) paste(x, collapse = ", ")),)
+```
+
+```
+## # A tibble: 1 × 2
+##   text                                       mentions
+##   <chr>                                      <chr>   
+## 1 this is a string, @mention, with a mention @mention
+```
+
+## Extracting urls into new column in tibble
+
+
+```r
+url_pattern <- "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+tibble(text = c("content with https://www.example.com url", "text in http://www.foo.com", "this string has no url")) |> mutate(url = str_extract(text, url_pattern))
+```
+
+```
+## # A tibble: 3 × 2
+##   text                                     url                    
+##   <chr>                                    <chr>                  
+## 1 content with https://www.example.com url https://www.example.com
+## 2 text in http://www.foo.com               http://www.foo.com     
+## 3 this string has no url                   <NA>
 ```
 

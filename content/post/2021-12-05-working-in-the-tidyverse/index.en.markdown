@@ -1,7 +1,7 @@
 ---
 title: Working in the tidyverse
 author: twg
-date: '2022-03-18'
+date: '2022-11-04'
 categories:
   - dplyr
   - tidy
@@ -24,6 +24,76 @@ image:
 
 
 
+## Writing files to Google Sheets
+
+This requires authorization, hopefully the Oauth token can be auto-refreshed. 
+
+
+```r
+# write this to Google Sheets 
+pacman::p_load(googlesheets4, googledrive)
+# if want to write multiple sheets
+my_df <- list(df_name1 = df1, df_name2 = df2)
+ss4 <- googlesheets4::gs4_create(
+  "SHEET NAME",
+  sheets = my_df
+)
+```
+
+## Removing empty tibble from a list of tibbles
+
+
+```r
+Filter(nrow, my_list)
+```
+
+## Converting named list to dataframe keeping column with the names
+
+This is using the `data.table` package
+
+
+```r
+# named list
+ll <- mtcars %>%
+    group_by(cyl) %>%
+    group_map(~ head(.x, 1L)) %>% 
+  set_names(c("Mazda", "Honda", "Suzuki"))
+ll
+```
+
+```
+## $Mazda
+## # A tibble: 1 × 10
+##     mpg  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1  22.8   108    93  3.85  2.32  18.6     1     1     4     1
+## 
+## $Honda
+## # A tibble: 1 × 10
+##     mpg  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1    21   160   110   3.9  2.62  16.5     0     1     4     4
+## 
+## $Suzuki
+## # A tibble: 1 × 10
+##     mpg  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1  18.7   360   175  3.15  3.44  17.0     0     0     3     2
+```
+
+```r
+data.table::rbindlist(ll, idcol = 'make') %>% tibble()
+```
+
+```
+## # A tibble: 3 × 11
+##   make     mpg  disp    hp  drat    wt  qsec    vs    am  gear  carb
+##   <chr>  <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1 Mazda   22.8   108    93  3.85  2.32  18.6     1     1     4     1
+## 2 Honda   21     160   110  3.9   2.62  16.5     0     1     4     4
+## 3 Suzuki  18.7   360   175  3.15  3.44  17.0     0     0     3     2
+```
+
 ## Using setNames to change column names
 
 
@@ -44,10 +114,10 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 y        17     6 n    
-## 2 f        18    58 v    
-## 3 n        76    44 a    
-## 4 l        68    90 f
+## 1 v        78    81 t    
+## 2 p        62    30 l    
+## 3 t        52     3 p    
+## 4 d        61    48 b
 ```
 
 ## Using map to create named lists
@@ -93,10 +163,10 @@ df %>%
 ## # A tibble: 4 × 4
 ##   ma_1   ma_2  ma_3 ma_4 
 ##   <chr> <int> <int> <chr>
-## 1 k        14    11 m    
-## 2 n         6    13 t    
-## 3 e         3    48 c    
-## 4 q        22    66 f
+## 1 w        47    96 j    
+## 2 y        72    35 x    
+## 3 z        75    95 v    
+## 4 v         5   100 i
 ```
 
 ## piping and dplyr verbs with lists and purrr 
@@ -251,11 +321,11 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 k           45784 j           52561
-## 2 c          245978 k           51565
-## 3 h          558572 z           17753
-## 4 u          425357 l           23738
-## 5 v           52628 g           48035
+## 1 f          512453 g            3973
+## 2 p          201891 v           22609
+## 3 b          218231 i           22512
+## 4 k           48650 t           12490
+## 5 n          488197 p           34779
 ```
 
 But we can also use the `intersect()` function to create an AND statement
@@ -282,7 +352,7 @@ tmp %>%
 ## # A tibble: 1 × 6
 ##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
 ##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
-## 1 1483192 593276.8----> 150165       60066 109512      43805.
+## 1 1632704 653081.6----> 113614      45446. 135451      54180.
 ```
 
 ## Piping into a t.test
@@ -299,13 +369,13 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 15.335, df = 198, p-value < 2.2e-16
+## t = 15.867, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##   9.391906 12.163867
+##  10.14131 13.01983
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            60.09306            49.31518
+##            61.71426            50.13368
 ```
 
 ## Piping into a cor.test
@@ -322,9 +392,10 @@ mtcars %$%
 
 ```
 ## # A tibble: 1 × 8
-##   estimate statistic     p.value parameter conf.low conf.high method alternative
-##      <dbl>     <dbl>       <dbl>     <int>    <dbl>     <dbl> <chr>  <chr>      
-## 1   -0.776     -6.74 0.000000179        30   -0.885    -0.586 Pears… two.sided
+##   estimate statistic     p.value parameter conf.low conf.high method     alter…¹
+##      <dbl>     <dbl>       <dbl>     <int>    <dbl>     <dbl> <chr>      <chr>  
+## 1   -0.776     -6.74 0.000000179        30   -0.885    -0.586 Pearson's… two.si…
+## # … with abbreviated variable name ¹​alternative
 ```
 
 ### Method 2 (allows group_by)
@@ -342,12 +413,13 @@ mtcars %>%
 
 ```
 ## # A tibble: 3 × 11
-##     cyl data     test    estimate statistic p.value parameter conf.low conf.high
-##   <dbl> <list>   <list>     <dbl>     <dbl>   <dbl>     <int>    <dbl>     <dbl>
-## 1     6 <tibble> <htest>   -0.127    -0.286  0.786          5   -0.803     0.692
-## 2     4 <tibble> <htest>   -0.524    -1.84   0.0984         9   -0.855     0.111
-## 3     8 <tibble> <htest>   -0.284    -1.02   0.326         12   -0.708     0.291
-## # … with 2 more variables: method <chr>, alternative <chr>
+##     cyl data     test    estimate stati…¹ p.value param…² conf.…³ conf.…⁴ method
+##   <dbl> <list>   <list>     <dbl>   <dbl>   <dbl>   <int>   <dbl>   <dbl> <chr> 
+## 1     6 <tibble> <htest>   -0.127  -0.286  0.786        5  -0.803   0.692 Pears…
+## 2     4 <tibble> <htest>   -0.524  -1.84   0.0984       9  -0.855   0.111 Pears…
+## 3     8 <tibble> <htest>   -0.284  -1.02   0.326       12  -0.708   0.291 Pears…
+## # … with 1 more variable: alternative <chr>, and abbreviated variable names
+## #   ¹​statistic, ²​parameter, ³​conf.low, ⁴​conf.high
 ```
 
 ## Arranging within a group

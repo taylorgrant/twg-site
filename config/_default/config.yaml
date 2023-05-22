@@ -61,7 +61,7 @@ markup:
   goldmark:
     renderer:
       unsafe: true
-  tableOfContents:
+tableOfContents:
     startLevel: 2
     endLevel: 3
 related:

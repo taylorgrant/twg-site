@@ -1,26 +1,23 @@
 ---
 title: ggplot
 author: twg
-date: '2021-12-05'
-slug: ggplot
+date: '2022-09-23'
 categories:
   - DataViz
-  - graphing
   - ggplot
+  - graphing
 tags:
   - DataViz
-  - graphing
   - ggplot
-subtitle: ''
-summary: 'Code snippets for better graphing in R'
-authors: []
+  - graphing
+slug: ggplot
+summary: Code snippets for better graphing in R
 lastmod: '2021-12-05T22:03:54-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 
@@ -67,6 +64,22 @@ tibble(type = rep(c('a','b'), each = 4),
 ```
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/dodge_bar-1.png" width="1104" style="display: block; margin: auto;" />
+
+## Adding text labels to stacked bar or ggchicklet
+
+`geom_chicklet()` defaults to `reverse = TRUE` so have to do it with label as well.
+
+```r
+tibble(grp = rep("Group", 5), 
+       var = letters[1:5],
+       frac = c(.1, .3,.2, .3 ,.1)) %>% 
+  ggplot(aes(x = grp, y = frac, group = var, fill = var)) +
+  ggchicklet::geom_chicklet() +
+  geom_text(aes(x = grp, y = frac, label = scales::percent(frac)),
+            position = position_stack(vjust = .5, reverse = TRUE))
+```
+
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/stack-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Faceting pie charts and donut plots 
 
