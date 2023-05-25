@@ -140,3 +140,69 @@ jsonlite::fromJSON(here::here('static', "data", "dmb.info.json"))$comments |>
   tibble() |> head()
 ```
 
+## Getting comments using just R and Python
+
+I'm sure that this could be much more streamlined working solely in Python, but this is how 
+you would do it without using command line tools.
+
+First, this is the Python function to pass YouTube urls into in order to pull the comments. 
+
+```{r, eval = FALSE}
+# python function 
+def get_yt_info(URL):
+  import json
+  import yt_dlp
+
+  # See help(yt_dlp.YoutubeDL) for a list of available options and public functions
+  ydl_opts = {'getcomments':True}
+  with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+      info = ydl.extract_info(URL, download=False)
+      return(info)
+```
+
+We're going to use the `purrr::map()` function to pass through multiple urls, which passes back the expected lists, but it seems to be doing so one list deeper than we'd normally prefer. 
+
+So we're going to use this function to extract our comment data from the lists and put them into a single dataframe. We're going to add a column with the video title so that we can tell which comments are for which video. 
+
+```{r, eval = FALSE}
+youtube_extract <- function(datalist) {
+  # get summary data about the video
+  summary <- purrr::map_dfr(datalist, 
+                     magrittr::extract, 
+                     c("uploader", "title", "description", "categories",
+                       "duration_string", "view_count", 
+                       "like_count", "comment_count", "original_url")) |> 
+    dplyr::rename(duration = duration_string)
+  # get the comments
+  x <- purrr::map(datalist, "comments")
+  comments <- NULL
+  for (i in seq_len(nrow(summary))) {
+    tmp <- x[[i]] %>% 
+      do.call(rbind.data.frame, .) |> 
+      dplyr::as_tibble() |> 
+      dplyr::mutate(timestamp = lubridate::as_datetime(as.numeric(timestamp, tz = "America/Los_Angeles"))) |>
+      dplyr::select(c(text, timestamp, like_count, author)) |> 
+      dplyr::mutate(video = summary$title[i],
+                    timestamp = as.Date(timestamp)) |> 
+      dplyr::rename(date = timestamp)
+    comments <- rbind(comments, tmp)
+    tmp <- NULL
+  }
+  out <- list(summary = summary, comments = comments)
+}
+```
+
+So, not the simplest, but absolutely works.  
+
+```{r, eval = FALSE}
+# assuming we've saved the python function, we have to call it via reticulate
+reticulate::source_python(here::here('python_functions', 'get_yt_info.py'))
+urls <- c("url1", "url2", "url3", ...)
+# map over function
+tmpdata <- urls |> 
+  purrr::map(get_yt_info)
+# clean and add to reactive values
+out <- youtube_extract(tmpdata)
+
+```
+
