@@ -23,6 +23,8 @@ projects: []
 
 
 
+{{% toc %}}
+
 YouTube subtitles are a trove of text data, but I've struggled with a good way of extracting and cleaning them. Now, thanks to a few utilities, I've built a nice R function that pulls and cleans subtitles as well as all comments and other data for each video. 
 
 ## Setup
