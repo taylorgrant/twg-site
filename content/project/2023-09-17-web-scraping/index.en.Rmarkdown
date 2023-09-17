@@ -148,6 +148,7 @@ out$post_data |>
 
 ```{r, eval = TRUE, echo = FALSE}
 out$post_data |> 
+  select(-c(thumbnail, video_url)) |> 
   head(2) |> 
   knitr::kable()
 ```
