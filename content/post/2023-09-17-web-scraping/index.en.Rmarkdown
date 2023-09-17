@@ -1,0 +1,140 @@
+---
+title: Web Scraping
+author: twg
+date: '2023-09-17'
+slug: web-scraping
+categories:
+  - rvest
+  - scraping
+tags:
+  - rvest
+  - scraping
+summary: 'Notes on scraping with R'
+lastmod: '2023-09-17T14:09:11-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r, setup, include = FALSE}
+pacman::p_load(tidyverse, here, janitor, showtext, knitr, rvest, httr)
+
+font_add_google("Raleway", "Raleway")
+showtext_auto()
+
+options("width" = 110)
+source(here::here("R", "theme_twg.R"))
+
+```
+
+## Scraping Instagram
+
+This is a function to scrape the user data and the last 12 posts from that user. Set this up as a recurring cron job and it could scrape multiple users and store the data. R code is adapted from [this post](https://scrapfly.io/blog/how-to-scrape-instagram/), written in python. We're also using the ```rjsoncons``` package, which allows for [JMESpath](https://jmespath.org/) subsetting of JSON data. Since we're adding headers to the GET request, we'll use the ```httr``` package, rather than ```rvest```. 
+
+```{r, eval = FALSE}
+library(httr)
+library(jsonlite)
+
+# function to parse data and put into list 
+parse_user <- function(data) {
+  # get data on the account
+  account_data <- rjsoncons::jmespath(data, "data.user.{
+        name: full_name,
+        username: username,
+        id: id,
+        category: category_name,
+        business_category: business_category_name,
+        phone: business_phone_number,
+        email: business_email,
+        bio: biography,
+        bio_links: bio_links[].url,
+        homepage: external_url,        
+        followers: edge_followed_by.count,
+        follows: edge_follow.count,
+        facebook_id: fbid,
+        is_private: is_private,
+        is_verified: is_verified,
+        profile_image: profile_pic_url_hd,
+        video_count: edge_felix_video_timeline.count,
+        image_count: edge_owner_to_timeline_media.count,
+        saved_count: edge_saved_media.count,
+        related_profiles: edge_related_profiles.edges[].node.username
+                                   
+}"
+  ) |> 
+    fromJSON()
+  
+  # get post data
+  post_data <- rjsoncons::jmespath(data, "data.user.edge_owner_to_timeline_media.edges[].node.{
+         post_date: taken_at_timestamp, 
+         typename: __typename,
+         type: is_video,
+         id: id,
+         shortcode: shortcode,
+         thumbnail: thumbnail_src,
+         video_url: video_url,
+         caption: edge_media_to_caption.edges[].node.text,
+         video_viewcount: video_view_count,
+         comment_count: edge_media_to_comment.count,
+         like_count: edge_liked_by.count,
+         location: location.name,
+         music_artist: clips_music_attribution_info.artist_name,
+         song_name: clips_music_attribution_info.song_name
+}"
+  ) |> 
+    fromJSON() |> 
+    mutate(post_date = as.POSIXct(post_date, origin = "1970-01-01"))
+  
+  list(account_data = account_data, post_data = post_data)
+}
+
+scrape_user <- function(username) {
+  INSTAGRAM_APP_ID <- "936619743392459"
+  url <- paste0("https://i.instagram.com/api/v1/users/web_profile_info/?username=", username)
+  response <- GET(
+    url = url,
+    add_headers(`x-ig-app-id` = INSTAGRAM_APP_ID)
+  )
+  data <- content(response, "text")
+  parse_user(data)
+}
+
+out <- scrape_user('bmw')
+```
+
+Two lists are saved. The first is the account data.  
+
+```{r, eval = FALSE}
+out$account_data[c(1,2,3,5,8,11:12,17,18)] |> 
+  cbind() |> 
+  data.frame() |> 
+  set_names(nm = "") |> 
+  knitr::kable()
+```
+
+```{r, eval = TRUE, echo = FALSE}
+out <- readRDS("~/R/twg-site/static/data/ig_scrape.rds")
+out$account_data[c(1,2,3,5,8,11:12,17,18)] |> 
+  cbind() |> 
+  data.frame() |> 
+  set_names(nm = "") |> 
+  knitr::kable()
+```
+
+The second is the post data that we've pulled. 
+
+```{r, eval = FALSE}
+out$post_data |> 
+  head(2) |> 
+  knitr::kable()
+```
+
+```{r, eval = TRUE, echo = FALSE}
+out <- readRDS("~/R/twg-site/static/data/ig_scrape.rds")
+out$post_data |> 
+  head(2) |> 
+  knitr::kable()
+```
