@@ -30,3 +30,127 @@ source(here::here("R", "theme_twg.R"))
 
 ```
 
+## Setting headers
+
+A number of sites will reject an rvest session because it looks like a robot. We can use the `httr` pacakge to add headers and start a new session (the `rvest::session()` function is just a wrapper around `httr`). 
+
+```{r, eval = FALSE}
+headers = c(
+    `sec-ch-ua` = '"Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"',
+    `Referer` = "https://www.google.com/",
+    `DNT` = "1",
+    `Accept-Language` = "en",
+    `sec-ch-ua-mobile` = "?0",
+    `User-Agent` = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+    `sec-ch-ua-platform` = '"macOS"'
+  )
+
+# can do this in two parts or just nest the functions
+url <- "https://www.espn.com"
+res <- httr::GET(url, httr::add_headers(.headers = headers))
+page <- httr:content(res)
+# OR
+page <- httr::content(httr::GET(url, httr::add_headers(.headers = headers)))
+```
+
+## Getting urls on a page
+
+We'll use pgatour.com and we want all links to the complete statistics pages in the Overview section. 
+
+```{r}
+pacman::p_load(tidyverse, rvest)
+url <- "https://www.pgatour.com/stats"
+page <- rvest::session(url)
+
+# get urls
+links <- page |> 
+  html_nodes("a") |> # node/nodes has been superseded (just use element/elements)
+  html_attr("href") |>
+  as_tibble_col(column_name = "path") |> 
+  filter(str_detect(path, "detail"))
+
+# get stat types so we know what we're doing
+types <- page |> 
+  html_elements(".css-1h0wur3") |> 
+  html_text()
+
+links |> 
+  mutate(stat_type = types)
+```
+
+## Fetching data from tables 
+
+```{r}
+pacman::p_load(tidyverse, rvest)
+url <- "https://www.goodcarbadcar.net/2023-us-vehicle-sales-figures-by-model/"
+
+page <- session(url)
+
+all_tables <- page |> html_elements("table") 
+
+# sales last month
+html_table(all_tables)[[1]]  |> head()
+
+# quarterly sales
+html_table(all_tables)[[2]]  |> head()
+```
+
+Or you can copy the xpath from devtools for a specific table. Since I'm only getting one table here I use `html_element()` rather than the plural "elements." Were I to use `html_elements()` it would return a list.  
+
+```{r}
+pacman::p_load(tidyverse, rvest)
+url <- "https://www.goodcarbadcar.net/2023-us-vehicle-sales-figures-by-model/"
+
+page <- session(url)
+
+# sales last month
+page |> 
+  html_element(xpath = '//*[@id="table_1"]') |> 
+  html_table() |> 
+  head()
+```
+
+## Relying on data loaded by javascript
+
+A lot of sites have the data loaded via scripts after the page loads. If the scripts are identifiable, it's often much easier to pull this data (normally in JSON format) then to try to grab specific elements. 
+
+For example, if you went to the PGA Tour's [Scoring Average](https://www.pgatour.com/stats/detail/120) stats page, there is a full table of data that is loaded via javascript. To see which script is loading it, use devtools to Inspect the page, and then use `ctrl+F` to search for a specific number or piece of text on the page. Doing this, you can see that the data is loaded via a script with the id #NEXT_DATA. We can use that to grab our data. 
+
+```{r, warning=FALSE}
+url <- "https://www.pgatour.com/stats/detail/120"
+page <- session(url)
+tmp <- page |> 
+  html_elements("script#__NEXT_DATA__") |> 
+  html_text() |> 
+  jsonlite::fromJSON()
+
+# this is where the stats data is found
+df <- tmp$props$pageProps$statDetails$rows
+
+# loop over the data to put into tibble format 
+overall <- NULL
+# create vector 
+vct <- 1:nrow(df)
+# need to account for the "Tour Average" row 
+for (i in vct[!vct %in% which(is.na(df$playerName))]) {
+  stat_line <- df$stats |> 
+    pluck(i) |> 
+    select(-color) |> 
+    pivot_wider(names_from = statName, values_from = statValue) |> 
+    janitor::clean_names()
+  stat <- tibble(rank = df$rank[i], change = df$rankDiff[i], 
+                 tendency = df$rankChangeTendency[i],
+                 player = df$playerName[i], country = df$country[i], 
+                 stat_line) |> 
+    mutate(across(c(rank, change, avg, total_adjustment), ~as.numeric(.)),
+           change = ifelse(tendency == "DOWN", change*-1, change)) |> 
+    select(-tendency)
+  overall <- rbind(overall, stat)
+}
+
+rbind(head(overall,6),tail(overall,6))
+```
+
+
+
+
