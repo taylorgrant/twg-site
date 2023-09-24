@@ -142,3 +142,97 @@ out$post_data |>
 |2023-09-07 01:00:45 |GraphVideo |TRUE |3186442829185025149 |Cw4hN7iqgR9 |Every decision is an act of creation, shaping the path of our journey.
 THE NEUE NEW. The BMW Vision Neue Klasse.
 #NeueKlasse #IAA23 #THEVisionNeueKlasse #TheNeueNew |          325513|           256|      40401|NA               |bmw          |Original audio |
+
+## Scraping hidden data
+
+In this [example](https://taylorgrant.netlify.app/post/web-scraping/#relying-on-data-loaded-by-javascript) I show how when there is an identifiable script, that we can scrape the javascript from a dynamically loaded site. But what to do when this hidden data is loaded via a generic script? When this occurs, we have to do some parsing. It can be a pain, but being able to do this correctly opens a whole new world of data availability. 
+
+As an example, we're going to use the Home Depot state by state [store location]("https://www.homedepot.com/l/AL") page. In this case, for the state of Alabama. This data is actually easily scrapable using `rvest` and css selection, but pulling the JSON is far more convenient, and often yields additional information. 
+
+After loading the page, we go to devtools and search for part of the first address. As can be seen, the script isn't identified, but we see the `window.__APOLLO_STATE__:`. We're going to use this little bit to find the JSON data. 
+
+![img](https://res.cloudinary.com/dn83gtg0l/image/upload/v1695522449/hd_locations.png)
+The first thing we're going to do is use the `httr` package to request the page and then parse it. 
+
+
+```r
+# Define the URL
+url <- "https://www.homedepot.com/l/AL"
+
+# Send a GET request to the URL
+response <- GET(url)
+
+# Check if the request was successful
+(http_status(response)$category == "Success")
+  
+# Parse the HTML content from the response
+html_content <- content(response, as = "text", encoding = "UTF-8")
+```
+
+Now that we have our content in text format, we have to find that script identifier. The `start_pos` variable is finding the location after the `window.__APOLLO_STATE__=` text is found. The `end_pos_relative` is looking for the location of the end of the JSON. In this case, becasue the data is nested, we're looking for 3 end brackets. This will change depending on the structure of the data. 
+
+
+```r
+# Find the position of the substring "window.__APOLLO_STATE__="
+start_pos <- str_locate(html_content, "window.__APOLLO_STATE__=")[2] + 1
+    
+# If the start position is found, proceed to find the end position and extract the JSON string
+end_substring <- str_sub(html_content, start = start_pos)
+end_pos_relative <- str_locate(end_substring, "\\}\\}\\}")
+```
+
+Now we adjust our end position relative to where our JSON data started, extract the data, and parse it with the `jsonlite::fromJSON()` function.   
+
+
+```r
+# Assuming we found the end_pos, adjust end_pos relative to start_pos 
+end_pos <- end_pos_relative[2] + start_pos - 1
+        
+# Extract the JSON string using substring
+json_str <- substr(html_content, start_pos, end_pos)
+        
+# Parse the JSON string to a list
+json_data <- fromJSON(json_str, flatten = TRUE)
+```
+
+Because our data is nested, it's going to parse as a list. Calling the data, we can see that our data can be found in the following location. 
+
+
+```r
+stores_df <- json_data$ROOT_QUERY$`storeDirectoryByState({"state":"AL"})`$storesInfo
+
+head(stores_df)
+```
+
+
+```
+##   __typename    storeName                                                              url         phone
+## 1  StoreInfo     W Mobile         https://www.homedepot.com/l/W-Mobile/AL/Mobile/36695/801 (251)634-0351
+## 2  StoreInfo        Foley             https://www.homedepot.com/l/Foley/AL/Foley/36535/802 (251)955-2401
+## 3  StoreInfo W Huntsville    https://www.homedepot.com/l/W-Huntsville/AL/Madison/35757/803 (256)837-6658
+## 4  StoreInfo N Huntsville https://www.homedepot.com/l/N-Huntsville/AL/Huntsville/35801/804 (256)536-2216
+## 5  StoreInfo       Pelham           https://www.homedepot.com/l/Pelham/AL/Pelham/35124/805 (205)685-1837
+## 6  StoreInfo   Prattville   https://www.homedepot.com/l/Prattville/AL/Prattville/36066/806 (334)285-1693
+##                                                                rentalsLink
+## 1         https://www.homedepot.com/l/W-Mobile/AL/Mobile/36695/801/rentals
+## 2             https://www.homedepot.com/l/Foley/AL/Foley/36535/802/rentals
+## 3    https://www.homedepot.com/l/W-Huntsville/AL/Madison/35757/803/rentals
+## 4 https://www.homedepot.com/l/N-Huntsville/AL/Huntsville/35801/804/rentals
+## 5           https://www.homedepot.com/l/Pelham/AL/Pelham/35124/805/rentals
+## 6   https://www.homedepot.com/l/Prattville/AL/Prattville/36066/806/rentals
+##                                                                servicesLink address.__typename
+## 1         https://www.homedepot.com/l/W-Mobile/AL/Mobile/36695/801/services            Address
+## 2             https://www.homedepot.com/l/Foley/AL/Foley/36535/802/services            Address
+## 3    https://www.homedepot.com/l/W-Huntsville/AL/Madison/35757/803/services            Address
+## 4 https://www.homedepot.com/l/N-Huntsville/AL/Huntsville/35801/804/services            Address
+## 5           https://www.homedepot.com/l/Pelham/AL/Pelham/35124/805/services            Address
+## 6   https://www.homedepot.com/l/Prattville/AL/Prattville/36066/806/services            Address
+##          address.street address.city address.state address.postalCode address.county
+## 1  755 Schillinger Rd S       Mobile            AL              36695         Mobile
+## 2    2899 S Mckenzie St        Foley            AL              36535        Baldwin
+## 3  4045 Lawson Ridge Dr      Madison            AL              35757        Madison
+## 4 1035 Memorial Pkwy Nw   Huntsville            AL              35801        Madison
+## 5      3191 Pelham Pkwy       Pelham            AL              35124         Shelby
+## 6  2710 Legends Parkway   Prattville            AL              36066         Elmore
+```
+

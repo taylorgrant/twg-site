@@ -152,3 +152,65 @@ out$post_data |>
   head(2) |> 
   knitr::kable()
 ```
+
+## Scraping hidden data
+
+In this [example](https://taylorgrant.netlify.app/post/web-scraping/#relying-on-data-loaded-by-javascript) I show how when there is an identifiable script, that we can scrape the javascript from a dynamically loaded site. But what to do when this hidden data is loaded via a generic script? When this occurs, we have to do some parsing. It can be a pain, but being able to do this correctly opens a whole new world of data availability. 
+
+As an example, we're going to use the Home Depot state by state [store location]("https://www.homedepot.com/l/AL") page. In this case, for the state of Alabama. This data is actually easily scrapable using `rvest` and css selection, but pulling the JSON is far more convenient, and often yields additional information. 
+
+After loading the page, we go to devtools and search for part of the first address. As can be seen, the script isn't identified, but we see the `window.__APOLLO_STATE__:`. We're going to use this little bit to find the JSON data. 
+
+![img](https://res.cloudinary.com/dn83gtg0l/image/upload/v1695522449/hd_locations.png)
+The first thing we're going to do is use the `httr` package to request the page and then parse it. 
+
+```{r, eval = FALSE}
+# Define the URL
+url <- "https://www.homedepot.com/l/AL"
+
+# Send a GET request to the URL
+response <- GET(url)
+
+# Check if the request was successful
+(http_status(response)$category == "Success")
+  
+# Parse the HTML content from the response
+html_content <- content(response, as = "text", encoding = "UTF-8")
+```
+
+Now that we have our content in text format, we have to find that script identifier. The `start_pos` variable is finding the location after the `window.__APOLLO_STATE__=` text is found. The `end_pos_relative` is looking for the location of the end of the JSON. In this case, becasue the data is nested, we're looking for 3 end brackets. This will change depending on the structure of the data. 
+
+```{r, eval = FALSE}
+# Find the position of the substring "window.__APOLLO_STATE__="
+start_pos <- str_locate(html_content, "window.__APOLLO_STATE__=")[2] + 1
+    
+# If the start position is found, proceed to find the end position and extract the JSON string
+end_substring <- str_sub(html_content, start = start_pos)
+end_pos_relative <- str_locate(end_substring, "\\}\\}\\}")
+```
+
+Now we adjust our end position relative to where our JSON data started, extract the data, and parse it with the `jsonlite::fromJSON()` function.   
+
+```{r, eval = FALSE}
+# Assuming we found the end_pos, adjust end_pos relative to start_pos 
+end_pos <- end_pos_relative[2] + start_pos - 1
+        
+# Extract the JSON string using substring
+json_str <- substr(html_content, start_pos, end_pos)
+        
+# Parse the JSON string to a list
+json_data <- fromJSON(json_str, flatten = TRUE)
+```
+
+Because our data is nested, it's going to parse as a list. Calling the data, we can see that our data can be found in the following location. 
+
+```{r, eval = FALSE}
+stores_df <- json_data$ROOT_QUERY$`storeDirectoryByState({"state":"AL"})`$storesInfo
+
+head(stores_df)
+```
+
+```{r, echo = FALSE}
+head(readRDS(here::here('static', 'data', 'hd_stores.rds')))
+```
+
