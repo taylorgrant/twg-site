@@ -142,14 +142,15 @@ The second is the post data that we've pulled.
 
 ```{r, eval = FALSE}
 out$post_data |> 
-  head(2) |> 
+  head(3) |> 
   knitr::kable()
 ```
 
 ```{r, eval = TRUE, echo = FALSE}
 out$post_data |> 
   select(-c(thumbnail, video_url)) |> 
-  head(2) |> 
+  mutate(caption = str_replace_all(caption, "\n", " ")) |> 
+  head(3) |> 
   knitr::kable()
 ```
 
@@ -205,12 +206,18 @@ json_data <- fromJSON(json_str, flatten = TRUE)
 Because our data is nested, it's going to parse as a list. Calling the data, we can see that our data can be found in the following location. 
 
 ```{r, eval = FALSE}
-stores_df <- json_data$ROOT_QUERY$`storeDirectoryByState({"state":"AL"})`$storesInfo
+stores_df <- json_data$ROOT_QUERY$`storeDirectoryByState({"state":"AL"})`$storesInfo |> 
+  select(storeName, address.street, address.city, address.state, 
+         address.postalCode, address.county, url, phone)
 
 head(stores_df)
 ```
 
 ```{r, echo = FALSE}
-head(readRDS(here::here('static', 'data', 'hd_stores.rds')))
+readRDS(here::here('static', 'data', 'hd_stores.rds')) |> 
+  select(storeName, address.street, address.city, address.state, 
+         address.postalCode, address.county,
+         url, phone) |> 
+  head()
 ```
 

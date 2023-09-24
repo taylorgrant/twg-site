@@ -131,17 +131,16 @@ The second is the post data that we've pulled.
 
 ```r
 out$post_data |> 
-  head(2) |> 
+  head(3) |> 
   knitr::kable()
 ```
 
 
-|post_date           |typename   |type |id                  |shortcode   |caption                                                                                                                                                            | video_viewcount| comment_count| like_count|location         |music_artist |song_name      |
-|:-------------------|:----------|:----|:-------------------|:-----------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------:|-------------:|----------:|:----------------|:------------|:--------------|
-|2023-09-05 09:12:49 |GraphVideo |TRUE |3185240436572707198 |Cw0P00KIFl- |Taking over our hometown in our home colours 💙🤍 #NeueKlasse #IAA23 #THEVisionNeueKlasse #TheNeueNew                                                              |          678386|           813|     164169|Max-Joseph-Platz |ottocarclub  |Original audio |
-|2023-09-07 01:00:45 |GraphVideo |TRUE |3186442829185025149 |Cw4hN7iqgR9 |Every decision is an act of creation, shaping the path of our journey.
-THE NEUE NEW. The BMW Vision Neue Klasse.
-#NeueKlasse #IAA23 #THEVisionNeueKlasse #TheNeueNew |          325513|           256|      40401|NA               |bmw          |Original audio |
+|post_date           |typename   |type |id                  |shortcode   |caption                                                                                                                                                              | video_viewcount| comment_count| like_count|location         |music_artist |song_name      |
+|:-------------------|:----------|:----|:-------------------|:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------:|-------------:|----------:|:----------------|:------------|:--------------|
+|2023-09-05 09:12:49 |GraphVideo |TRUE |3185240436572707198 |Cw0P00KIFl- |Taking over our hometown in our home colours 💙🤍 #NeueKlasse #IAA23 #THEVisionNeueKlasse #TheNeueNew                                                                |          678386|           813|     164169|Max-Joseph-Platz |ottocarclub  |Original audio |
+|2023-09-07 01:00:45 |GraphVideo |TRUE |3186442829185025149 |Cw4hN7iqgR9 |Every decision is an act of creation, shaping the path of our journey. THE NEUE NEW. The BMW Vision Neue Klasse. #NeueKlasse #IAA23 #THEVisionNeueKlasse #TheNeueNew |          325513|           256|      40401|NA               |bmw          |Original audio |
+|2023-09-08 10:34:30 |GraphVideo |TRUE |3187455988330466509 |Cw8HlVhoQzN |BMW faces its toughest critic yet @liamcarps1 🫣 Shop Liam’s look via the link in bio. #NeueKlasse #IAA23 #THEVisionNeueKlasse #TheNeueNew #BMW                       |         1540983|           959|     121633|NA               |bmw          |Original audio |
 
 ## Scraping hidden data
 
@@ -199,40 +198,28 @@ Because our data is nested, it's going to parse as a list. Calling the data, we 
 
 
 ```r
-stores_df <- json_data$ROOT_QUERY$`storeDirectoryByState({"state":"AL"})`$storesInfo
+stores_df <- json_data$ROOT_QUERY$`storeDirectoryByState({"state":"AL"})`$storesInfo |> 
+  select(storeName, address.street, address.city, address.state, 
+         address.postalCode, address.county, url, phone)
 
 head(stores_df)
 ```
 
 
 ```
-##   __typename    storeName                                                              url         phone
-## 1  StoreInfo     W Mobile         https://www.homedepot.com/l/W-Mobile/AL/Mobile/36695/801 (251)634-0351
-## 2  StoreInfo        Foley             https://www.homedepot.com/l/Foley/AL/Foley/36535/802 (251)955-2401
-## 3  StoreInfo W Huntsville    https://www.homedepot.com/l/W-Huntsville/AL/Madison/35757/803 (256)837-6658
-## 4  StoreInfo N Huntsville https://www.homedepot.com/l/N-Huntsville/AL/Huntsville/35801/804 (256)536-2216
-## 5  StoreInfo       Pelham           https://www.homedepot.com/l/Pelham/AL/Pelham/35124/805 (205)685-1837
-## 6  StoreInfo   Prattville   https://www.homedepot.com/l/Prattville/AL/Prattville/36066/806 (334)285-1693
-##                                                                rentalsLink
-## 1         https://www.homedepot.com/l/W-Mobile/AL/Mobile/36695/801/rentals
-## 2             https://www.homedepot.com/l/Foley/AL/Foley/36535/802/rentals
-## 3    https://www.homedepot.com/l/W-Huntsville/AL/Madison/35757/803/rentals
-## 4 https://www.homedepot.com/l/N-Huntsville/AL/Huntsville/35801/804/rentals
-## 5           https://www.homedepot.com/l/Pelham/AL/Pelham/35124/805/rentals
-## 6   https://www.homedepot.com/l/Prattville/AL/Prattville/36066/806/rentals
-##                                                                servicesLink address.__typename
-## 1         https://www.homedepot.com/l/W-Mobile/AL/Mobile/36695/801/services            Address
-## 2             https://www.homedepot.com/l/Foley/AL/Foley/36535/802/services            Address
-## 3    https://www.homedepot.com/l/W-Huntsville/AL/Madison/35757/803/services            Address
-## 4 https://www.homedepot.com/l/N-Huntsville/AL/Huntsville/35801/804/services            Address
-## 5           https://www.homedepot.com/l/Pelham/AL/Pelham/35124/805/services            Address
-## 6   https://www.homedepot.com/l/Prattville/AL/Prattville/36066/806/services            Address
-##          address.street address.city address.state address.postalCode address.county
-## 1  755 Schillinger Rd S       Mobile            AL              36695         Mobile
-## 2    2899 S Mckenzie St        Foley            AL              36535        Baldwin
-## 3  4045 Lawson Ridge Dr      Madison            AL              35757        Madison
-## 4 1035 Memorial Pkwy Nw   Huntsville            AL              35801        Madison
-## 5      3191 Pelham Pkwy       Pelham            AL              35124         Shelby
-## 6  2710 Legends Parkway   Prattville            AL              36066         Elmore
+##      storeName        address.street address.city address.state address.postalCode address.county
+## 1     W Mobile  755 Schillinger Rd S       Mobile            AL              36695         Mobile
+## 2        Foley    2899 S Mckenzie St        Foley            AL              36535        Baldwin
+## 3 W Huntsville  4045 Lawson Ridge Dr      Madison            AL              35757        Madison
+## 4 N Huntsville 1035 Memorial Pkwy Nw   Huntsville            AL              35801        Madison
+## 5       Pelham      3191 Pelham Pkwy       Pelham            AL              35124         Shelby
+## 6   Prattville  2710 Legends Parkway   Prattville            AL              36066         Elmore
+##                                                                url         phone
+## 1         https://www.homedepot.com/l/W-Mobile/AL/Mobile/36695/801 (251)634-0351
+## 2             https://www.homedepot.com/l/Foley/AL/Foley/36535/802 (251)955-2401
+## 3    https://www.homedepot.com/l/W-Huntsville/AL/Madison/35757/803 (256)837-6658
+## 4 https://www.homedepot.com/l/N-Huntsville/AL/Huntsville/35801/804 (256)536-2216
+## 5           https://www.homedepot.com/l/Pelham/AL/Pelham/35124/805 (205)685-1837
+## 6   https://www.homedepot.com/l/Prattville/AL/Prattville/36066/806 (334)285-1693
 ```
 
