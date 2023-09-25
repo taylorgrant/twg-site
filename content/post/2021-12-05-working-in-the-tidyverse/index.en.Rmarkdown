@@ -56,6 +56,9 @@ ss4 <- googlesheets4::gs4_create(
 
 ```{r, eval = FALSE}
 Filter(nrow, my_list)
+
+# or if list of lists
+Filter(length, my_list)
 ```
 
 ## Converting named list to dataframe keeping column with the names

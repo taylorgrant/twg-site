@@ -45,6 +45,9 @@ ss4 <- googlesheets4::gs4_create(
 
 ```r
 Filter(nrow, my_list)
+
+# or if list of lists
+Filter(length, my_list)
 ```
 
 ## Converting named list to dataframe keeping column with the names
@@ -114,10 +117,10 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 v        78    81 t    
-## 2 p        62    30 l    
-## 3 t        52     3 p    
-## 4 d        61    48 b
+## 1 o        99    81 p    
+## 2 y        68    92 b    
+## 3 f        22    68 f    
+## 4 a        52    15 m
 ```
 
 ## Using map to create named lists
@@ -163,10 +166,10 @@ df %>%
 ## # A tibble: 4 × 4
 ##   ma_1   ma_2  ma_3 ma_4 
 ##   <chr> <int> <int> <chr>
-## 1 w        47    96 j    
-## 2 y        72    35 x    
-## 3 z        75    95 v    
-## 4 v         5   100 i
+## 1 c        61    95 s    
+## 2 i        22    92 f    
+## 3 d        27    40 m    
+## 4 w        75    60 q
 ```
 
 ## piping and dplyr verbs with lists and purrr 
@@ -321,11 +324,11 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 f          512453 g            3973
-## 2 p          201891 v           22609
-## 3 b          218231 i           22512
-## 4 k           48650 t           12490
-## 5 n          488197 p           34779
+## 1 y          544049 c           34233
+## 2 g          280276 w           39746
+## 3 v          360863 a           44029
+## 4 h          103718 l            7239
+## 5 s          589545 k            7679
 ```
 
 But we can also use the `intersect()` function to create an AND statement
@@ -352,7 +355,7 @@ tmp %>%
 ## # A tibble: 1 × 6
 ##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
 ##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
-## 1 1632704 653081.6----> 113614      45446. 135451      54180.
+## 1 1612202 644880.8----> 170900       68360 212280       84912
 ```
 
 ## Piping into a t.test
@@ -369,13 +372,13 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 15.867, df = 198, p-value < 2.2e-16
+## t = 12.601, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##  10.14131 13.01983
+##   8.040443 11.023895
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            61.71426            50.13368
+##            60.11495            50.58278
 ```
 
 ## Piping into a cor.test
@@ -392,10 +395,9 @@ mtcars %$%
 
 ```
 ## # A tibble: 1 × 8
-##   estimate statistic     p.value parameter conf.low conf.high method     alter…¹
-##      <dbl>     <dbl>       <dbl>     <int>    <dbl>     <dbl> <chr>      <chr>  
-## 1   -0.776     -6.74 0.000000179        30   -0.885    -0.586 Pearson's… two.si…
-## # … with abbreviated variable name ¹​alternative
+##   estimate statistic     p.value parameter conf.low conf.high method alternative
+##      <dbl>     <dbl>       <dbl>     <int>    <dbl>     <dbl> <chr>  <chr>      
+## 1   -0.776     -6.74 0.000000179        30   -0.885    -0.586 Pears… two.sided
 ```
 
 ### Method 2 (allows group_by)
@@ -413,13 +415,12 @@ mtcars %>%
 
 ```
 ## # A tibble: 3 × 11
-##     cyl data     test    estimate stati…¹ p.value param…² conf.…³ conf.…⁴ method
-##   <dbl> <list>   <list>     <dbl>   <dbl>   <dbl>   <int>   <dbl>   <dbl> <chr> 
-## 1     6 <tibble> <htest>   -0.127  -0.286  0.786        5  -0.803   0.692 Pears…
-## 2     4 <tibble> <htest>   -0.524  -1.84   0.0984       9  -0.855   0.111 Pears…
-## 3     8 <tibble> <htest>   -0.284  -1.02   0.326       12  -0.708   0.291 Pears…
-## # … with 1 more variable: alternative <chr>, and abbreviated variable names
-## #   ¹​statistic, ²​parameter, ³​conf.low, ⁴​conf.high
+##     cyl data     test    estimate statistic p.value parameter conf.low conf.high
+##   <dbl> <list>   <list>     <dbl>     <dbl>   <dbl>     <int>    <dbl>     <dbl>
+## 1     6 <tibble> <htest>   -0.127    -0.286  0.786          5   -0.803     0.692
+## 2     4 <tibble> <htest>   -0.524    -1.84   0.0984         9   -0.855     0.111
+## 3     8 <tibble> <htest>   -0.284    -1.02   0.326         12   -0.708     0.291
+## # ℹ 2 more variables: method <chr>, alternative <chr>
 ```
 
 ## Arranging within a group
@@ -447,7 +448,7 @@ ToothGrowth %>%
 ##  8  15.2 OJ      0.5
 ##  9  16.5 OJ      0.5
 ## 10  17.6 OJ      0.5
-## # … with 50 more rows
+## # ℹ 50 more rows
 ```
 
 ## Using `cross` and `map` to paste
