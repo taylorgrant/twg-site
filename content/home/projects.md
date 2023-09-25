@@ -31,6 +31,8 @@ content:
     tag: DataViz
   - name: Tidy Data
     tag: tidy
+  - name: Scraping
+    tag: scraping
 
 design:
   # Choose how many columns the section has. Valid values: '1' or '2'.
