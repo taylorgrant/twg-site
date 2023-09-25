@@ -299,6 +299,19 @@ youtube_extract <- function(datalist) {
 
 Finally, we write a wrapper function that will run the above functions and save the output into `.rds` and `.xlsx` files.
 
+Everything in this function is referenced by the `here()` function. The directory structure looks like the following: 
+
+```{r, eval = FALSE, echo = TRUE}
+├── R
+│   └── helpers
+├── py_functions
+├── youtube_report
+│   └── youtube_data
+├── yt_caption_data
+└── yt_link_data
+```
+
+
 ```{r, eval = FALSE}
 # YouTube metrics and comments # 
 
