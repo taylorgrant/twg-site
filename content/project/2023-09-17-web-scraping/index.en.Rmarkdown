@@ -221,3 +221,139 @@ readRDS(here::here('static', 'data', 'hd_stores.rds')) |>
   head()
 ```
 
+## Scraping YouTube
+
+YouTube has an API, but it can be rate limited pretty quickly. The following will get performance metrics and all comments from each video, without running into any limit. 
+
+#### Set up
+
+Within a conda environment created via the `reticulate` package, install `yt-dlp` (more [detail](https://taylorgrant.netlify.app/post/reticulate/)).
+
+```{r, eval = FALSE}
+
+reticulate::conda_install("[ENV Name]", "yt-dlp", pip = TRUE)
+```
+
+Next, write the python function that will call the `yt-dlp` library and pull the video metrics and comments for any url that's passed to it. 
+
+```{python, eval = FALSE}
+def youtube_dl_info(URL):
+  import json
+  import yt_dlp
+
+  # See help(yt_dlp.YoutubeDL) for a list of available options and public functions
+  ydl_opts = {'getcomments':True}
+  with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+      info = ydl.extract_info(URL, download=False)
+      return(info)
+```
+
+After that, write quick function to clean the urls that we're going to read in. 
+
+```{r, eval = FALSE}
+yt_clean <- function(file_loc) {
+  tmp <- readr::read_csv(file_loc) |> 
+    dplyr::filter(stringr::str_detect(links, "^https://www.youtube.com/watch?")) |> 
+    dplyr::distinct(links) |> 
+    dplyr::pull()
+}
+```
+
+Because I prefer to work in R, I need to get the data out of the python environment and into R. From there, I'm going to clean the data. The data will be split into two different dataframes - the summary metrics and the comments. 
+
+```{r, eval = FALSE}
+# to get data out of the returned lists # 
+youtube_extract <- function(datalist) {
+  # get summary data about the video
+  summary <- purrr::map_dfr(datalist, 
+                            magrittr::extract, 
+                            c("uploader", "upload_date", "title", "description", "categories",
+                              "duration_string", "view_count", 
+                              "like_count", "comment_count", "original_url")) |> 
+    dplyr::rename(duration = duration_string) |> 
+    dplyr::mutate(upload_date = lubridate::ymd(upload_date))
+  # get the comments
+  x <- purrr::map(datalist, "comments")
+  # drop empty lists (no comments)
+  x <- Filter(length, x)
+  
+  # loop over comments and put into dataframe
+  comments <- NULL
+  for (i in seq_len(nrow(summary))) {
+    print(i)
+    tmp <- x[[i]] %>% 
+      data.table::rbindlist(fill = TRUE) |> 
+      dplyr::as_tibble() |> 
+      dplyr::mutate(timestamp = lubridate::as_datetime(as.numeric(timestamp, tz = "America/Los_Angeles"))) |>
+      dplyr::select(c(text, timestamp, like_count, author)) |> 
+      dplyr::mutate(video = summary$title[i],
+                    timestamp = as.Date(timestamp)) |> 
+      dplyr::rename(date = timestamp)
+    comments <- rbind(comments, tmp)
+    tmp <- NULL
+  }
+  out <- list(summary = summary, comments = comments)
+}
+
+```
+
+Finally, we write a wrapper function that will run the above functions and save the output into `.rds` and `.xlsx` files.
+
+```{r, eval = FALSE}
+# YouTube metrics and comments # 
+
+# 1. start with LinkGopher to extract all urls
+# 2. add links to a csv with the column name "links"
+# 3. save csv as "[handle_name]_yt_links.csv" in the "yt_link_data" folder
+# 4. run this function 
+
+yt_scrape_fn <- function(handle) {
+  # load packages
+  pacman::p_load(tidyverse, janitor, here, glue)
+  # load functions
+  reticulate::source_python(here::here('youtube', 'py_functions', 'youtube_dl_info.py'))
+  source(here('youtube','R','helpers', 'helpers.R'))
+  source(here('youtube','R', "youtube_extract.R"))
+  
+  loc <- here('youtube','yt_link_data', glue("{handle}_yt_links.csv"))
+  urls <- yt_clean(loc)
+  
+  # map over function and save to environment for safe processing
+  tmpdata <<- urls |>
+    purrr::map(youtube_dl_info)
+  
+  # clean and add to reactive values
+  out <- youtube_extract(tmpdata)
+  
+  outlist <- list(summary = out$summary, comments = out$comments)
+  saveRDS(outlist, here("youtube","youtube_report", "youtube_data", glue::glue("yt_{handle}_{Sys.Date()}.rds")))
+  
+  openxlsx::write.xlsx(outlist, here("youtube","youtube_report", "youtube_data", glue::glue("yt_{handle}_{Sys.Date()}.xlsx")))
+}
+```
+
+#### Getting the link data
+
+We have to pass links into the function and to get them, we're going to use the Link Gopher extension to pull all urls on the YouTube page of the account of interest. Then copy and paste the data and save as a csv.
+
+#### Run it
+
+As written, the script will save the data. 
+
+```{r, eval = FALSE}
+yt_scrape_fn("tesla")
+```
+
+And when the data is loaded, it looks like this
+
+```{r, echo = FALSE}
+tyt <- readRDS(here::here("static", "data", "tesla_youtube.rds"))
+
+tyt$summary |> 
+  head(3)
+
+tyt$comments |> 
+  group_by(video) |> 
+  slice(1:2)
+```
+

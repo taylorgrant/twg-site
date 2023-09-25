@@ -223,3 +223,155 @@ head(stores_df)
 ## 6   https://www.homedepot.com/l/Prattville/AL/Prattville/36066/806 (334)285-1693
 ```
 
+## Scraping YouTube
+
+YouTube has an API, but it can be rate limited pretty quickly. The following will get performance metrics and all comments from each video, without running into any limit. 
+
+#### Set up
+
+Within a conda environment created via the `reticulate` package, install `yt-dlp` (more [detail](https://taylorgrant.netlify.app/post/reticulate/)).
+
+
+```r
+reticulate::conda_install("[ENV Name]", "yt-dlp", pip = TRUE)
+```
+
+Next, write the python function that will call the `yt-dlp` library and pull the video metrics and comments for any url that's passed to it. 
+
+
+```python
+def youtube_dl_info(URL):
+  import json
+  import yt_dlp
+
+  # See help(yt_dlp.YoutubeDL) for a list of available options and public functions
+  ydl_opts = {'getcomments':True}
+  with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+      info = ydl.extract_info(URL, download=False)
+      return(info)
+```
+
+After that, write quick function to clean the urls that we're going to read in. 
+
+
+```r
+yt_clean <- function(file_loc) {
+  tmp <- readr::read_csv(file_loc) |> 
+    dplyr::filter(stringr::str_detect(links, "^https://www.youtube.com/watch?")) |> 
+    dplyr::distinct(links) |> 
+    dplyr::pull()
+}
+```
+
+Because I prefer to work in R, I need to get the data out of the python environment and into R. From there, I'm going to clean the data. The data will be split into two different dataframes - the summary metrics and the comments. 
+
+
+```r
+# to get data out of the returned lists # 
+youtube_extract <- function(datalist) {
+  # get summary data about the video
+  summary <- purrr::map_dfr(datalist, 
+                            magrittr::extract, 
+                            c("uploader", "upload_date", "title", "description", "categories",
+                              "duration_string", "view_count", 
+                              "like_count", "comment_count", "original_url")) |> 
+    dplyr::rename(duration = duration_string) |> 
+    dplyr::mutate(upload_date = lubridate::ymd(upload_date))
+  # get the comments
+  x <- purrr::map(datalist, "comments")
+  # drop empty lists (no comments)
+  x <- Filter(length, x)
+  
+  # loop over comments and put into dataframe
+  comments <- NULL
+  for (i in seq_len(nrow(summary))) {
+    print(i)
+    tmp <- x[[i]] %>% 
+      data.table::rbindlist(fill = TRUE) |> 
+      dplyr::as_tibble() |> 
+      dplyr::mutate(timestamp = lubridate::as_datetime(as.numeric(timestamp, tz = "America/Los_Angeles"))) |>
+      dplyr::select(c(text, timestamp, like_count, author)) |> 
+      dplyr::mutate(video = summary$title[i],
+                    timestamp = as.Date(timestamp)) |> 
+      dplyr::rename(date = timestamp)
+    comments <- rbind(comments, tmp)
+    tmp <- NULL
+  }
+  out <- list(summary = summary, comments = comments)
+}
+```
+
+Finally, we write a wrapper function that will run the above functions and save the output into `.rds` and `.xlsx` files.
+
+
+```r
+# YouTube metrics and comments # 
+
+# 1. start with LinkGopher to extract all urls
+# 2. add links to a csv with the column name "links"
+# 3. save csv as "[handle_name]_yt_links.csv" in the "yt_link_data" folder
+# 4. run this function 
+
+yt_scrape_fn <- function(handle) {
+  # load packages
+  pacman::p_load(tidyverse, janitor, here, glue)
+  # load functions
+  reticulate::source_python(here::here('youtube', 'py_functions', 'youtube_dl_info.py'))
+  source(here('youtube','R','helpers', 'helpers.R'))
+  source(here('youtube','R', "youtube_extract.R"))
+  
+  loc <- here('youtube','yt_link_data', glue("{handle}_yt_links.csv"))
+  urls <- yt_clean(loc)
+  
+  # map over function and save to environment for safe processing
+  tmpdata <<- urls |>
+    purrr::map(youtube_dl_info)
+  
+  # clean and add to reactive values
+  out <- youtube_extract(tmpdata)
+  
+  outlist <- list(summary = out$summary, comments = out$comments)
+  saveRDS(outlist, here("youtube","youtube_report", "youtube_data", glue::glue("yt_{handle}_{Sys.Date()}.rds")))
+  
+  openxlsx::write.xlsx(outlist, here("youtube","youtube_report", "youtube_data", glue::glue("yt_{handle}_{Sys.Date()}.xlsx")))
+}
+```
+
+#### Getting the link data
+
+We have to pass links into the function and to get them, we're going to use the Link Gopher extension to pull all urls on the YouTube page of the account of interest. Then copy and paste the data and save as a csv.
+
+#### Run it
+
+As written, the script will save the data. 
+
+
+```r
+yt_scrape_fn("tesla")
+```
+
+And when the data is loaded, it looks like this
+
+
+```
+## # A tibble: 3 × 10
+##   uploader upload_date title  description categories duration view_count like_count comment_count original_url
+##   <chr>    <date>      <chr>  <chr>       <chr>      <chr>         <int>      <int>         <int> <chr>       
+## 1 Tesla    2023-01-21  Tesla… "Tesla is … Autos & V… 2:17         619217      21844          1586 https://www…
+## 2 Tesla    2023-03-31  Lars … "Engineere… Autos & V… 2:45         319640      15934          1089 https://www…
+## 3 Tesla    2023-09-25  Tesla… "Optimus c… Autos & V… 1:18          28591       5882           729 https://www…
+```
+
+```
+## # A tibble: 6 × 5
+## # Groups:   video [3]
+##   text                                                                      date       like_count author video
+##   <chr>                                                                     <date>          <int> <chr>  <chr>
+## 1 From Lars to Lars. Nice Explanation 👍                                    2023-09-24         NA @lars… Lars…
+## 2 When you drill into the crash test data, it becomes apparent that the Mo… 2023-09-11         NA @cras… Lars…
+## 3 And my car still can't drive itself halfway through the city in a light … 2023-09-25         NA @ne0n… Tesl…
+## 4 The fact that it moves it whole body, hips included when moving the bloc… 2023-09-25         NA @Wify… Tesl…
+## 5 I love to see them working very hard to replace every human on earth, ro… 2023-09-04         NA @Ahme… Tesl…
+## 6 Please build artificial, noiseless, space- and energy-saving muscles int… 2023-08-25         NA @gk... Tesl…
+```
+
