@@ -39,7 +39,7 @@ library(reticulate)
 conda_create("twg-site")
 ```
 
-Reticulate seems to have an aggressive habit of forcing a specific python version within the environment. And what's interesting, is that I don't have an environmental variable that points to a specific python version. But if I use the `Sys.getenv('RETICULATE_PYTHON')` function for it I find that the python version is set somewhere: /usr/bin/python3 
+Reticulate seems to have an aggressive habit of forcing a specific python version within the environment. And what's interesting, is that I don't have an environmental variable that points to a specific python version. But if I use the `Sys.getenv('RETICULATE_PYTHON')` function for it I find that the python version is set somewhere:  
 
 So, when we call `py_config()` to see which version is being used, it's always this base python3, which isn't that helpful.  
 
@@ -50,13 +50,13 @@ reticulate::py_config()
 ```
 
 ```
-## python:         /usr/bin/python3
-## libpython:      /Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/config-3.8-darwin/libpython3.8.dylib
-## pythonhome:     /Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8:/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8
-## version:        3.8.2 (default, Dec 21 2020, 15:06:04)  [Clang 12.0.0 (clang-1200.0.32.29)]
+## python:         /opt/homebrew/bin/python3
+## libpython:      /opt/homebrew/opt/python@3.11/Frameworks/Python.framework/Versions/3.11/lib/python3.11/config-3.11-darwin/libpython3.11.dylib
+## pythonhome:     /opt/homebrew/Cellar/python@3.11/3.11.3/Frameworks/Python.framework/Versions/3.11:/opt/homebrew/Cellar/python@3.11/3.11.3/Frameworks/Python.framework/Versions/3.11
+## version:        3.11.3 (main, Apr  7 2023, 20:13:31) [Clang 14.0.0 (clang-1400.0.29.202)]
 ## numpy:           [NOT FOUND]
 ## 
-## NOTE: Python version was forced by RETICULATE_PYTHON
+## NOTE: Python version was forced by RETICULATE_PYTHON_FALLBACK
 ```
 
 If we use the `conda_list()` function we can see the various conda environments that have been set up. So what we want to do is create our own .Renviron file within our project to ensure that the proper environment is called every time. This way, we know that packages downloaded for a specific project can be found again.
@@ -67,11 +67,11 @@ conda_list()
 ```
 
 ```
-##           name                                                               python
-## 1         base                   /Users/taylor_grant/Library/r-miniconda/bin/python
-## 2 r-reticulate /Users/taylor_grant/Library/r-miniconda/envs/r-reticulate/bin/python
-## 3      top2vec      /Users/taylor_grant/Library/r-miniconda/envs/top2vec/bin/python
-## 4     twg-site     /Users/taylor_grant/Library/r-miniconda/envs/twg-site/bin/python
+##           name                                                                    python
+## 1         base                   /Users/taylorgrant/Library/r-miniconda-arm64/bin/python
+## 2 r-reticulate /Users/taylorgrant/Library/r-miniconda-arm64/envs/r-reticulate/bin/python
+## 3     scrapper     /Users/taylorgrant/Library/r-miniconda-arm64/envs/scrapper/bin/python
+## 4   topicmodel   /Users/taylorgrant/Library/r-miniconda-arm64/envs/topicmodel/bin/python
 ```
 
 Now create an .Renviron file with the proper directory location
@@ -107,7 +107,15 @@ Just as easy, use the `conda_remove()` function.
 reticulate::conda_remove("twg-site", "statsmodels", pip = TRUE)
 ```
 
+Occasionally, the `conda_remove()` function will fail to find a package that is clearly installed in the conda environment. If that happens, the following code is useful. Put the package name in quotes. The trailing '-y' tells not to ask for confirmation.
+
+
+```r
+system2(reticulate::py_exe(), c("-m", "pip", "uninstall", <package>, '-y))
+```
+
 ## Working in Python 
+
 
 To switch to python, simply call 
 

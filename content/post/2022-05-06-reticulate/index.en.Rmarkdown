@@ -92,7 +92,14 @@ Just as easy, use the `conda_remove()` function.
 reticulate::conda_remove("twg-site", "statsmodels", pip = TRUE)
 ```
 
+Occasionally, the `conda_remove()` function will fail to find a package that is clearly installed in the conda environment. If that happens, the following code is useful. Put the package name in quotes. The trailing '-y' tells not to ask for confirmation.
+
+```{r, eval = FALSE}
+system2(reticulate::py_exe(), c("-m", "pip", "uninstall", <package>, '-y))
+```
+
 ## Working in Python 
+
 
 To switch to python, simply call 
 
