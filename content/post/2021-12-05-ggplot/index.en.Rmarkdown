@@ -513,7 +513,7 @@ tibble(date = seq.Date(as.Date("2018-01-01"), as.Date("2022-01-01"), by = "month
 
 ## Using boxplots 
 
-```{r, boxplot}
+```{r, boxplot, fig.height = 8}
 library(rvest)
 pg <- session("https://www.cnbc.com/2023/07/11/americas-top-states-for-business-2023-the-full-rankings.html")
 
