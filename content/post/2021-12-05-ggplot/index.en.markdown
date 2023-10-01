@@ -63,6 +63,13 @@ tibble(type = rep(c('a','b'), each = 4),
        caption = "Source: data source")
 ```
 
+```
+## Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
+## ℹ Please use the `linewidth` argument instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
+```
+
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/dodge_bar-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Adding text labels to stacked bar or ggchicklet
@@ -263,6 +270,13 @@ data %>%
        caption = "Note: Black lines are Benchmarks")
 ```
 
+```
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
+```
+
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/benchmark-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Unifying Legends
@@ -461,6 +475,40 @@ tibble(date = seq.Date(as.Date("2018-01-01"), as.Date("2022-01-01"), by = "month
   labs(x = NULL, y = NULL)
 ```
 
-<img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-3-1.png" width="1104" style="display: block; margin: auto;" />
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/split-axis-1.png" width="1104" style="display: block; margin: auto;" />
 
-## TBD 
+## Using boxplots 
+
+
+```r
+library(rvest)
+pg <- session("https://www.cnbc.com/2023/07/11/americas-top-states-for-business-2023-the-full-rankings.html")
+
+html_node(pg, "table") |>
+  html_table() |>
+  janitor::clean_names() -> cnbc
+
+cnbc |> 
+  select(-overall_rank) |>
+  gather(measure, value, -state) |>
+  mutate(
+    state = fct_reorder(state, value, sum) |> fct_rev()
+  ) |> 
+  ggplot() +
+  geom_boxplot(
+    aes(state, value),
+    color = "black", fill = "black",
+    linewidth = 0.125, width = 0.4,
+    outlier.size = 0.25
+  ) +
+  scale_y_continuous(sec.axis = dup_axis())+
+  coord_flip() +
+  labs(
+    y = "Rank Range", x = NULL,
+    title = "CNBC 2023 U.S. State Rankings"
+  ) +
+  theme_twg(grid = "X")
+```
+
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/boxplot-1.png" width="1104" style="display: block; margin: auto;" />
+

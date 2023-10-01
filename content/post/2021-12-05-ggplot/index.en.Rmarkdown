@@ -497,7 +497,7 @@ tmp %>%
 
 Dates can take up quite a bit of space on an axis. But we can split out the month and year on separate lines. Here, `labels` can take a function that uses a simple ifelse logic. 
 
-```{r}
+```{r, split-axis}
 tibble(date = seq.Date(as.Date("2018-01-01"), as.Date("2022-01-01"), by = "month"),
       t = seq(0,10, length.out = 49), 
       y = sin(t)) %>% 
@@ -511,4 +511,35 @@ tibble(date = seq.Date(as.Date("2018-01-01"), as.Date("2022-01-01"), by = "month
   labs(x = NULL, y = NULL)
 ```
 
-## TBD 
+## Using boxplots 
+
+```{r, boxplot}
+library(rvest)
+pg <- session("https://www.cnbc.com/2023/07/11/americas-top-states-for-business-2023-the-full-rankings.html")
+
+html_node(pg, "table") |>
+  html_table() |>
+  janitor::clean_names() -> cnbc
+
+cnbc |> 
+  select(-overall_rank) |>
+  gather(measure, value, -state) |>
+  mutate(
+    state = fct_reorder(state, value, sum) |> fct_rev()
+  ) |> 
+  ggplot() +
+  geom_boxplot(
+    aes(state, value),
+    color = "black", fill = "black",
+    linewidth = 0.125, width = 0.4,
+    outlier.size = 0.25
+  ) +
+  scale_y_continuous(sec.axis = dup_axis())+
+  coord_flip() +
+  labs(
+    y = "Rank Range", x = NULL,
+    title = "CNBC 2023 U.S. State Rankings"
+  ) +
+  theme_twg(grid = "X")
+```
+
