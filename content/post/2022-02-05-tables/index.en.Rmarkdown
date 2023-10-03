@@ -92,7 +92,7 @@ DT is another html table, but it's far more interactive. Columns are sortable an
 
 The DT table won't render via netlify but it will render properly in Rmarkdown or Shiny.  
 ```{r, eval = FALSE}
-dt <- mlb %>%
+mlb %>%
   select(Name:AVG, `wRC+`, contains("WAR")) %>%
   select(-G19) %>%
   mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>%
