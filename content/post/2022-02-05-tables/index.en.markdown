@@ -28,14 +28,8 @@ projects: []
 <script src="{{< blogdown/postref >}}index.en_files/kePrint/kePrint.js"></script>
 <link href="{{< blogdown/postref >}}index.en_files/lightable/lightable.css" rel="stylesheet" />
 <script src="{{< blogdown/postref >}}index.en_files/htmlwidgets/htmlwidgets.js"></script>
-<link href="{{< blogdown/postref >}}index.en_files/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
-<script src="{{< blogdown/postref >}}index.en_files/datatables-binding/datatables.js"></script>
-<script src="{{< blogdown/postref >}}index.en_files/jquery/jquery-3.6.0.min.js"></script>
-<link href="{{< blogdown/postref >}}index.en_files/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
-<link href="{{< blogdown/postref >}}index.en_files/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
-<script src="{{< blogdown/postref >}}index.en_files/dt-core/js/jquery.dataTables.min.js"></script>
-<link href="{{< blogdown/postref >}}index.en_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
-<script src="{{< blogdown/postref >}}index.en_files/crosstalk/js/crosstalk.min.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/pymjs/pym.v1.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/widgetframe-binding/widgetframe.js"></script>
 
 Building tables with three different packages - [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html), [DT](https://rstudio.github.io/DT/), and [gt](https://gt.rstudio.com/). These builds aren’t meant to be extravagant, but are baselines for html and static tables.
 
@@ -1760,48 +1754,52 @@ DT is another html table, but it’s far more interactive. Columns are sortable 
 The DT table won’t render, but this code will work in R or in any HTML Rmarkdown doc.
 
 ``` r
-mlb %>% 
+library(widgetframe)
+```
+
+    ## Loading required package: htmlwidgets
+
+``` r
+dt <- mlb %>%
   select(Name:AVG, `wRC+`, contains("WAR")) %>%
   select(-G19) %>%
   mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>%
-  DT::datatable()
-```
-
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"],["Trea Turner","Vladimir Guerrero Jr.","Bryce Harper","Marcus Semien","Juan Soto","Jose Ramirez","Fernando Tatis Jr.","Carlos Correa","Starling Marte","Aaron Judge","Bryan Reynolds","Brandon Crawford","Tyler O'Neill","Cedric Mullins II","Brandon Lowe","Xander Bogaerts","Jose Altuve","Shohei Ohtani","Matt Olson","Paul Goldschmidt","Bo Bichette","Max Muncy","Kyle Tucker","Rafael Devers","Yoan Moncada","Freddie Freeman","J.T. Realmuto","Jake Cronenworth","Manny Machado","Nicky Lopez"],["---","TOR","PHI","TOR","WSN","CLE","SDP","HOU","---","NYY","PIT","SFG","STL","BAL","TBR","BOS","HOU","LAA","OAK","STL","TOR","LAD","HOU","BOS","CHW","ATL","PHI","SDP","SDP","KCR"],[13000000,605400,27538462,18000000,8500000,9400000,1714286,11700000,12500000,10175000,601000,15200000,594700,577000,2500000,20000000,29000000,3000000,5000000,25333333,587800,9000000,624300,4575000,6800000,22359375,18048556,584900,34000000,597500],[148,161,141,162,151,152,130,148,120,148,159,138,138,159,149,144,146,158,156,158,159,144,140,156,144,159,134,152,153,151],[646,698,599,724,654,636,546,640,526,633,646,549,537,675,615,603,678,639,673,679,690,592,567,664,616,695,537,643,640,565],[28,48,35,45,29,36,42,26,12,39,24,24,34,30,39,23,31,46,39,31,29,36,30,38,14,31,17,21,28,2],[107,123,101,115,111,111,99,104,89,89,93,79,89,91,97,90,117,103,101,102,121,95,83,101,74,120,64,94,92,78],[77,111,84,102,95,103,97,92,55,98,90,90,80,59,99,79,83,100,111,99,102,94,92,113,61,83,73,71,106,43],[32,4,13,15,9,27,25,0,47,6,5,11,15,30,7,5,5,26,4,12,25,2,14,5,3,8,13,4,12,22],[0.063,0.123,0.167,0.091,0.222,0.113,0.114,0.117,0.08199999999999999,0.118,0.116,0.102,0.07099999999999999,0.08699999999999999,0.111,0.103,0.09699999999999999,0.15,0.131,0.099,0.058,0.14,0.09300000000000001,0.09300000000000001,0.136,0.122,0.08900000000000001,0.08599999999999999,0.098,0.08699999999999999],[0.17,0.158,0.224,0.202,0.142,0.137,0.28,0.181,0.188,0.25,0.184,0.191,0.313,0.185,0.272,0.187,0.134,0.296,0.168,0.2,0.199,0.203,0.159,0.215,0.255,0.154,0.24,0.14,0.159,0.131],[0.208,0.29,0.305,0.273,0.221,0.272,0.328,0.205,0.148,0.256,0.22,0.224,0.274,0.228,0.277,0.198,0.211,0.335,0.269,0.221,0.186,0.278,0.263,0.259,0.148,0.203,0.176,0.194,0.211,0.078],[0.362,0.313,0.359,0.276,0.332,0.256,0.324,0.308,0.372,0.332,0.345,0.334,0.366,0.322,0.28,0.333,0.28,0.303,0.269,0.331,0.339,0.257,0.304,0.307,0.35,0.321,0.325,0.283,0.29,0.347],[0.328,0.311,0.309,0.265,0.313,0.266,0.282,0.279,0.31,0.287,0.302,0.298,0.286,0.291,0.247,0.295,0.278,0.257,0.271,0.294,0.298,0.249,0.294,0.279,0.263,0.3,0.263,0.266,0.278,0.3],[142,166,170,131,163,137,156,134,134,148,142,139,145,136,137,130,130,152,146,138,122,140,147,134,122,135,108,116,122,106],[3.6,0.4,4.5,7.6,4.9,3.6,null,null,3,null,3.2,0.3,null,null,null,6.8,3.5,null,3.9,3,null,4.7,null,5.9,5.6,3.9,5.7,null,3.2,null],[6.9,6.7,6.6,6.6,6.6,6.3,6.1,5.8,5.5,5.5,5.5,5.5,5.4,5.3,5.2,5.2,5.2,5.1,5,4.9,4.9,4.9,4.8,4.7,4.5,4.5,4.4,4.4,4.4,4.4]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Name<\/th>\n      <th>Team<\/th>\n      <th>Salary<\/th>\n      <th>G<\/th>\n      <th>PA<\/th>\n      <th>HR<\/th>\n      <th>R<\/th>\n      <th>RBI<\/th>\n      <th>SB<\/th>\n      <th>BB%<\/th>\n      <th>K%<\/th>\n      <th>ISO<\/th>\n      <th>BABIP<\/th>\n      <th>AVG<\/th>\n      <th>wRC+<\/th>\n      <th>WAR19<\/th>\n      <th>WAR<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-
-``` r
   # create a link to player's wiki 
-  # mutate(
-  #   link = paste0("https://en.wikipedia.org/wiki/", 
-  #                                       str_replace_all(Name, " ", "_")),
-  #   Name = paste0('<a href="',link,'"target="_blank">',Name,"</a>")) %>%
-  # DT::datatable(
-  #   fillContainer = TRUE, # make it scrollable
-  #   escape = FALSE, # for links to work
-  #   caption = "DT Version - MLB Table",
-  #   class = "display",
-  #   filter = 'top',
-  #   rownames = FALSE,
-  #   # extensions = "Buttons", 
-  #   options = list(
-  #     dom = "t",
-  #     # buttons = list( # download data
-  #     #   list(
-  #     #   extend = "collection",
-  #     #   buttons = c("csv", "excel", "pdf"),
-  #     #   text = "Download"
-  #     #   )),
-  #     pageLength = 20, # how many rows per page
-  #     columnDefs = list(
-  #       list(
-  #         visible = FALSE, targets = 17) # hiding a column
-  #       ))
-  #   ) %>% 
-  # # formatting numbers
-  # formatPercentage(c(10,11), digits = 1) %>% 
-  # formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
+  mutate(
+    link = paste0("https://en.wikipedia.org/wiki/",
+                                        str_replace_all(Name, " ", "_")),
+    Name = paste0('<a href="',link,'"target="_blank">',Name,"</a>")) %>%
+  DT::datatable(
+    fillContainer = TRUE, # make it scrollable
+    escape = FALSE, # for links to work
+    caption = "DT Version - MLB Table",
+    class = "display",
+    filter = 'top',
+    rownames = FALSE,
+    extensions = "Buttons",
+    options = list(
+      dom = "Bfrtip",
+      buttons = list( # download data
+        list(
+        extend = "collection",
+        buttons = c("csv", "excel", "pdf"),
+        text = "Download"
+        )),
+      pageLength = 20, # how many rows per page
+      columnDefs = list(
+        list(
+          visible = FALSE, targets = 17) # hiding a column
+        ))
+    ) %>%
+  # formatting numbers
+  formatPercentage(c(10,11), digits = 1) %>%
+  formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
+
+frameWidget(dt, height = 500, width = '95%') 
 ```
+
+<div id="htmlwidget-1" style="width:95%;height:500px;" class="widgetframe html-widget "></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index.en_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 
 ## gt Tables
 
@@ -1965,21 +1963,21 @@ mlb %>%
   )
 ```
 
-<div id="fjfhrcvkri" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="zfjiccuwew" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-#fjfhrcvkri table {
+#zfjiccuwew table {
   font-family: 'Open Sans';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-&#10;#fjfhrcvkri thead, #fjfhrcvkri tbody, #fjfhrcvkri tfoot, #fjfhrcvkri tr, #fjfhrcvkri td, #fjfhrcvkri th {
+&#10;#zfjiccuwew thead, #zfjiccuwew tbody, #zfjiccuwew tfoot, #zfjiccuwew tr, #zfjiccuwew td, #zfjiccuwew th {
   border-style: none;
 }
-&#10;#fjfhrcvkri p {
+&#10;#zfjiccuwew p {
   margin: 0;
   padding: 0;
 }
-&#10;#fjfhrcvkri .gt_table {
+&#10;#zfjiccuwew .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2004,11 +2002,11 @@ mlb %>%
   border-left-width: 2px;
   border-left-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_caption {
+&#10;#zfjiccuwew .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
-&#10;#fjfhrcvkri .gt_title {
+&#10;#zfjiccuwew .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2019,7 +2017,7 @@ mlb %>%
   border-bottom-color: #F3F3F3;
   border-bottom-width: 0;
 }
-&#10;#fjfhrcvkri .gt_subtitle {
+&#10;#zfjiccuwew .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2030,7 +2028,7 @@ mlb %>%
   border-top-color: #F3F3F3;
   border-top-width: 0;
 }
-&#10;#fjfhrcvkri .gt_heading {
+&#10;#zfjiccuwew .gt_heading {
   background-color: #F3F3F3;
   text-align: center;
   border-bottom-color: #F3F3F3;
@@ -2041,12 +2039,12 @@ mlb %>%
   border-right-width: 1px;
   border-right-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_bottom_border {
+&#10;#zfjiccuwew .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_col_headings {
+&#10;#zfjiccuwew .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2060,7 +2058,7 @@ mlb %>%
   border-right-width: 1px;
   border-right-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_col_heading {
+&#10;#zfjiccuwew .gt_col_heading {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2079,7 +2077,7 @@ mlb %>%
   padding-right: 5px;
   overflow-x: hidden;
 }
-&#10;#fjfhrcvkri .gt_column_spanner_outer {
+&#10;#zfjiccuwew .gt_column_spanner_outer {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2090,13 +2088,13 @@ mlb %>%
   padding-left: 4px;
   padding-right: 4px;
 }
-&#10;#fjfhrcvkri .gt_column_spanner_outer:first-child {
+&#10;#zfjiccuwew .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
-&#10;#fjfhrcvkri .gt_column_spanner_outer:last-child {
+&#10;#zfjiccuwew .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
-&#10;#fjfhrcvkri .gt_column_spanner {
+&#10;#zfjiccuwew .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2107,10 +2105,10 @@ mlb %>%
   display: inline-block;
   width: 100%;
 }
-&#10;#fjfhrcvkri .gt_spanner_row {
+&#10;#zfjiccuwew .gt_spanner_row {
   border-bottom-style: hidden;
 }
-&#10;#fjfhrcvkri .gt_group_heading {
+&#10;#zfjiccuwew .gt_group_heading {
   padding-top: 6px;
   padding-bottom: 6px;
   padding-left: 5px;
@@ -2135,7 +2133,7 @@ mlb %>%
   vertical-align: middle;
   text-align: left;
 }
-&#10;#fjfhrcvkri .gt_empty_group_heading {
+&#10;#zfjiccuwew .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #F3F3F3;
@@ -2149,13 +2147,13 @@ mlb %>%
   border-bottom-color: #D3D3D3;
   vertical-align: middle;
 }
-&#10;#fjfhrcvkri .gt_from_md > :first-child {
+&#10;#zfjiccuwew .gt_from_md > :first-child {
   margin-top: 0;
 }
-&#10;#fjfhrcvkri .gt_from_md > :last-child {
+&#10;#zfjiccuwew .gt_from_md > :last-child {
   margin-bottom: 0;
 }
-&#10;#fjfhrcvkri .gt_row {
+&#10;#zfjiccuwew .gt_row {
   padding-top: 6px;
   padding-bottom: 6px;
   padding-left: 5px;
@@ -2173,7 +2171,7 @@ mlb %>%
   vertical-align: middle;
   overflow-x: hidden;
 }
-&#10;#fjfhrcvkri .gt_stub {
+&#10;#zfjiccuwew .gt_stub {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2185,7 +2183,7 @@ mlb %>%
   padding-left: 5px;
   padding-right: 5px;
 }
-&#10;#fjfhrcvkri .gt_stub_row_group {
+&#10;#zfjiccuwew .gt_stub_row_group {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2198,13 +2196,13 @@ mlb %>%
   padding-right: 5px;
   vertical-align: top;
 }
-&#10;#fjfhrcvkri .gt_row_group_first td {
+&#10;#zfjiccuwew .gt_row_group_first td {
   border-top-width: 2px;
 }
-&#10;#fjfhrcvkri .gt_row_group_first th {
+&#10;#zfjiccuwew .gt_row_group_first th {
   border-top-width: 2px;
 }
-&#10;#fjfhrcvkri .gt_summary_row {
+&#10;#zfjiccuwew .gt_summary_row {
   color: #333333;
   background-color: #F3F3F3;
   text-transform: inherit;
@@ -2213,14 +2211,14 @@ mlb %>%
   padding-left: 5px;
   padding-right: 5px;
 }
-&#10;#fjfhrcvkri .gt_first_summary_row {
+&#10;#zfjiccuwew .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_first_summary_row.thick {
+&#10;#zfjiccuwew .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
-&#10;#fjfhrcvkri .gt_last_summary_row {
+&#10;#zfjiccuwew .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2229,7 +2227,7 @@ mlb %>%
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_grand_summary_row {
+&#10;#zfjiccuwew .gt_grand_summary_row {
   color: #333333;
   background-color: #F3F3F3;
   text-transform: inherit;
@@ -2238,7 +2236,7 @@ mlb %>%
   padding-left: 5px;
   padding-right: 5px;
 }
-&#10;#fjfhrcvkri .gt_first_grand_summary_row {
+&#10;#zfjiccuwew .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2247,7 +2245,7 @@ mlb %>%
   border-top-width: 6px;
   border-top-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_last_grand_summary_row_top {
+&#10;#zfjiccuwew .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2256,10 +2254,10 @@ mlb %>%
   border-bottom-width: 6px;
   border-bottom-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_striped {
+&#10;#zfjiccuwew .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
-&#10;#fjfhrcvkri .gt_table_body {
+&#10;#zfjiccuwew .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2267,7 +2265,7 @@ mlb %>%
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_footnotes {
+&#10;#zfjiccuwew .gt_footnotes {
   color: #333333;
   background-color: #F3F3F3;
   border-bottom-style: none;
@@ -2280,7 +2278,7 @@ mlb %>%
   border-right-width: 2px;
   border-right-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_footnote {
+&#10;#zfjiccuwew .gt_footnote {
   margin: 0px;
   font-size: 10px;
   padding-top: 4px;
@@ -2288,7 +2286,7 @@ mlb %>%
   padding-left: 5px;
   padding-right: 5px;
 }
-&#10;#fjfhrcvkri .gt_sourcenotes {
+&#10;#zfjiccuwew .gt_sourcenotes {
   color: #333333;
   background-color: #F3F3F3;
   border-bottom-style: none;
@@ -2301,57 +2299,57 @@ mlb %>%
   border-right-width: 2px;
   border-right-color: #D3D3D3;
 }
-&#10;#fjfhrcvkri .gt_sourcenote {
+&#10;#zfjiccuwew .gt_sourcenote {
   font-size: 10px;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 5px;
   padding-right: 5px;
 }
-&#10;#fjfhrcvkri .gt_left {
+&#10;#zfjiccuwew .gt_left {
   text-align: left;
 }
-&#10;#fjfhrcvkri .gt_center {
+&#10;#zfjiccuwew .gt_center {
   text-align: center;
 }
-&#10;#fjfhrcvkri .gt_right {
+&#10;#zfjiccuwew .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
-&#10;#fjfhrcvkri .gt_font_normal {
+&#10;#zfjiccuwew .gt_font_normal {
   font-weight: normal;
 }
-&#10;#fjfhrcvkri .gt_font_bold {
+&#10;#zfjiccuwew .gt_font_bold {
   font-weight: bold;
 }
-&#10;#fjfhrcvkri .gt_font_italic {
+&#10;#zfjiccuwew .gt_font_italic {
   font-style: italic;
 }
-&#10;#fjfhrcvkri .gt_super {
+&#10;#zfjiccuwew .gt_super {
   font-size: 65%;
 }
-&#10;#fjfhrcvkri .gt_footnote_marks {
+&#10;#zfjiccuwew .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
-&#10;#fjfhrcvkri .gt_asterisk {
+&#10;#zfjiccuwew .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
-&#10;#fjfhrcvkri .gt_indent_1 {
+&#10;#zfjiccuwew .gt_indent_1 {
   text-indent: 5px;
 }
-&#10;#fjfhrcvkri .gt_indent_2 {
+&#10;#zfjiccuwew .gt_indent_2 {
   text-indent: 10px;
 }
-&#10;#fjfhrcvkri .gt_indent_3 {
+&#10;#zfjiccuwew .gt_indent_3 {
   text-indent: 15px;
 }
-&#10;#fjfhrcvkri .gt_indent_4 {
+&#10;#zfjiccuwew .gt_indent_4 {
   text-indent: 20px;
 }
-&#10;#fjfhrcvkri .gt_indent_5 {
+&#10;#zfjiccuwew .gt_indent_5 {
   text-indent: 25px;
 }
 </style>

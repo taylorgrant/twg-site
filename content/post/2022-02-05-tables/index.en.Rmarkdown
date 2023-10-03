@@ -92,43 +92,43 @@ DT is another html table, but it's far more interactive. Columns are sortable an
 
 The DT table won't render, but this code will work in R or in any HTML Rmarkdown doc. 
 ```{r, eval = TRUE}
-mlb %>% 
+library(widgetframe)
+dt <- mlb %>%
   select(Name:AVG, `wRC+`, contains("WAR")) %>%
   select(-G19) %>%
   mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>%
-  DT::datatable()
   # create a link to player's wiki 
-  # mutate(
-  #   link = paste0("https://en.wikipedia.org/wiki/", 
-  #                                       str_replace_all(Name, " ", "_")),
-  #   Name = paste0('<a href="',link,'"target="_blank">',Name,"</a>")) %>%
-  # DT::datatable(
-  #   fillContainer = TRUE, # make it scrollable
-  #   escape = FALSE, # for links to work
-  #   caption = "DT Version - MLB Table",
-  #   class = "display",
-  #   filter = 'top',
-  #   rownames = FALSE,
-  #   # extensions = "Buttons", 
-  #   options = list(
-  #     dom = "t",
-  #     # buttons = list( # download data
-  #     #   list(
-  #     #   extend = "collection",
-  #     #   buttons = c("csv", "excel", "pdf"),
-  #     #   text = "Download"
-  #     #   )),
-  #     pageLength = 20, # how many rows per page
-  #     columnDefs = list(
-  #       list(
-  #         visible = FALSE, targets = 17) # hiding a column
-  #       ))
-  #   ) %>% 
-  # # formatting numbers
-  # formatPercentage(c(10,11), digits = 1) %>% 
-  # formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
+  mutate(
+    link = paste0("https://en.wikipedia.org/wiki/",
+                                        str_replace_all(Name, " ", "_")),
+    Name = paste0('<a href="',link,'"target="_blank">',Name,"</a>")) %>%
+  DT::datatable(
+    fillContainer = TRUE, # make it scrollable
+    escape = FALSE, # for links to work
+    caption = "DT Version - MLB Table",
+    class = "display",
+    filter = 'top',
+    rownames = FALSE,
+    extensions = "Buttons",
+    options = list(
+      dom = "Bfrtip",
+      buttons = list( # download data
+        list(
+        extend = "collection",
+        buttons = c("csv", "excel", "pdf"),
+        text = "Download"
+        )),
+      pageLength = 20, # how many rows per page
+      columnDefs = list(
+        list(
+          visible = FALSE, targets = 17) # hiding a column
+        ))
+    ) %>%
+  # formatting numbers
+  formatPercentage(c(10,11), digits = 1) %>%
+  formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
 
-  
+frameWidget(dt, height = 500, width = '95%') 
 ```
 
 ## gt Tables 
