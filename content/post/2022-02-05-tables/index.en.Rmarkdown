@@ -90,7 +90,7 @@ mlb %>%
 
 DT is another html table, but it's far more interactive. Columns are sortable and filterable by default. We're going to convert the string columns to numeric so that we can use the DT format functions.  
 
-The DT table won't render, but this code will work in R or in any HTML Rmarkdown doc. 
+The DT table will only render via the `widgetframe` package, but it works without it on any Rmarkdown or Shiny app.  
 ```{r, eval = TRUE}
 library(widgetframe)
 dt <- mlb %>%
