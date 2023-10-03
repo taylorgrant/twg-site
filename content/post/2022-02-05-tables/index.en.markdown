@@ -26,8 +26,16 @@ projects: []
 ---
 
 <script src="{{< blogdown/postref >}}index.en_files/kePrint/kePrint.js"></script>
-
 <link href="{{< blogdown/postref >}}index.en_files/lightable/lightable.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/htmlwidgets/htmlwidgets.js"></script>
+<link href="{{< blogdown/postref >}}index.en_files/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/datatables-binding/datatables.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/jquery/jquery-3.6.0.min.js"></script>
+<link href="{{< blogdown/postref >}}index.en_files/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="{{< blogdown/postref >}}index.en_files/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/dt-core/js/jquery.dataTables.min.js"></script>
+<link href="{{< blogdown/postref >}}index.en_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index.en_files/crosstalk/js/crosstalk.min.js"></script>
 
 Building tables with three different packages - [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html), [DT](https://rstudio.github.io/DT/), and [gt](https://gt.rstudio.com/). These builds aren’t meant to be extravagant, but are baselines for html and static tables.
 
@@ -37,10 +45,10 @@ Starting with knitr and kableExtra to make html tables. They’re not interactiv
 
 Some watchouts:
 
--   Table Height - if you limit the height of the table, the horizontal scroll (if it’s necessary) is at the bottom of the table; it’s not persistent at the base of the table.
--   Justification - by default, numeric columns are right-justified. This data has two columns, BB% and K% that are strings and need to be justified. But, you can’t specify specific columns, it’s a vector of “l,” “c,” or “r.” Column headers follow the justification.
+- Table Height - if you limit the height of the table, the horizontal scroll (if it’s necessary) is at the bottom of the table; it’s not persistent at the base of the table.
+- Justification - by default, numeric columns are right-justified. This data has two columns, BB% and K% that are strings and need to be justified. But, you can’t specify specific columns, it’s a vector of “l”, “c”, or “r”. Column headers follow the justification.
 
-*The escape symbol ’\\' is showing up in the Salary column b/c some strange interference from DT and/or possibly widgetframe.*
+*The escape symbol ’\\ is showing up in the Salary column b/c some strange interference from DT and/or possibly widgetframe.*
 
 ``` r
 mlb %>% 
@@ -1756,36 +1764,43 @@ mlb %>%
   select(Name:AVG, `wRC+`, contains("WAR")) %>%
   select(-G19) %>%
   mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>%
+  DT::datatable()
+```
+
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"],["Trea Turner","Vladimir Guerrero Jr.","Bryce Harper","Marcus Semien","Juan Soto","Jose Ramirez","Fernando Tatis Jr.","Carlos Correa","Starling Marte","Aaron Judge","Bryan Reynolds","Brandon Crawford","Tyler O'Neill","Cedric Mullins II","Brandon Lowe","Xander Bogaerts","Jose Altuve","Shohei Ohtani","Matt Olson","Paul Goldschmidt","Bo Bichette","Max Muncy","Kyle Tucker","Rafael Devers","Yoan Moncada","Freddie Freeman","J.T. Realmuto","Jake Cronenworth","Manny Machado","Nicky Lopez"],["---","TOR","PHI","TOR","WSN","CLE","SDP","HOU","---","NYY","PIT","SFG","STL","BAL","TBR","BOS","HOU","LAA","OAK","STL","TOR","LAD","HOU","BOS","CHW","ATL","PHI","SDP","SDP","KCR"],[13000000,605400,27538462,18000000,8500000,9400000,1714286,11700000,12500000,10175000,601000,15200000,594700,577000,2500000,20000000,29000000,3000000,5000000,25333333,587800,9000000,624300,4575000,6800000,22359375,18048556,584900,34000000,597500],[148,161,141,162,151,152,130,148,120,148,159,138,138,159,149,144,146,158,156,158,159,144,140,156,144,159,134,152,153,151],[646,698,599,724,654,636,546,640,526,633,646,549,537,675,615,603,678,639,673,679,690,592,567,664,616,695,537,643,640,565],[28,48,35,45,29,36,42,26,12,39,24,24,34,30,39,23,31,46,39,31,29,36,30,38,14,31,17,21,28,2],[107,123,101,115,111,111,99,104,89,89,93,79,89,91,97,90,117,103,101,102,121,95,83,101,74,120,64,94,92,78],[77,111,84,102,95,103,97,92,55,98,90,90,80,59,99,79,83,100,111,99,102,94,92,113,61,83,73,71,106,43],[32,4,13,15,9,27,25,0,47,6,5,11,15,30,7,5,5,26,4,12,25,2,14,5,3,8,13,4,12,22],[0.063,0.123,0.167,0.091,0.222,0.113,0.114,0.117,0.08199999999999999,0.118,0.116,0.102,0.07099999999999999,0.08699999999999999,0.111,0.103,0.09699999999999999,0.15,0.131,0.099,0.058,0.14,0.09300000000000001,0.09300000000000001,0.136,0.122,0.08900000000000001,0.08599999999999999,0.098,0.08699999999999999],[0.17,0.158,0.224,0.202,0.142,0.137,0.28,0.181,0.188,0.25,0.184,0.191,0.313,0.185,0.272,0.187,0.134,0.296,0.168,0.2,0.199,0.203,0.159,0.215,0.255,0.154,0.24,0.14,0.159,0.131],[0.208,0.29,0.305,0.273,0.221,0.272,0.328,0.205,0.148,0.256,0.22,0.224,0.274,0.228,0.277,0.198,0.211,0.335,0.269,0.221,0.186,0.278,0.263,0.259,0.148,0.203,0.176,0.194,0.211,0.078],[0.362,0.313,0.359,0.276,0.332,0.256,0.324,0.308,0.372,0.332,0.345,0.334,0.366,0.322,0.28,0.333,0.28,0.303,0.269,0.331,0.339,0.257,0.304,0.307,0.35,0.321,0.325,0.283,0.29,0.347],[0.328,0.311,0.309,0.265,0.313,0.266,0.282,0.279,0.31,0.287,0.302,0.298,0.286,0.291,0.247,0.295,0.278,0.257,0.271,0.294,0.298,0.249,0.294,0.279,0.263,0.3,0.263,0.266,0.278,0.3],[142,166,170,131,163,137,156,134,134,148,142,139,145,136,137,130,130,152,146,138,122,140,147,134,122,135,108,116,122,106],[3.6,0.4,4.5,7.6,4.9,3.6,null,null,3,null,3.2,0.3,null,null,null,6.8,3.5,null,3.9,3,null,4.7,null,5.9,5.6,3.9,5.7,null,3.2,null],[6.9,6.7,6.6,6.6,6.6,6.3,6.1,5.8,5.5,5.5,5.5,5.5,5.4,5.3,5.2,5.2,5.2,5.1,5,4.9,4.9,4.9,4.8,4.7,4.5,4.5,4.4,4.4,4.4,4.4]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Name<\/th>\n      <th>Team<\/th>\n      <th>Salary<\/th>\n      <th>G<\/th>\n      <th>PA<\/th>\n      <th>HR<\/th>\n      <th>R<\/th>\n      <th>RBI<\/th>\n      <th>SB<\/th>\n      <th>BB%<\/th>\n      <th>K%<\/th>\n      <th>ISO<\/th>\n      <th>BABIP<\/th>\n      <th>AVG<\/th>\n      <th>wRC+<\/th>\n      <th>WAR19<\/th>\n      <th>WAR<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+
+``` r
   # create a link to player's wiki 
-  mutate(
-    link = paste0("https://en.wikipedia.org/wiki/", 
-                                        str_replace_all(Name, " ", "_")),
-    Name = paste0('<a href="',link,'"target="_blank">',Name,"</a>")) %>%
-  DT::datatable(
-    fillContainer = TRUE, # make it scrollable
-    escape = FALSE, # for links to work
-    caption = "DT Version - MLB Table",
-    class = "display",
-    filter = 'top',
-    rownames = FALSE,
-    extensions = "Buttons", 
-    options = list(
-      dom = "Bfrtip",
-      buttons = list( # download data
-        list(
-        extend = "collection",
-        buttons = c("csv", "excel", "pdf"),
-        text = "Download"
-        )),
-      pageLength = 20, # how many rows per page
-      columnDefs = list(
-        list(
-          visible = FALSE, targets = 17) # hiding a column
-        ))
-    ) %>% 
-  # formatting numbers
-  formatPercentage(c(10,11), digits = 1) %>% 
-  formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
+  # mutate(
+  #   link = paste0("https://en.wikipedia.org/wiki/", 
+  #                                       str_replace_all(Name, " ", "_")),
+  #   Name = paste0('<a href="',link,'"target="_blank">',Name,"</a>")) %>%
+  # DT::datatable(
+  #   fillContainer = TRUE, # make it scrollable
+  #   escape = FALSE, # for links to work
+  #   caption = "DT Version - MLB Table",
+  #   class = "display",
+  #   filter = 'top',
+  #   rownames = FALSE,
+  #   # extensions = "Buttons", 
+  #   options = list(
+  #     dom = "t",
+  #     # buttons = list( # download data
+  #     #   list(
+  #     #   extend = "collection",
+  #     #   buttons = c("csv", "excel", "pdf"),
+  #     #   text = "Download"
+  #     #   )),
+  #     pageLength = 20, # how many rows per page
+  #     columnDefs = list(
+  #       list(
+  #         visible = FALSE, targets = 17) # hiding a column
+  #       ))
+  #   ) %>% 
+  # # formatting numbers
+  # formatPercentage(c(10,11), digits = 1) %>% 
+  # formatCurrency(columns = "Salary", currency = "$", mark = ",", digits = 0)
 ```
 
 ## gt Tables
@@ -1801,7 +1816,8 @@ down_arrow <- "<span style=\"color:red\">&#9660;</span>"
 
 mlb %>% 
   select(Name:AVG, `wRC+`, contains("WAR")) %>% 
-  mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>% 
+  mutate(across(contains("%"), ~as.numeric(str_replace_all(., "%", ""))/100)) %>%
+  rename(WAR21 = WAR, G21 = G) %>%
   # set up table
   gt(rowname_col = "Name") %>% 
   # title and subtitle
@@ -1840,10 +1856,10 @@ mlb %>%
     label = "WAR",
     columns = matches("WAR")
   ) %>% 
-  # add spanner over WAR
+  # add spanner over G
   tab_spanner(
     label = "Games",
-    columns = c("G19", "G")
+    columns = c("G19", "G21")
   ) %>%
   # format columns
   fmt_currency(
@@ -1916,22 +1932,22 @@ mlb %>%
   # adding red/green arrows based on WAR
   text_transform(
     locations = list(
-      cells_body(columns = "WAR",
-                 rows = WAR > WAR19)
+      cells_body(columns = c("WAR21"),
+                 rows = WAR21 > WAR19)
     ),
     fn = function(x) paste(x, up_arrow)
   ) %>%
   text_transform(
     locations = list(
-      cells_body(columns = "WAR",
-                 rows = WAR < WAR19)
+      cells_body(columns = c("WAR21"),
+                 rows = WAR21 < WAR19)
     ),
     fn = function(x) paste(x, down_arrow)
   ) %>%
   # rename columns if necessary
   cols_label(
-    G19 = "2019", G = "2021",
-    WAR19 = "2019", WAR = "2021"
+    G19 = "2019", G21 = "2021",
+    WAR19 = "2019", WAR21 = "2021"
   ) %>%
   # hide columne for space
   cols_hide(
@@ -1949,15 +1965,24 @@ mlb %>%
   )
 ```
 
-<div id="swmlvxnacn" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="fjfhrcvkri" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-html {
+#fjfhrcvkri table {
   font-family: 'Open Sans';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-
-#swmlvxnacn .gt_table {
+&#10;#fjfhrcvkri thead, #fjfhrcvkri tbody, #fjfhrcvkri tfoot, #fjfhrcvkri tr, #fjfhrcvkri td, #fjfhrcvkri th {
+  border-style: none;
+}
+&#10;#fjfhrcvkri p {
+  margin: 0;
+  padding: 0;
+}
+&#10;#fjfhrcvkri .gt_table {
   display: table;
   border-collapse: collapse;
+  line-height: normal;
   margin-left: auto;
   margin-right: auto;
   color: #333333;
@@ -1979,8 +2004,33 @@ html {
   border-left-width: 2px;
   border-left-color: #D3D3D3;
 }
-
-#swmlvxnacn .gt_heading {
+&#10;#fjfhrcvkri .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+&#10;#fjfhrcvkri .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #F3F3F3;
+  border-bottom-width: 0;
+}
+&#10;#fjfhrcvkri .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #F3F3F3;
+  border-top-width: 0;
+}
+&#10;#fjfhrcvkri .gt_heading {
   background-color: #F3F3F3;
   text-align: center;
   border-bottom-color: #F3F3F3;
@@ -1991,34 +2041,12 @@ html {
   border-right-width: 1px;
   border-right-color: #D3D3D3;
 }
-
-#swmlvxnacn .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom-color: #F3F3F3;
-  border-bottom-width: 0;
-}
-
-#swmlvxnacn .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 6px;
-  border-top-color: #F3F3F3;
-  border-top-width: 0;
-}
-
-#swmlvxnacn .gt_bottom_border {
+&#10;#fjfhrcvkri .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
-
-#swmlvxnacn .gt_col_headings {
+&#10;#fjfhrcvkri .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2032,8 +2060,7 @@ html {
   border-right-width: 1px;
   border-right-color: #D3D3D3;
 }
-
-#swmlvxnacn .gt_col_heading {
+&#10;#fjfhrcvkri .gt_col_heading {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2052,8 +2079,7 @@ html {
   padding-right: 5px;
   overflow-x: hidden;
 }
-
-#swmlvxnacn .gt_column_spanner_outer {
+&#10;#fjfhrcvkri .gt_column_spanner_outer {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2064,16 +2090,13 @@ html {
   padding-left: 4px;
   padding-right: 4px;
 }
-
-#swmlvxnacn .gt_column_spanner_outer:first-child {
+&#10;#fjfhrcvkri .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
-
-#swmlvxnacn .gt_column_spanner_outer:last-child {
+&#10;#fjfhrcvkri .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
-
-#swmlvxnacn .gt_column_spanner {
+&#10;#fjfhrcvkri .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2084,9 +2107,14 @@ html {
   display: inline-block;
   width: 100%;
 }
-
-#swmlvxnacn .gt_group_heading {
-  padding: 6px;
+&#10;#fjfhrcvkri .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+&#10;#fjfhrcvkri .gt_group_heading {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2105,9 +2133,9 @@ html {
   border-right-width: 1px;
   border-right-color: #D3D3D3;
   vertical-align: middle;
+  text-align: left;
 }
-
-#swmlvxnacn .gt_empty_group_heading {
+&#10;#fjfhrcvkri .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #F3F3F3;
@@ -2121,16 +2149,13 @@ html {
   border-bottom-color: #D3D3D3;
   vertical-align: middle;
 }
-
-#swmlvxnacn .gt_from_md > :first-child {
+&#10;#fjfhrcvkri .gt_from_md > :first-child {
   margin-top: 0;
 }
-
-#swmlvxnacn .gt_from_md > :last-child {
+&#10;#fjfhrcvkri .gt_from_md > :last-child {
   margin-bottom: 0;
 }
-
-#swmlvxnacn .gt_row {
+&#10;#fjfhrcvkri .gt_row {
   padding-top: 6px;
   padding-bottom: 6px;
   padding-left: 5px;
@@ -2148,8 +2173,7 @@ html {
   vertical-align: middle;
   overflow-x: hidden;
 }
-
-#swmlvxnacn .gt_stub {
+&#10;#fjfhrcvkri .gt_stub {
   color: #333333;
   background-color: #F3F3F3;
   font-size: 100%;
@@ -2158,10 +2182,29 @@ html {
   border-right-style: solid;
   border-right-width: 2px;
   border-right-color: #D3D3D3;
-  padding-left: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
-
-#swmlvxnacn .gt_summary_row {
+&#10;#fjfhrcvkri .gt_stub_row_group {
+  color: #333333;
+  background-color: #F3F3F3;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+&#10;#fjfhrcvkri .gt_row_group_first td {
+  border-top-width: 2px;
+}
+&#10;#fjfhrcvkri .gt_row_group_first th {
+  border-top-width: 2px;
+}
+&#10;#fjfhrcvkri .gt_summary_row {
   color: #333333;
   background-color: #F3F3F3;
   text-transform: inherit;
@@ -2170,18 +2213,23 @@ html {
   padding-left: 5px;
   padding-right: 5px;
 }
-
-#swmlvxnacn .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
+&#10;#fjfhrcvkri .gt_first_summary_row {
   border-top-style: solid;
-  border-top-width: 2px;
   border-top-color: #D3D3D3;
 }
-
-#swmlvxnacn .gt_grand_summary_row {
+&#10;#fjfhrcvkri .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+&#10;#fjfhrcvkri .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+&#10;#fjfhrcvkri .gt_grand_summary_row {
   color: #333333;
   background-color: #F3F3F3;
   text-transform: inherit;
@@ -2190,8 +2238,7 @@ html {
   padding-left: 5px;
   padding-right: 5px;
 }
-
-#swmlvxnacn .gt_first_grand_summary_row {
+&#10;#fjfhrcvkri .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2200,12 +2247,19 @@ html {
   border-top-width: 6px;
   border-top-color: #D3D3D3;
 }
-
-#swmlvxnacn .gt_striped {
+&#10;#fjfhrcvkri .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+&#10;#fjfhrcvkri .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
-
-#swmlvxnacn .gt_table_body {
+&#10;#fjfhrcvkri .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2213,8 +2267,7 @@ html {
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
-
-#swmlvxnacn .gt_footnotes {
+&#10;#fjfhrcvkri .gt_footnotes {
   color: #333333;
   background-color: #F3F3F3;
   border-bottom-style: none;
@@ -2227,14 +2280,15 @@ html {
   border-right-width: 2px;
   border-right-color: #D3D3D3;
 }
-
-#swmlvxnacn .gt_footnote {
+&#10;#fjfhrcvkri .gt_footnote {
   margin: 0px;
   font-size: 10px;
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
-
-#swmlvxnacn .gt_sourcenotes {
+&#10;#fjfhrcvkri .gt_sourcenotes {
   color: #333333;
   background-color: #F3F3F3;
   border-bottom-style: none;
@@ -2247,614 +2301,624 @@ html {
   border-right-width: 2px;
   border-right-color: #D3D3D3;
 }
-
-#swmlvxnacn .gt_sourcenote {
+&#10;#fjfhrcvkri .gt_sourcenote {
   font-size: 10px;
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
-
-#swmlvxnacn .gt_left {
+&#10;#fjfhrcvkri .gt_left {
   text-align: left;
 }
-
-#swmlvxnacn .gt_center {
+&#10;#fjfhrcvkri .gt_center {
   text-align: center;
 }
-
-#swmlvxnacn .gt_right {
+&#10;#fjfhrcvkri .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
-
-#swmlvxnacn .gt_font_normal {
+&#10;#fjfhrcvkri .gt_font_normal {
   font-weight: normal;
 }
-
-#swmlvxnacn .gt_font_bold {
+&#10;#fjfhrcvkri .gt_font_bold {
   font-weight: bold;
 }
-
-#swmlvxnacn .gt_font_italic {
+&#10;#fjfhrcvkri .gt_font_italic {
   font-style: italic;
 }
-
-#swmlvxnacn .gt_super {
+&#10;#fjfhrcvkri .gt_super {
   font-size: 65%;
 }
-
-#swmlvxnacn .gt_footnote_marks {
-  font-style: italic;
-  font-weight: normal;
-  font-size: 65%;
+&#10;#fjfhrcvkri .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+&#10;#fjfhrcvkri .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+&#10;#fjfhrcvkri .gt_indent_1 {
+  text-indent: 5px;
+}
+&#10;#fjfhrcvkri .gt_indent_2 {
+  text-indent: 10px;
+}
+&#10;#fjfhrcvkri .gt_indent_3 {
+  text-indent: 15px;
+}
+&#10;#fjfhrcvkri .gt_indent_4 {
+  text-indent: 20px;
+}
+&#10;#fjfhrcvkri .gt_indent_5 {
+  text-indent: 25px;
 }
 </style>
-<table class="gt_table">
-  <thead class="gt_header">
-    <tr>
-      <th colspan="17" class="gt_heading gt_title gt_font_normal" style="font-size: 18px; text-align: left; font-weight: bold;"><strong>gt Table: MLB Table</strong></th>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="17" class="gt_heading gt_title gt_font_normal" style="font-size: 18px; text-align: left; font-weight: bold;"><strong>gt Table: MLB Table</strong></td>
     </tr>
-    <tr>
-      <th colspan="17" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style>Top 30 by fWAR</th>
+    <tr class="gt_heading">
+      <td colspan="17" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style>Top 30 by fWAR</td>
     </tr>
-  </thead>
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1"></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">Team</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">Salary</th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" style="font-size: 13px; text-align: center; font-weight: bold;">
+    <tr class="gt_col_headings gt_spanner_row">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id=""></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="Team">Team</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="Salary">Salary</th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" style="font-size: 13px; text-align: center; font-weight: bold;" scope="colgroup" id="Games">
         <span class="gt_column_spanner">Games</span>
       </th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">PA</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">HR</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">R</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">RBI</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">SB</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">BB%</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">K%</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">BABIP</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">AVG</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">wRC+</th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" style="font-size: 13px; text-align: center; font-weight: bold;">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="PA">PA</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="HR">HR</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="R">R</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="RBI">RBI</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="SB">SB</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="BB%">BB%</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="K%">K%</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="BABIP">BABIP</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="AVG">AVG</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="wRC+">wRC+</th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" style="font-size: 13px; text-align: center; font-weight: bold;" scope="colgroup" id="WAR">
         <span class="gt_column_spanner">WAR</span>
       </th>
     </tr>
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">2019</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">2021</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">2019</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;">2021</th>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="2019">2019</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="2021">2021</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="2019">2019</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-size: 13px; font-weight: bold; text-align: center;" scope="col" id="2021">2021</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
     <tr class="gt_group_heading_row">
-      <td colspan="17" class="gt_group_heading" style="font-size: 13px; font-weight: bold;">Mega Salary (Over $10MM)</td>
+      <th colspan="17" class="gt_group_heading" style="font-size: 13px; font-weight: bold;" scope="colgroup" id="Mega Salary (Over $10MM)">Mega Salary (Over $10MM)</th>
     </tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Trea Turner</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">---</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$13M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">122</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">148</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">646</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">28</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">107</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">77</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">32</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.3&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">17.0&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.362</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.328</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">142</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.6</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.9 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Bryce Harper</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">PHI</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$28M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">157</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">141</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">599</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">35</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">101</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">84</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">13</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">16.7&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">22.4&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.359</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.309</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">170</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.5</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.6 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Marcus Semien</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">TOR</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$18M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">162</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">162</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">724</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">45</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">115</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">102</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">15</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.1&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">20.2&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.276</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.265</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">131</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">7.6</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.6 <span style="color:red">&#9660;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Carlos Correa</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">HOU</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$12M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">148</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">640</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">26</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">104</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">92</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.7&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.1&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.308</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.279</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.8</td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Starling Marte</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">---</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$12M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">132</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">120</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">526</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">12</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">89</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">55</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">47</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.2&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.8&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.372</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.310</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.0</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.5 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Aaron Judge</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">NYY</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$10M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">148</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">633</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">39</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">89</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">98</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.8&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">25.0&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.332</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.287</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">148</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.5</td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Brandon Crawford</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">SFG</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$15M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">147</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">138</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">549</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">24</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">79</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">90</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">11</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">10.2&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">19.1&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.334</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.298</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">139</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.3</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.5 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Xander Bogaerts</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">BOS</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$20M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">155</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">144</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">603</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">23</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">90</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">79</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">10.3&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.7&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.333</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.295</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">130</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.8</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.2 <span style="color:red">&#9660;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Jose Altuve</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">HOU</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$29M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">124</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">146</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">678</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">31</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">117</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">83</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.7&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.4&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.280</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.278</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">130</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.5</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.2 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Paul Goldschmidt</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">STL</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$25M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">161</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">158</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">679</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">31</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">102</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">99</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">12</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.9&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">20.0&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.331</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.294</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">138</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.0</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.9 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Freddie Freeman</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">ATL</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$22M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">158</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">159</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">695</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">31</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">120</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">83</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">8</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">12.2&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.4&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.321</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.300</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">135</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.9</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.5 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">J.T. Realmuto</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">PHI</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$18M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">145</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">537</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">17</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">64</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">73</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">13</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.9&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">24.0&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.325</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.263</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">108</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.7</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.4 <span style="color:red">&#9660;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Manny Machado</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">SDP</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$34M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">153</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">640</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">28</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">92</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">106</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">12</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.8&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.9&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.290</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.278</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">122</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.2</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.4 <span style="color:green">&#9650;</span></td></tr>
+    <tr class="gt_row_group_first"><th id="stub_1_1" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Trea Turner</th>
+<td headers="Mega Salary (Over $10MM) stub_1_1 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">---</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$13M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">122</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">148</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">646</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">28</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">107</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">77</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">32</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.3%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">17.0%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.362</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.328</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">142</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.6</td>
+<td headers="Mega Salary (Over $10MM) stub_1_1 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.9 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_2" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Bryce Harper</th>
+<td headers="Mega Salary (Over $10MM) stub_1_2 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">PHI</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$28M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">157</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">141</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">599</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">35</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">101</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">84</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">13</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">16.7%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">22.4%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.359</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.309</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">170</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.5</td>
+<td headers="Mega Salary (Over $10MM) stub_1_2 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.6 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_3" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Marcus Semien</th>
+<td headers="Mega Salary (Over $10MM) stub_1_3 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">TOR</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$18M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">162</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">162</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">724</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">45</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">115</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">102</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">15</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.1%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">20.2%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.276</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.265</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">131</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">7.6</td>
+<td headers="Mega Salary (Over $10MM) stub_1_3 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.6 <span style="color:red">&#9660;</span></td></tr>
+    <tr><th id="stub_1_4" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Carlos Correa</th>
+<td headers="Mega Salary (Over $10MM) stub_1_4 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">HOU</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$12M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">148</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">640</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">26</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">104</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">92</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.7%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.1%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.308</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.279</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Mega Salary (Over $10MM) stub_1_4 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.8</td></tr>
+    <tr><th id="stub_1_5" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Starling Marte</th>
+<td headers="Mega Salary (Over $10MM) stub_1_5 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">---</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$12M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">132</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">120</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">526</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">12</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">89</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">55</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">47</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.2%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.8%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.372</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.310</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.0</td>
+<td headers="Mega Salary (Over $10MM) stub_1_5 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.5 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_6" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Aaron Judge</th>
+<td headers="Mega Salary (Over $10MM) stub_1_6 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">NYY</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$10M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">148</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">633</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">39</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">89</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">98</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.8%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">25.0%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.332</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.287</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">148</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Mega Salary (Over $10MM) stub_1_6 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.5</td></tr>
+    <tr><th id="stub_1_7" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Brandon Crawford</th>
+<td headers="Mega Salary (Over $10MM) stub_1_7 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">SFG</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$15M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">147</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">138</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">549</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">24</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">79</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">90</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">11</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">10.2%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">19.1%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.334</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.298</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">139</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.3</td>
+<td headers="Mega Salary (Over $10MM) stub_1_7 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.5 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_8" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Xander Bogaerts</th>
+<td headers="Mega Salary (Over $10MM) stub_1_8 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">BOS</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$20M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">155</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">144</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">603</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">23</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">90</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">79</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">10.3%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.7%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.333</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.295</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">130</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.8</td>
+<td headers="Mega Salary (Over $10MM) stub_1_8 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.2 <span style="color:red">&#9660;</span></td></tr>
+    <tr><th id="stub_1_9" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Jose Altuve</th>
+<td headers="Mega Salary (Over $10MM) stub_1_9 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">HOU</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$29M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">124</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">146</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">678</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">31</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">117</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">83</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.7%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.4%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.280</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.278</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">130</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.5</td>
+<td headers="Mega Salary (Over $10MM) stub_1_9 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.2 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_10" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Paul Goldschmidt</th>
+<td headers="Mega Salary (Over $10MM) stub_1_10 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">STL</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$25M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">161</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">158</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">679</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">31</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">102</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">99</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">12</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.9%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">20.0%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.331</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.294</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">138</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.0</td>
+<td headers="Mega Salary (Over $10MM) stub_1_10 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.9 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_11" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Freddie Freeman</th>
+<td headers="Mega Salary (Over $10MM) stub_1_11 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">ATL</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$22M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">158</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">159</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">695</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">31</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">120</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">83</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">8</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">12.2%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.4%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.321</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.300</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">135</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.9</td>
+<td headers="Mega Salary (Over $10MM) stub_1_11 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.5 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_12" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">J.T. Realmuto</th>
+<td headers="Mega Salary (Over $10MM) stub_1_12 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">PHI</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$18M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">145</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">537</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">17</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">64</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">73</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">13</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.9%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">24.0%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.325</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.263</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">108</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.7</td>
+<td headers="Mega Salary (Over $10MM) stub_1_12 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.4 <span style="color:red">&#9660;</span></td></tr>
+    <tr><th id="stub_1_13" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Manny Machado</th>
+<td headers="Mega Salary (Over $10MM) stub_1_13 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">SDP</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$34M</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">153</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">640</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">28</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">92</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">106</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">12</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.8%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.9%</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.290</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.278</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">122</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.2</td>
+<td headers="Mega Salary (Over $10MM) stub_1_13 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.4 <span style="color:green">&#9650;</span></td></tr>
     <tr class="gt_group_heading_row">
-      <td colspan="17" class="gt_group_heading" style="font-size: 13px; font-weight: bold;">Market-Value (3-$10MM)</td>
+      <th colspan="17" class="gt_group_heading" style="font-size: 13px; font-weight: bold;" scope="colgroup" id="Market-Value (3-$10MM)">Market-Value (3-$10MM)</th>
     </tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Juan Soto</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">WSN</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$8M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">150</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">151</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">654</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">29</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">111</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">95</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">9</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">22.2&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">14.2&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.332</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.313</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">163</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.9</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.6 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Jose Ramirez</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">CLE</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$9M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">129</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">152</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">636</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">36</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">111</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">103</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">27</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.3&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.7&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.256</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.266</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">137</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.6</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.3 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Matt Olson</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">OAK</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$5M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">127</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">673</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">39</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">101</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">111</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.1&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">16.8&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.269</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.271</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">146</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.9</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.0 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Max Muncy</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">LAD</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$9M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">141</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">144</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">592</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">36</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">95</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">94</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">2</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">14.0&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">20.3&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.257</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.249</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">140</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.7</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.9 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Rafael Devers</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">BOS</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$5M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">664</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">38</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">101</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">113</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.3&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">21.5&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.307</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.279</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.9</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.7 <span style="color:red">&#9660;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Yoan Moncada</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">CHW</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$7M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">132</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">144</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">616</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">14</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">74</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">61</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.6&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">25.5&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.350</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.263</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">122</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.6</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.5 <span style="color:red">&#9660;</span></td></tr>
+    <tr class="gt_row_group_first"><th id="stub_1_14" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Juan Soto</th>
+<td headers="Market-Value (3-$10MM) stub_1_14 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">WSN</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$8M</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">150</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">151</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">654</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">29</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">111</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">95</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">9</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">22.2%</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">14.2%</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.332</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.313</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">163</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.9</td>
+<td headers="Market-Value (3-$10MM) stub_1_14 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.6 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_15" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Jose Ramirez</th>
+<td headers="Market-Value (3-$10MM) stub_1_15 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">CLE</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$9M</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">129</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">152</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">636</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">36</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">111</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">103</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">27</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.3%</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.7%</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.256</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.266</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">137</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.6</td>
+<td headers="Market-Value (3-$10MM) stub_1_15 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.3 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_16" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Matt Olson</th>
+<td headers="Market-Value (3-$10MM) stub_1_16 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">OAK</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$5M</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">127</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">673</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">39</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">101</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">111</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.1%</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">16.8%</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.269</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.271</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">146</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.9</td>
+<td headers="Market-Value (3-$10MM) stub_1_16 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.0 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_17" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Max Muncy</th>
+<td headers="Market-Value (3-$10MM) stub_1_17 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">LAD</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$9M</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">141</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">144</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">592</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">36</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">95</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">94</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">2</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">14.0%</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">20.3%</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.257</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.249</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">140</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.7</td>
+<td headers="Market-Value (3-$10MM) stub_1_17 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.9 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_18" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Rafael Devers</th>
+<td headers="Market-Value (3-$10MM) stub_1_18 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">BOS</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$5M</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">664</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">38</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">101</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">113</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.3%</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">21.5%</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.307</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.279</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.9</td>
+<td headers="Market-Value (3-$10MM) stub_1_18 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.7 <span style="color:red">&#9660;</span></td></tr>
+    <tr><th id="stub_1_19" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Yoan Moncada</th>
+<td headers="Market-Value (3-$10MM) stub_1_19 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">CHW</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$7M</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">132</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">144</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">616</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">14</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">74</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">61</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.6%</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">25.5%</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.350</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.263</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">122</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.6</td>
+<td headers="Market-Value (3-$10MM) stub_1_19 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.5 <span style="color:red">&#9660;</span></td></tr>
     <tr class="gt_group_heading_row">
-      <td colspan="17" class="gt_group_heading" style="font-size: 13px; font-weight: bold;">Great Deal (1-$3MM)</td>
+      <th colspan="17" class="gt_group_heading" style="font-size: 13px; font-weight: bold;" scope="colgroup" id="Great Deal (1-$3MM)">Great Deal (1-$3MM)</th>
     </tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Fernando Tatis Jr.</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">SDP</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$2M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">130</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">546</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">42</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">99</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">97</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">25</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.4&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">28.0&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.324</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.282</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.1</td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Brandon Lowe</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">TBR</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$2M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">149</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">615</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">39</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">97</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">99</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">7</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.1&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">27.2&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.280</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.247</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">137</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.2</td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Shohei Ohtani</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">LAA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$3M</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">158</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">639</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">46</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">103</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">100</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">26</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.0&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">29.6&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.303</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.257</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">152</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.1</td></tr>
+    <tr class="gt_row_group_first"><th id="stub_1_20" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Fernando Tatis Jr.</th>
+<td headers="Great Deal (1-$3MM) stub_1_20 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">SDP</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$2M</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">130</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">546</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">42</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">99</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">97</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">25</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.4%</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">28.0%</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.324</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.282</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">156</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Great Deal (1-$3MM) stub_1_20 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.1</td></tr>
+    <tr><th id="stub_1_21" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Brandon Lowe</th>
+<td headers="Great Deal (1-$3MM) stub_1_21 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">TBR</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$2M</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">149</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">615</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">39</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">97</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">99</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">7</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.1%</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">27.2%</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.280</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.247</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">137</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Great Deal (1-$3MM) stub_1_21 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.2</td></tr>
+    <tr><th id="stub_1_22" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Shohei Ohtani</th>
+<td headers="Great Deal (1-$3MM) stub_1_22 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">LAA</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$3M</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">158</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">639</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">46</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">103</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">100</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">26</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.0%</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">29.6%</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.303</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.257</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">152</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Great Deal (1-$3MM) stub_1_22 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.1</td></tr>
     <tr class="gt_group_heading_row">
-      <td colspan="17" class="gt_group_heading" style="font-size: 13px; font-weight: bold;">Highway Robbery (&lt; $1MM)</td>
+      <th colspan="17" class="gt_group_heading" style="font-size: 13px; font-weight: bold;" scope="colgroup" id="Highway Robbery (&amp;lt; $1MM)">Highway Robbery (&lt; $1MM)</th>
     </tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Vladimir Guerrero Jr.</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">TOR</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$605K</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">123</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">161</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">698</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">48</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">123</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">111</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">12.3&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.8&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.313</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.311</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">166</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.4</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.7 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Bryan Reynolds</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">PIT</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$601K</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">159</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">646</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">24</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">93</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">90</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.6&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.4&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.345</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.302</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">142</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.2</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.5 <span style="color:green">&#9650;</span></td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Tyler O'Neill</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">STL</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$595K</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">138</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">537</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">34</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">89</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">80</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">15</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">7.1&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">31.3&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.366</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.286</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">145</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.4</td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Cedric Mullins II</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">BAL</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$577K</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">159</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">675</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">30</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">91</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">59</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">30</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.7&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.5&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.322</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.291</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">136</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.3</td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Bo Bichette</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">TOR</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$588K</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">159</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">690</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">29</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">121</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">102</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">25</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.8&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">19.9&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.339</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.298</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">122</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.9</td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Kyle Tucker</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">HOU</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$624K</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">140</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">567</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">30</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">83</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">92</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">14</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.3&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.9&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.304</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.294</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">147</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.8</td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Jake Cronenworth</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">SDP</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$585K</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">152</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">643</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">21</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">94</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">71</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.6&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">14.0&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.283</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.266</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">116</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.4</td></tr>
-    <tr><td class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Nicky Lopez</td>
-<td class="gt_row gt_left" style="font-size: 12px; text-align: center;">KCR</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">$598K</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">151</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">565</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">2</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">78</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">43</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">22</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.7&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.1&percnt;</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.347</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.300</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">106</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
-<td class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.4</td></tr>
+    <tr class="gt_row_group_first"><th id="stub_1_23" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Vladimir Guerrero Jr.</th>
+<td headers="Highway Robbery (< $1MM) stub_1_23 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">TOR</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$605K</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">123</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">161</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">698</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">48</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">123</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">111</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">12.3%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.8%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.313</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.311</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">166</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.4</td>
+<td headers="Highway Robbery (< $1MM) stub_1_23 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">6.7 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_24" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Bryan Reynolds</th>
+<td headers="Highway Robbery (< $1MM) stub_1_24 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">PIT</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$601K</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">134</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">159</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">646</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">24</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">93</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">90</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">11.6%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.4%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.345</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.302</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">142</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">3.2</td>
+<td headers="Highway Robbery (< $1MM) stub_1_24 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.5 <span style="color:green">&#9650;</span></td></tr>
+    <tr><th id="stub_1_25" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Tyler O'Neill</th>
+<td headers="Highway Robbery (< $1MM) stub_1_25 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">STL</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$595K</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">138</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">537</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">34</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">89</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">80</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">15</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">7.1%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">31.3%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.366</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.286</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">145</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_25 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.4</td></tr>
+    <tr><th id="stub_1_26" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Cedric Mullins II</th>
+<td headers="Highway Robbery (< $1MM) stub_1_26 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">BAL</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$577K</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">159</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">675</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">30</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">91</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">59</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">30</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.7%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">18.5%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.322</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.291</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">136</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_26 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.3</td></tr>
+    <tr><th id="stub_1_27" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Bo Bichette</th>
+<td headers="Highway Robbery (< $1MM) stub_1_27 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">TOR</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$588K</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">159</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">690</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">29</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">121</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">102</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">25</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">5.8%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">19.9%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.339</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.298</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">122</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_27 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.9</td></tr>
+    <tr><th id="stub_1_28" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Kyle Tucker</th>
+<td headers="Highway Robbery (< $1MM) stub_1_28 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">HOU</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$624K</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">140</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">567</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">30</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">83</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">92</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">14</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">9.3%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">15.9%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.304</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.294</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">147</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_28 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.8</td></tr>
+    <tr><th id="stub_1_29" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Jake Cronenworth</th>
+<td headers="Highway Robbery (< $1MM) stub_1_29 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">SDP</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$585K</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">152</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">643</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">21</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">94</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">71</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.6%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">14.0%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.283</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.266</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">116</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_29 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.4</td></tr>
+    <tr><th id="stub_1_30" scope="row" class="gt_row gt_left gt_stub" style="font-size: 12px; text-indent: 8px;">Nicky Lopez</th>
+<td headers="Highway Robbery (< $1MM) stub_1_30 Team" class="gt_row gt_left" style="font-size: 12px; text-align: center;">KCR</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 Salary" class="gt_row gt_right" style="font-size: 12px; text-align: center;">$598K</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 G19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 G21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">151</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 PA" class="gt_row gt_right" style="font-size: 12px; text-align: center;">565</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 HR" class="gt_row gt_right" style="font-size: 12px; text-align: center;">2</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 R" class="gt_row gt_right" style="font-size: 12px; text-align: center;">78</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 RBI" class="gt_row gt_right" style="font-size: 12px; text-align: center;">43</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 SB" class="gt_row gt_right" style="font-size: 12px; text-align: center;">22</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 BB%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">8.7%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 K%" class="gt_row gt_right" style="font-size: 12px; text-align: center;">13.1%</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 BABIP" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.347</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 AVG" class="gt_row gt_right" style="font-size: 12px; text-align: center;">0.300</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 wRC+" class="gt_row gt_right" style="font-size: 12px; text-align: center;">106</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 WAR19" class="gt_row gt_right" style="font-size: 12px; text-align: center;">NA</td>
+<td headers="Highway Robbery (< $1MM) stub_1_30 WAR21" class="gt_row gt_right" style="font-size: 12px; text-align: center;">4.4</td></tr>
   </tbody>
   <tfoot class="gt_sourcenotes">
     <tr>
       <td class="gt_sourcenote" colspan="17"><em>Source: FanGraphs</em></td>
     </tr>
   </tfoot>
-  
-</table>
+  &#10;</table>
 </div>
