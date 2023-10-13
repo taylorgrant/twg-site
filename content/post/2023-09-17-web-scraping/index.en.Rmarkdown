@@ -151,6 +151,16 @@ for (i in vct[!vct %in% which(is.na(df$playerName))]) {
 rbind(head(overall,6),tail(overall,6))
 ```
 
+## Getting the url on redirect
+
+At least for this specific use case that I had, this worked. If we scrape the TikTok trends data, all of the urls from the platform use a redirect. To capture it, you can use the following::
+
+```{r}
+# this is the given url
+link <- "https://www.tiktok.com/@mnm_pipi/video/7286489123030912286"
+# use httr
+httr::GET(link)$url
+```
 
 
 

@@ -102,14 +102,14 @@ html_table(all_tables)[[1]]  |> head()
 
 ```
 ## # A tibble: 6 × 7
-##   Model           Month  `Month LY` Change YTD     `YTD LY` `YTD Change`
-##   <chr>           <chr>  <chr>      <chr>  <chr>   <chr>    <chr>       
-## 1 Mazda 3         2,611  2,100      24.33  20,732  18,120   14.42       
-## 2 Toyota 4Runner  12,569 10,066     24.87  65,224  84,577   -22.88      
-## 3 Volvo 60-Series 944    536        76.12  6,005   5,070    18.44       
-## 4 Volvo 90-Series 120    99         21.21  1,494   1,320    13.18       
-## 5 Honda Accord    17,661 11,619     52.00  135,379 99,340   36.28       
-## 6 Subaru Ascent   4,860  5,638      -13.80 42,282  41,058   2.98
+##   Model        Month `Month LY` Change YTD    `YTD LY` `YTD Change`
+##   <chr>        <chr> <chr>      <chr>  <chr>  <chr>    <chr>       
+## 1 BMW 2-Series 1,045 518        101.74 7,323  9,181    -20.24      
+## 2 Mazda 3      2,632 1,860      41.51  23,364 19,980   16.94       
+## 3 BMW 3-Series 2,951 1,756      68.05  23,088 19,666   17.40       
+## 4 Chrysler 300 1,321 1,374      -3.86  11,159 11,756   -5.08       
+## 5 Nissan 370Z  114   28         307.14 1,309  85       1,440.00    
+## 6 BMW 4-Series 4,556 3,086      47.63  39,430 23,400   68.50
 ```
 
 ```r
@@ -119,14 +119,14 @@ html_table(all_tables)[[2]]  |> head()
 
 ```
 ## # A tibble: 6 × 5
-##   modelName     `Q2 2023` `Q2 2022` `Year To Date` `Year to Date Previous Year`
+##   modelName     `Q3 2023` `Q3 2022` `Year To Date` `Year to Date Previous Year`
 ##   <chr>         <chr>     <chr>     <chr>          <chr>                       
-## 1 Acura ILX     0         2,506     2              6,267                       
-## 2 Acura Integra 8,808     1,496     22,050         1,496                       
-## 3 Acura MDX     16,741    10,052    40,533         23,610                      
-## 4 Acura NSX     0         77        5              123                         
-## 5 Acura RDX     8,866     6,361     22,929         14,239                      
-## 6 Acura RLX     0         1         0              3
+## 1 Acura ILX     0         29        2              6,296                       
+## 2 Acura Integra 8,320     4,542     24,834         6,038                       
+## 3 Acura MDX     12,955    9,604     44,919         33,214                      
+## 4 Acura NSX     0         88        5              211                         
+## 5 Acura RDX     11,527    5,497     27,202         19,736                      
+## 6 Acura RLX     0         0         0              3
 ```
 
 Or you can copy the xpath from devtools for a specific table. Since I'm only getting one table here I use `html_element()` rather than the plural "elements." Were I to use `html_elements()` it would return a list.  
@@ -147,14 +147,14 @@ page |>
 
 ```
 ## # A tibble: 6 × 7
-##   Model           Month  `Month LY` Change YTD     `YTD LY` `YTD Change`
-##   <chr>           <chr>  <chr>      <chr>  <chr>   <chr>    <chr>       
-## 1 Mazda 3         2,611  2,100      24.33  20,732  18,120   14.42       
-## 2 Toyota 4Runner  12,569 10,066     24.87  65,224  84,577   -22.88      
-## 3 Volvo 60-Series 944    536        76.12  6,005   5,070    18.44       
-## 4 Volvo 90-Series 120    99         21.21  1,494   1,320    13.18       
-## 5 Honda Accord    17,661 11,619     52.00  135,379 99,340   36.28       
-## 6 Subaru Ascent   4,860  5,638      -13.80 42,282  41,058   2.98
+##   Model        Month `Month LY` Change YTD    `YTD LY` `YTD Change`
+##   <chr>        <chr> <chr>      <chr>  <chr>  <chr>    <chr>       
+## 1 BMW 2-Series 1,045 518        101.74 7,323  9,181    -20.24      
+## 2 Mazda 3      2,632 1,860      41.51  23,364 19,980   16.94       
+## 3 BMW 3-Series 2,951 1,756      68.05  23,088 19,666   17.40       
+## 4 Chrysler 300 1,321 1,374      -3.86  11,159 11,756   -5.08       
+## 5 Nissan 370Z  114   28         307.14 1,309  85       1,440.00    
+## 6 BMW 4-Series 4,556 3,086      47.63  39,430 23,400   68.50
 ```
 
 ## Relying on data loaded by javascript
@@ -209,14 +209,29 @@ rbind(head(overall,6),tail(overall,6))
 ##  4     4      0 Xander Schauffele United States     69.1 5,313                     6.37 77          
 ##  5     5      0 Viktor Hovland    Norway            69.1 6,065                    17.8  88          
 ##  6     6      0 Patrick Cantlay   United States     69.2 4,956                    25.7  72          
-##  7   179     -2 Andrew Landry     United States     72.6 4,794                    68.9  67          
-##  8   180     -4 Max McGreevy      United States     72.6 5,611                    54.3  78          
-##  9   181     -3 Nick Watney       United States     72.7 4,610                    41.6  64          
-## 10   182     -2 Ryan Brehm        United States     72.7 5,312                    67.2  74          
-## 11   183     -4 Michael Gligic    Canada            72.7 4,383                    54.7  61          
-## 12   184     -3 Brandon Matthews  United States     73.1 4,116                    49.7  57
+##  7   181     -2 Andrew Landry     United States     72.6 5,076                    75.2  71          
+##  8   182     -2 Max McGreevy      United States     72.7 5,754                    58.7  80          
+##  9   183     -1 Ryan Brehm        United States     72.7 5,455                    71.6  76          
+## 10   184     -1 Michael Gligic    Canada            72.7 4,666                    60.9  65          
+## 11   185     -4 Nick Watney       United States     72.8 4,758                    46.0  66          
+## 12   186     -2 Brandon Matthews  United States     73.2 4,262                    54.1  59
 ```
 
+## Getting the url on redirect
+
+At least for this specific use case that I had, this worked. If we scrape the TikTok trends data, all of the urls from the platform use a redirect. To capture it, you can use the following::
+
+
+```r
+# this is the given url
+link <- "https://www.tiktok.com/@mnm_pipi/video/7286489123030912286"
+# use httr
+httr::GET(link)$url
+```
+
+```
+## [1] "https://www.tiktok.com/@raycaralevy/video/7286489123030912286"
+```
 
 
 
