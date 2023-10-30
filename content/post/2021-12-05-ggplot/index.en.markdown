@@ -512,3 +512,39 @@ cnbc |>
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/boxplot-1.png" width="1104" style="display: block; margin: auto;" />
 
+## Adding linking colors to plot titles instead of a legend
+
+Using the [ggtext](https://wilkelab.org/ggtext/) package to edit the subtitle via `plot.subtitle = element_markdown()`
+
+```r
+library(ggplot2) # For plotting
+library(palmerpenguins) # For the example penguin dataset
+library(ggtext) # For HTML rendering of text to support colour
+                # Also for Markdown rendering of text
+
+ggplot(data = penguins, 
+       aes(x = flipper_length_mm, 
+           y = body_mass_g)) +
+  geom_point(aes(color = species, 
+                 shape = species),
+                 size = 2) +
+  scale_color_manual(values = c("#FF8C00","#9932CC","#008B8B")) +
+  labs(title = "Penguin flipper length versus body mass",
+       subtitle = "Penguin species
+       <span style='color:#FF8C00;'>*Pygoscelis adeliae*</span>, 
+       <span style='color:#9932CC;'>*Pygoscelis papua*</span> and 
+       <span style='color:#008B8B;'>*Pygoscelis antarcticus*</span>",
+       x = "Flipper Length (mm)",
+       y = "Body Mass (g)")  +
+  theme_twg() +
+  theme(panel.grid = element_blank(),
+        plot.subtitle = element_markdown(),
+        legend.position = "none")
+```
+
+```
+## Warning: Removed 2 rows containing missing values (`geom_point()`).
+```
+
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/subtitle-color-1.png" width="1104" style="display: block; margin: auto;" />
+
