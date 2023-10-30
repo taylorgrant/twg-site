@@ -546,7 +546,7 @@ cnbc |>
 ## Adding linking colors to plot titles instead of a legend
 
 Using the [ggtext](https://wilkelab.org/ggtext/) package to edit the subtitle via `plot.subtitle = element_markdown()`
-```{r, subtitle-color}
+```{r, subtitle-color, warning = FALSE}
 library(ggplot2) # For plotting
 library(palmerpenguins) # For the example penguin dataset
 library(ggtext) # For HTML rendering of text to support colour

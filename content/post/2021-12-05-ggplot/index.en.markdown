@@ -542,9 +542,5 @@ ggplot(data = penguins,
         legend.position = "none")
 ```
 
-```
-## Warning: Removed 2 rows containing missing values (`geom_point()`).
-```
-
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/subtitle-color-1.png" width="1104" style="display: block; margin: auto;" />
 
