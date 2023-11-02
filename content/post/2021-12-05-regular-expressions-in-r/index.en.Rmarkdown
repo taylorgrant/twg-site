@@ -1,7 +1,7 @@
 ---
 title: Regular Expressions in R
 author: twg
-date: '2023-04-24'
+date: '2023-11-02'
 categories:
   - regex
   - strings
@@ -212,12 +212,39 @@ string <- "i was buffereing but then buffered and buffering on the bluff"
 str_replace_all(string, "buffer[a-z]+", "buffer")
 ```
 
+## Iteratively replacing text in a string using a key 
+
+```{r}
+sample_texts <- tibble(text = c("blah-blah-blah-value1_value1-value2_value2",
+                                "blah _value1-value2"))
+
+key <- tibble(
+  old = c("-value1", "-value2"),
+  new = c("_value1", "_value2")
+)
+
+sample_texts |> 
+  mutate(text = stringi::stri_replace_all_fixed(text, 
+                                                pattern = key$old, 
+                                                replacement = key$new, 
+                                                vectorize_all=FALSE))
+```
+
 ## Splitting words on space or other character
 
 ```{r}
 string <- c("apple: banana: orange: kiwi")
 str_split(string, boundary('word'))
 ```
+
+## Splitting a string and keeping the delimiter
+ 
+Using the `separate()` function seems to work well here
+```{r}
+tmp <- tibble(string = "abc-def-ghi-jkl-mno")
+tmp |> separate(string, c("part1", "part2"), "(?=jkl)")
+```
+
 
 ## Extracting specific version of a word
 

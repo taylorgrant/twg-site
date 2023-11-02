@@ -1,7 +1,7 @@
 ---
 title: Regular Expressions in R
 author: twg
-date: '2023-04-24'
+date: '2023-11-02'
 categories:
   - regex
   - strings
@@ -334,6 +334,33 @@ str_replace_all(string, "buffer[a-z]+", "buffer")
 ## [1] "i was buffer but then buffer and buffer on the bluff"
 ```
 
+## Iteratively replacing text in a string using a key 
+
+
+```r
+sample_texts <- tibble(text = c("blah-blah-blah-value1_value1-value2_value2",
+                                "blah _value1-value2"))
+
+key <- tibble(
+  old = c("-value1", "-value2"),
+  new = c("_value1", "_value2")
+)
+
+sample_texts |> 
+  mutate(text = stringi::stri_replace_all_fixed(text, 
+                                                pattern = key$old, 
+                                                replacement = key$new, 
+                                                vectorize_all=FALSE))
+```
+
+```
+## # A tibble: 2 × 1
+##   text                                      
+##   <chr>                                     
+## 1 blah-blah-blah_value1_value1_value2_value2
+## 2 blah _value1_value2
+```
+
 ## Splitting words on space or other character
 
 
@@ -346,6 +373,23 @@ str_split(string, boundary('word'))
 ## [[1]]
 ## [1] "apple"  "banana" "orange" "kiwi"
 ```
+
+## Splitting a string and keeping the delimiter
+ 
+Using the `separate()` function seems to work well here
+
+```r
+tmp <- tibble(string = "abc-def-ghi-jkl-mno")
+tmp |> separate(string, c("part1", "part2"), "(?=jkl)")
+```
+
+```
+## # A tibble: 1 × 2
+##   part1        part2  
+##   <chr>        <chr>  
+## 1 abc-def-ghi- jkl-mno
+```
+
 
 ## Extracting specific version of a word
 
