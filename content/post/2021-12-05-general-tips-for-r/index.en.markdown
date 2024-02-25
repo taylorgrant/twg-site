@@ -1,22 +1,19 @@
 ---
 title: General Tips for R
 author: twg
-date: '2021-12-05'
-slug: general-tips-for-r
+date: '2024-02-24'
 categories:
   - R
 tags:
   - R
-subtitle: ''
-summary: 'Tips and Tricks for R and RStudio'
-authors: []
+slug: general-tips-for-r
+summary: Tips and Tricks for R and RStudio
 lastmod: '2021-12-05T22:08:17-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 
@@ -215,40 +212,39 @@ fns
 ## [13] "get_artist_albums"               "get_artist_audio_features"      
 ## [15] "get_artist_top_tracks"           "get_artists"                    
 ## [17] "get_categories"                  "get_category"                   
-## [19] "get_category_playlists"          "get_discography"                
-## [21] "get_featured_playlists"          "get_genre_artists"              
-## [23] "get_label_artists"               "get_my_current_playback"        
-## [25] "get_my_currently_playing"        "get_my_devices"                 
-## [27] "get_my_followed_artists"         "get_my_playlists"               
-## [29] "get_my_profile"                  "get_my_recently_played"         
-## [31] "get_my_saved_albums"             "get_my_saved_tracks"            
-## [33] "get_my_top_artists_or_tracks"    "get_new_releases"               
-## [35] "get_playlist"                    "get_playlist_audio_features"    
-## [37] "get_playlist_cover_image"        "get_playlist_tracks"            
-## [39] "get_recommendations"             "get_recommendations_all"        
-## [41] "get_related_artists"             "get_show"                       
-## [43] "get_show_episodes"               "get_shows"                      
-## [45] "get_spotify_access_token"        "get_spotify_authorization_code" 
-## [47] "get_track"                       "get_track_audio_analysis"       
-## [49] "get_track_audio_features"        "get_tracks"                     
-## [51] "get_user_audio_features"         "get_user_playlists"             
-## [53] "get_user_profile"                "is_uri"                         
-## [55] "pause_my_playback"               "print.playlist"                 
-## [57] "query_playlist"                  "remove_tracks_from_playlist"    
-## [59] "scopes"                          "search_spotify"                 
-## [61] "seek_to_position"                "set_my_repeat_mode"             
-## [63] "set_my_volume"                   "skip_my_playback"               
-## [65] "skip_my_playback_previous"       "start_my_playback"              
-## [67] "tidy"                            "tidy.playlist"                  
-## [69] "toggle_my_shuffle"               "transfer_my_playback"           
-## [71] "unfollow_playlist"               "validate_country"               
-## [73] "validate_include_meta_info"      "validate_limit"                 
-## [75] "validate_locale"                 "validate_market"                
-## [77] "validate_offset"                 "validate_parameters"            
-## [79] "validate_position_ms"            "validate_state"                 
-## [81] "validate_time_range"             "validate_type_artist_or_user"   
-## [83] "validate_type_artists_or_tracks" "validate_volume_percent"        
-## [85] "verify_result"                  
+## [19] "get_category_playlists"          "get_featured_playlists"         
+## [21] "get_genre_artists"               "get_label_artists"              
+## [23] "get_my_current_playback"         "get_my_currently_playing"       
+## [25] "get_my_devices"                  "get_my_followed_artists"        
+## [27] "get_my_playlists"                "get_my_profile"                 
+## [29] "get_my_recently_played"          "get_my_saved_albums"            
+## [31] "get_my_saved_tracks"             "get_my_top_artists_or_tracks"   
+## [33] "get_new_releases"                "get_playlist"                   
+## [35] "get_playlist_audio_features"     "get_playlist_cover_image"       
+## [37] "get_playlist_tracks"             "get_recommendations"            
+## [39] "get_recommendations_all"         "get_related_artists"            
+## [41] "get_show"                        "get_show_episodes"              
+## [43] "get_shows"                       "get_spotify_access_token"       
+## [45] "get_spotify_authorization_code"  "get_track"                      
+## [47] "get_track_audio_analysis"        "get_track_audio_features"       
+## [49] "get_tracks"                      "get_user_audio_features"        
+## [51] "get_user_playlists"              "get_user_profile"               
+## [53] "is_uri"                          "pause_my_playback"              
+## [55] "print.playlist"                  "query_playlist"                 
+## [57] "remove_tracks_from_playlist"     "scopes"                         
+## [59] "search_spotify"                  "seek_to_position"               
+## [61] "set_my_repeat_mode"              "set_my_volume"                  
+## [63] "skip_my_playback"                "skip_my_playback_previous"      
+## [65] "start_my_playback"               "tidy"                           
+## [67] "tidy.playlist"                   "toggle_my_shuffle"              
+## [69] "transfer_my_playback"            "unfollow_playlist"              
+## [71] "validate_country"                "validate_include_meta_info"     
+## [73] "validate_limit"                  "validate_locale"                
+## [75] "validate_market"                 "validate_offset"                
+## [77] "validate_parameters"             "validate_position_ms"           
+## [79] "validate_state"                  "validate_time_range"            
+## [81] "validate_type_artist_or_user"    "validate_type_artists_or_tracks"
+## [83] "validate_volume_percent"         "verify_result"                  
 ## attr(,"envir")
 ## <environment: namespace:spotifyr>
 ## attr(,"mode")
@@ -300,7 +296,7 @@ lapply(mget(nm), dim)
 ## [1] 87 14
 ## 
 ## $storms
-## [1] 11859    13
+## [1] 19537    13
 ```
 
 The `vcdExtra` package actually does all of the above very nicely. 
@@ -316,7 +312,7 @@ vcdExtra::datasets("dplyr")
 ## 2 band_instruments2 data.frame      3x2     Band membership
 ## 3      band_members data.frame      3x2     Band membership
 ## 4          starwars data.frame    87x14 Starwars characters
-## 5            storms data.frame 11859x13   Storm tracks data
+## 5            storms data.frame 19537x13   Storm tracks data
 ```
 
 ## Loading a dataset from a package without loading package itself
@@ -327,6 +323,19 @@ I want a dataset from a package, but loading that package sometimes interferes w
 ```r
 data(Howell1, package = "rethinking")
 ```
+
+## Searching for functions within a package
+
+The `utils` package comes to the rescue. It searches all packages that have been installed for any function you provide. This even seems to find functions that are directly loaded by the package, which is really helpful 
+
+
+```r
+utils::getAnywhere("FUNCTION_NAME")
+
+# if more than one function by the name is found, it returns multiple; then just subset by location
+utils::getAnywhere("FUNCTION_NAME")[2]
+```
+
 
 ## Loading all functions within a folder
 

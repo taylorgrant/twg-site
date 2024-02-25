@@ -1,22 +1,19 @@
 ---
 title: General Tips for R
 author: twg
-date: '2021-12-05'
-slug: general-tips-for-r
+date: '2024-02-24'
 categories:
   - R
 tags:
   - R
-subtitle: ''
-summary: 'Tips and Tricks for R and RStudio'
-authors: []
+slug: general-tips-for-r
+summary: Tips and Tricks for R and RStudio
 lastmod: '2021-12-05T22:08:17-08:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 ```{r setup, include=FALSE}
@@ -189,6 +186,20 @@ I want a dataset from a package, but loading that package sometimes interferes w
 ```{r, eval = FALSE}
 data(Howell1, package = "rethinking")
 ```
+
+## Searching for functions within a package
+
+The `utils` package comes to the rescue. It searches all packages that have been installed for any function you provide. This even seems to find functions that are directly loaded by the package, which is really helpful 
+
+```{r, eval = FALSE}
+
+utils::getAnywhere("FUNCTION_NAME")
+
+# if more than one function by the name is found, it returns multiple; then just subset by location
+utils::getAnywhere("FUNCTION_NAME")[2]
+
+```
+
 
 ## Loading all functions within a folder
 
