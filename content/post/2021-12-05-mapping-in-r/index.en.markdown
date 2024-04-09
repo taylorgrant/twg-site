@@ -1,26 +1,22 @@
 ---
 title: Mapping in R
 author: twg
-date: '2021-12-05'
-slug: mapping-in-r
+date: '2024-04-08'
 categories:
-  - mapping
   - DataViz
   - ggplot
+  - mapping
 tags:
-  - mapping
   - DataViz
   - ggplot
-subtitle: ''
-summary: 'Using ggplot to create nice maps'
-authors: []
-lastmod: '2021-12-05T22:06:29-08:00'
+  - mapping
+slug: mapping-in-r
+summary: Using ggplot to create nice maps
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 
@@ -94,6 +90,13 @@ ggplot(subset(fred$dt2, GEO_Name != "DC"),
        title = "The coasts have gotten more expensive",
        caption = "Freddie Mac House Price Index by State,\ndeflated by US BLS, Consumer Price Index",
        fill = "Real House Price Growth\nSince Jan 1975")  
+```
+
+```
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
 ```
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/state_level-1.png" width="1104" style="display: block; margin: auto;" />
@@ -251,73 +254,86 @@ ggplot(migration, aes(x=year, y = net, ymin = 0, ymax = net)) +
        y = "", x = "")
 ```
 
+```
+## Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
+## ℹ Please use the `linewidth` argument instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
+```
+
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/migration_map-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Hexbins
 
-Another fun way of mapping data is with hexbins. To do this we first need to get get some geojson files, which can be found [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). 
+Another fun way of mapping data is with hexbins. The old way of doing this no longer works since it relied on `rgdal` and `rgeos`, both of which were sunsetted in 2023. 
 
-After cleaning up the data, we'll pull in some random data about the average alcohol consumption for each state. 
+
+Originally, we were getting the hexbin data from [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). Now we'll pull from another github page in the code below. 
 
 
 ```r
-pacman::p_load(rgdal, rgeos, geojsonio)
-# download the hexbin data from here https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map
-# map data
-us <- geojsonio::geojson_read(here("static", "data", "us_states_hexgrid.geojson"), what = "sp")
-# reformat a bit
-us@data = us@data %>% 
-  mutate(google_name = gsub(" \\(United States\\)", "", google_name))
-# fortify the data (put into a data frame)
-library(broom)
-us_fortified <- tidy(us, region = "google_name")
+pacman::p_load(tidyverse, here, sf)
 
-# calculate centroid of each hexagon to add the label
-centers <- cbind.data.frame(data.frame(gCentroid(us, byid = TRUE), id = us@data$iso3166_2))
+# download hexbin map from github
+# https://github.com/donmeltz/US-States---Hexbins
+# map_path <- "https://raw.githubusercontent.com/donmeltz/US-States---Hexbins/master/GeoJSON/US_HexBinStates_EPSG4326.geojson"
+# download.file(map_path, here("hexbinstate.geojson"))
 
-# get state abbs 
-abbs <- tibble(abb = state.abb, name = state.name)
+# read as sf map of hexbin
+sf_state <- read_sf(here("static","data","hexbinstate.geojson")) |>  
+    set_names(str_to_lower) |>  
+    mutate(region = str_to_lower(name))
+    
+# find centroid
+centers <- st_centroid(sf_state) |> 
+    st_coordinates() |>  
+    as_tibble() |>  
+    set_names(str_to_lower)
+```
 
-# get some random data
-pacman::p_load(rvest)
+```
+## Warning: st_centroid assumes attributes are constant over geometries
+```
 
-# scrape a site for data 
-url <- "http://worldpopulationreview.com/states/alcohol-consumption-by-state/"
-drink <- url %>%
-  read_html() %>%
-  html_nodes(xpath = '//*[@id="dataTable"]/div[1]/div/div/div/div/div[2]/table') %>%
-  html_table(header = TRUE) %>% 
-  flatten_df() %>% 
-  janitor::clean_names()
+```r
+df_center <- tibble(abbr = sf_state$code) |>  
+    bind_cols(centers)
 
-us_fortified <- us_fortified %>% 
-  left_join(drink, by = c("id" = "state")) %>%
-  left_join(abbs, by = c("id" = "name")) %>% 
-  mutate(abb = ifelse(is.na(abb), "DC", abb))
 
-centers <- centers %>% 
-  left_join(us_fortified, by = c("id" = "abb")) %>% 
-  distinct(id, .keep_all = TRUE)
+# data to diplay
+# default dataset by state
 
-# plot 
-ggplot() + 
-  geom_polygon(data = us_fortified, aes(fill = alcohol_consumption_gallons,
-                                        x = long, y = lat, group = group)) +
-  geom_text(data=centers, aes(label=id, x=x, y=y), color="white", size=3) +
-  viridis::scale_fill_viridis(option = "E", na.value="#7f7f7f", trans = "log",
-                              breaks = c(1,2,3,4),
-                              labels = c("1","2","3","4"),
-                              name = "Gallons/person") +
-  coord_map() + 
-  theme_twg(grid = FALSE) + 
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank()) + 
-  labs(x = "", y = "",
-       title = "Alcohol Consumption by State per Capita, 2021",
-       caption = "Source: World Population Review")
+state_dict <- tibble(state = state.name, abb = state.abb)
+arrests <- USArrests |> 
+    rownames_to_column("state") |>  
+    as_tibble() |>  
+    set_names(str_to_lower) 
+
+df_state <- state_dict |> 
+    inner_join(arrests, by = "state") 
+
+# draw map
+dfa <- df_state |>  
+    mutate(region = str_to_lower(state)) |>  
+    right_join(sf_state, by = "region")
+
+# with labels
+dfa |>  
+  ggplot() +
+  geom_sf(aes(fill = urbanpop, geometry = geometry)) + 
+  geom_text(data = df_center, aes(x, y, label = abbr), color = "white") +
+  scale_fill_viridis_c(direction = -1) + 
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank())
 ```
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/hexbin-1.png" width="1104" style="display: block; margin: auto;" />
+
+
+ 
+
+
 
 ## Statebins
 

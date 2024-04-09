@@ -1,30 +1,26 @@
 ---
 title: Mapping in R
 author: twg
-date: '2021-12-05'
-slug: mapping-in-r
+date: '2024-04-08'
 categories:
-  - mapping
   - DataViz
   - ggplot
+  - mapping
 tags:
-  - mapping
   - DataViz
   - ggplot
-subtitle: ''
-summary: 'Using ggplot to create nice maps'
-authors: []
-lastmod: '2021-12-05T22:06:29-08:00'
+  - mapping
+slug: mapping-in-r
+summary: Using ggplot to create nice maps
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 ```{r, setup, include = FALSE}
-pacman::p_load(tidyverse, here, janitor, rvest, knitr, showtext, urbnmapr, httr)
+pacman::p_load(tidyverse, here, janitor, rvest, knitr, showtext, urbnmapr, httr, mapproj)
 
 font_add_google("Raleway", "Raleway")
 showtext_auto()
@@ -32,6 +28,7 @@ showtext_auto()
 options("width" = 110)
 source(here::here("R", "theme_twg.R"))
 
+data(counties)
 fred <- readRDS(here("static", "data", "freddie.rds"))
 ed <- readRDS(here("static", "data", "education.rds"))
 ```
@@ -263,11 +260,66 @@ ggplot(migration, aes(x=year, y = net, ymin = 0, ymax = net)) +
 
 ## Hexbins
 
-Another fun way of mapping data is with hexbins. To do this we first need to get get some geojson files, which can be found [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). 
+Another fun way of mapping data is with hexbins. The old way of doing this no longer works since it relied on `rgdal` and `rgeos`, both of which were sunsetted in 2023. 
 
-After cleaning up the data, we'll pull in some random data about the average alcohol consumption for each state. 
+
+Originally, we were getting the hexbin data from [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). Now we'll pull from another github page in the code below. 
 
 ```{r, hexbin}
+pacman::p_load(tidyverse, here, sf)
+
+# download hexbin map from github
+# https://github.com/donmeltz/US-States---Hexbins
+# map_path <- "https://raw.githubusercontent.com/donmeltz/US-States---Hexbins/master/GeoJSON/US_HexBinStates_EPSG4326.geojson"
+# download.file(map_path, here("hexbinstate.geojson"))
+
+# read as sf map of hexbin
+sf_state <- read_sf(here("static","data","hexbinstate.geojson")) |>  
+    set_names(str_to_lower) |>  
+    mutate(region = str_to_lower(name))
+    
+# find centroid
+centers <- st_centroid(sf_state) |> 
+    st_coordinates() |>  
+    as_tibble() |>  
+    set_names(str_to_lower)
+
+df_center <- tibble(abbr = sf_state$code) |>  
+    bind_cols(centers)
+
+
+# data to diplay
+# default dataset by state
+
+state_dict <- tibble(state = state.name, abb = state.abb)
+arrests <- USArrests |> 
+    rownames_to_column("state") |>  
+    as_tibble() |>  
+    set_names(str_to_lower) 
+
+df_state <- state_dict |> 
+    inner_join(arrests, by = "state") 
+
+# draw map
+dfa <- df_state |>  
+    mutate(region = str_to_lower(state)) |>  
+    right_join(sf_state, by = "region")
+
+# with labels
+dfa |>  
+  ggplot() +
+  geom_sf(aes(fill = urbanpop, geometry = geometry)) + 
+  geom_text(data = df_center, aes(x, y, label = abbr), color = "white") +
+  scale_fill_viridis_c(direction = -1) + 
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank())
+```
+
+
+ 
+
+```{r, hexbin2, eval = FALSE, echo = FALSE}
 pacman::p_load(rgdal, rgeos, geojsonio)
 # download the hexbin data from here https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map
 # map data
