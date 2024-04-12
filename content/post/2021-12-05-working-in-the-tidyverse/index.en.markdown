@@ -117,10 +117,10 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 o        99    81 p    
-## 2 y        68    92 b    
-## 3 f        22    68 f    
-## 4 a        52    15 m
+## 1 o        51    32 a    
+## 2 u        61    67 y    
+## 3 v        48     4 h    
+## 4 f        38    58 n
 ```
 
 ## Using map to create named lists
@@ -166,10 +166,10 @@ df %>%
 ## # A tibble: 4 × 4
 ##   ma_1   ma_2  ma_3 ma_4 
 ##   <chr> <int> <int> <chr>
-## 1 c        61    95 s    
-## 2 i        22    92 f    
-## 3 d        27    40 m    
-## 4 w        75    60 q
+## 1 t        72    88 t    
+## 2 y        77    92 e    
+## 3 l        35    91 d    
+## 4 q        68    26 k
 ```
 
 ## piping and dplyr verbs with lists and purrr 
@@ -324,11 +324,11 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 y          544049 c           34233
-## 2 g          280276 w           39746
-## 3 v          360863 a           44029
-## 4 h          103718 l            7239
-## 5 s          589545 k            7679
+## 1 c          500667 r           18493
+## 2 v          484425 s           39526
+## 3 z           67023 l           36516
+## 4 g          404841 p           53658
+## 5 f          487789 w           13608
 ```
 
 But we can also use the `intersect()` function to create an AND statement
@@ -355,7 +355,7 @@ tmp %>%
 ## # A tibble: 1 × 6
 ##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
 ##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
-## 1 1612202 644880.8----> 170900       68360 212280       84912
+## 1 1137369 454947.6----> 104305       41722 135048      54019.
 ```
 
 ## Piping into a t.test
@@ -372,13 +372,13 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 12.601, df = 198, p-value < 2.2e-16
+## t = 14.251, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##   8.040443 11.023895
+##   8.823405 11.657487
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            60.11495            50.58278
+##            59.92855            49.68810
 ```
 
 ## Piping into a cor.test
@@ -515,6 +515,62 @@ data %>%
 ## 4 Q4-13
 ## 5 Q1-14
 ## 6 Q2-14
+```
+
+## Group indices
+
+Assume we have a tibble like so
+
+```r
+tibble(letter = rep(letters[1:2], each = 6),
+       state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
+                 rep(c(state.abb[c(25,38,43)]), each = 2)))
+```
+
+```
+## # A tibble: 12 × 2
+##    letter state
+##    <chr>  <chr>
+##  1 a      AL   
+##  2 a      AL   
+##  3 a      AR   
+##  4 a      AR   
+##  5 a      CA   
+##  6 a      CA   
+##  7 b      MO   
+##  8 b      MO   
+##  9 b      PA   
+## 10 b      PA   
+## 11 b      TX   
+## 12 b      TX
+```
+
+and we want to create a group index for each letter. A simple way of doing this is to use factor conversion. 
+
+
+```r
+tibble(letter = rep(letters[1:2], each = 6),
+       state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
+                 rep(c(state.abb[c(25,38,43)]), each = 2))) |> 
+  mutate(id = as.integer(as.factor(letter)))
+```
+
+```
+## # A tibble: 12 × 3
+##    letter state    id
+##    <chr>  <chr> <int>
+##  1 a      AL        1
+##  2 a      AL        1
+##  3 a      AR        1
+##  4 a      AR        1
+##  5 a      CA        1
+##  6 a      CA        1
+##  7 b      MO        2
+##  8 b      MO        2
+##  9 b      PA        2
+## 10 b      PA        2
+## 11 b      TX        2
+## 12 b      TX        2
 ```
 
 ## Group indices within nested groups 

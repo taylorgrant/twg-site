@@ -315,6 +315,24 @@ data %>%
   head()
 ```
 
+## Group indices
+
+Assume we have a tibble like so
+```{r}
+tibble(letter = rep(letters[1:2], each = 6),
+       state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
+                 rep(c(state.abb[c(25,38,43)]), each = 2)))
+```
+
+and we want to create a group index for each letter. A simple way of doing this is to use factor conversion. 
+
+```{r}
+tibble(letter = rep(letters[1:2], each = 6),
+       state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
+                 rep(c(state.abb[c(25,38,43)]), each = 2))) |> 
+  mutate(id = as.integer(as.factor(letter)))
+```
+
 ## Group indices within nested groups 
 
 Assume we have a data set with a nested group structures like so. 
