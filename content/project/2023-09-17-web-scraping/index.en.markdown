@@ -389,3 +389,256 @@ And when the data is loaded, it looks like this
 ## 6 Please build artificial, noiseless, space- and energy-saving muscles int… 2023-08-25         NA @gk... Tesl…
 ```
 
+## Scraping TikTok
+
+Code below can be used to scrape three different aspects of TikTok data - Profile data, Post data, Comments and comment data.  
+#### Profile data 
+
+The first thing we'll scrape is the Profile data, which is found in a JavaScript `script` tag. The data is pretty comprehensive and is returned in a JSON format. A function to pull the data is below. 
+
+
+```r
+get_tt_user <- function(handle) {
+  pacman::p_load(tidyverse)
+  handle <- sub("^@", "", handle) # drop @ if it's there
+  link <- glue::glue("https://www.tiktok.com/@{handle}?lang=en")
+
+  # setting headers
+  headers = c(
+    `Accept` = '*/*',
+    `Accept-Language` = 'en-US,en;q=0.9',
+    `Connection` = 'keep-alive',
+    `Content-type` = 'application/x-www-form-urlencoded',
+    `DNT` = '1',
+    `Referer` = "https://www.google.com/",
+    `Sec-Fetch-Dest` = 'empty',
+    `Sec-Fetch-Mode` = 'cors',
+    `Sec-Fetch-Site` = 'same-origin',
+    `User-Agent` = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+    `cache-control` = 'no-cache',
+    `pragma` = 'no-cache',
+    `sec-ch-ua` = '"Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"',
+    `sec-ch-ua-mobile` = '?0',
+    `sec-ch-ua-platform` = '"macOS"'
+  )
+
+  # GET request
+  res <- httr::GET(link, httr::add_headers(.headers = headers))
+  if (res$status_code != 200) {
+    stop(paste("Error: Received status code", res$status_code))
+  }
+
+  tmpout <- httr::content(res) |>
+    rvest::html_elements("script#__UNIVERSAL_DATA_FOR_REHYDRATION__") |>
+    rvest::html_text() |>
+    jsonlite::fromJSON()
+
+  out <- tmpout$`__DEFAULT_SCOPE__`$`webapp.user-detail`$userInfo
+
+  # build out a table of user data
+  tibble::tibble(name = out$user$nickname,
+         handle = out$user$uniqueId,
+         signature = out$user$signature,
+         verified = out$user$verified,
+         biolink = out$user$bioLink$link,
+         region = out$user$region,
+         followers = out$stats$followerCount,
+         following = out$stats$followingCount,
+         hearts = out$stats$heartCount,
+         videos = out$stats$videoCount,
+         diggs = out$stats$diggCount,
+         friends = out$stats$friendCount,
+         date_pulled = Sys.Date())
+}
+```
+
+Let's run it. 
+
+
+```r
+adre <- get_tt_user("addisonre")
+adre |> 
+  knitr::kable()
+```
+
+
+
+|name        |handle    |signature |verified |biolink                 |region | followers| following|  hearts| videos| diggs| friends|date_pulled |
+|:-----------|:---------|:---------|:--------|:-----------------------|:------|---------:|---------:|-------:|------:|-----:|-------:|:-----------|
+|Addison Rae |addisonre |          |TRUE     |addisonraefragrance.com |US     |  88800000|        58| 1.5e+09|   1781|     0|      18|2024-05-18  |
+
+#### Post data
+
+Similar to profile data, post-level data can be found in a hidden `script`. The function to pull post level data is below. 
+
+
+```r
+get_tt_posts <- function(link){
+  # setting headers
+  headers = c(
+    `Accept` = '*/*',
+    `Accept-Language` = 'en-US,en;q=0.9',
+    `Connection` = 'keep-alive',
+    `Content-type` = 'application/x-www-form-urlencoded',
+    `DNT` = '1',
+    `Referer` = "https://www.google.com/",
+    `Sec-Fetch-Dest` = 'empty',
+    `Sec-Fetch-Mode` = 'cors',
+    `Sec-Fetch-Site` = 'same-origin',
+    `User-Agent` = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+    `cache-control` = 'no-cache',
+    `pragma` = 'no-cache',
+    `sec-ch-ua` = '"Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"',
+    `sec-ch-ua-mobile` = '?0',
+    `sec-ch-ua-platform` = '"macOS"'
+  )
+  
+  # GET request
+  res <- httr::GET(link, httr::add_headers(.headers = headers))
+  if (res$status_code != 200) {
+    stop(paste("Error: Received status code", res$status_code))
+  }
+  # content and pull script
+  tmpout <- httr::content(res) |>
+    rvest::html_elements("script#__UNIVERSAL_DATA_FOR_REHYDRATION__") |>
+    rvest::html_text() |>
+    jsonlite::fromJSON()
+  
+  out <- tmpout$`__DEFAULT_SCOPE__`$`webapp.video-detail`$itemInfo$itemStruct
+  # build out a table of user data
+  tibble::tibble(id = out$id, 
+                 post_text = out$desc,
+                 created_time = out$createTime,
+                 duration = out$video$duration,
+                 author_id = out$author$id,
+                 author_uniqueID = out$author$uniqueId,
+                 author_nickname = out$author$nickname,
+                 author_signature = out$author$signature,
+                 author_verified = out$author$verified,
+                 like_count = out$stats$diggCount,
+                 share_count = out$stats$shareCount,
+                 comment_count = out$stats$commentCount,
+                 play_count = out$stats$playCount,
+                 collect_count = out$stats$collectCount,
+                 diversification_labels = paste(out$diversificationLabels, collapse = ", "),
+                 suggested_words = paste(out$suggestedWords, collapse = ", ")) |>  
+    dplyr::mutate(hashtags = stringr::str_extract_all(post_text, "#\\S+"),
+                  at_mentions = stringr::str_extract_all(post_text, "@\\S+"),
+                  created_time = lubridate::as_datetime(as.integer(created_time), tz = "America/Los_Angeles"))
+} 
+```
+
+To run it, just provide a link
+
+
+```r
+single_post <- get_tt_posts(link = "https://www.tiktok.com/@addisonre/video/7363016297233354027")
+single_post |> 
+  knitr::kable()
+```
+
+
+
+|id                  |post_text                                       |created_time        | duration|author_id           |author_uniqueID |author_nickname |author_signature |author_verified | like_count| share_count| comment_count| play_count|collect_count |diversification_labels         |suggested_words                                                                                                                                                                                                     |hashtags |at_mentions |
+|:-------------------|:-----------------------------------------------|:-------------------|--------:|:-------------------|:---------------|:---------------|:----------------|:---------------|----------:|-----------:|-------------:|----------:|:-------------|:------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------|:-----------|
+|7363016297233354027 |Got married at stagecoach. thank u @airbnb 🙏🏼 |2024-04-28 13:24:14 |       30|6703550784929793030 |addisonre       |Addison Rae     |                 |TRUE            |     236500|        2353|           820|    9800000|6180          |Romance, Family & Relationship |addison rae, addison rae boyfriend, Getting Married, I Got Married On The Show, Abby Roberts And Addison Rae, enzo and addison rae, enzo addison rae, Abby And Addison Rae, Addison Rae's Dad, addison rae throw it |         |@airbnb     |
+
+#### Comment data
+
+Finally, we'll pull the comments from a post. Comments aren't found in a hidden script, but are loaded dynamically through hidden APIs as a user scrolls. We're going to call the hidden API directly, and iterate through all of the comments to pull them. We can get 50 comments per API call, and one of the API parameters is `cursor`, which identifies where in the number of comments we want to start to pull our next 50. 
+
+There are several functions that will all be used in our convenience wrapper function. We're going to use the same post as above. 
+
+
+```r
+parse_comments <- purrr::possibly(function(l){
+  # putting comment data into a cleaned tibble
+  tibble::tibble(
+    text = l$comments$text,
+    comment_language = l$comments$comment_language,
+    digg_count = l$comments$digg_count,
+    reply_comment_count = l$comments$reply_comment_total,
+    author_pin = l$comments$author_pin,
+    create_time = l$comments$create_time,
+    cid = l$comments$cid,
+    nickname = l$comments$user$nickname,
+    unique_id = l$comments$user$unique_id,
+    post_id = l$comments$aweme_id
+  ) |> 
+    dplyr::mutate(create_time = lubridate::as_datetime(create_time, tz = "America/Los_Angeles"))
+}, otherwise = NA_character_)
+
+scrape_comments <- function(post_id, cursor) {
+  # setting headers
+  headers = c(
+    `Accept` = '*/*',
+    `Accept-Language` = 'en-US,en;q=0.9',
+    `Connection` = 'keep-alive',
+    `Content-type` = 'application/x-www-form-urlencoded',
+    `DNT` = '1',
+    `Referer` = "https://www.google.com/",
+    `Sec-Fetch-Dest` = 'empty',
+    `Sec-Fetch-Mode` = 'cors',
+    `Sec-Fetch-Site` = 'same-origin',
+    `User-Agent` = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+    `cache-control` = 'no-cache',
+    `pragma` = 'no-cache',
+    `sec-ch-ua` = '"Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"',
+    `sec-ch-ua-mobile` = '?0',
+    `sec-ch-ua-platform` = '"macOS"'
+  )
+  # build url and first pull 
+  base_url <- "https://www.tiktok.com/api/comment/list/?"
+  params <- list(
+    aweme_id = post_id,
+    count = 50,
+    cursor = cursor
+  )
+  # GET request
+  res <- httr::GET(base_url, query = params, httr::add_headers(.headers = headers))
+  # parse data depending on cursor location
+  if (cursor == 0) {
+    tmp <- httr::content(res, "text") |> 
+      jsonlite::fromJSON()
+    
+    out <- list(comment_data = parse_comments(tmp), total_comments = tmp$total)
+  } else {
+    tmp <- httr::content(res, "text") |> 
+      jsonlite::fromJSON()
+    
+    out <- parse_comments(tmp)
+  }
+}
+
+fetch_tt_comments <- function(post_id) {
+  tmp <- scrape_comments(post_id, cursor = 0)
+  # get cursor starting locations
+  cursors <- (1:floor(tmp$total_comments/50)*50)+1
+  # map across cursor starts
+  out <- purrr::map2(post_id, cursors, scrape_comments)
+  out <- out[!is.na(out)]
+  out <- dplyr::bind_rows(out)
+  # bind all pulls together
+  rbind(tmp$comment_data, out)
+}
+```
+
+We'll run it and provide a random sample of 5 comments.
+
+
+```r
+fetch_tt_comments("7363016297233354027") |> 
+  head(5) |> 
+  knitr::kable()
+```
+
+
+
+|text                          |comment_language | digg_count| reply_comment_count|author_pin |create_time         |cid                 |nickname   |unique_id |post_id             |
+|:-----------------------------|:----------------|----------:|-------------------:|:----------|:-------------------|:-------------------|:----------|:---------|:-------------------|
+|W                             |pl               |          9|                   0|FALSE      |2024-04-29 09:51:59 |7363332657865212702 |kka        |kkalton   |7363016297233354027 |
+|SHES THIS GENERATIONS BRITNEY |en               |       8875|                  38|FALSE      |2024-04-28 13:37:19 |7363019734805349151 |Fany🎀     |kyngfany  |7363016297233354027 |
+|ATEEE                         |tl               |          8|                   0|FALSE      |2024-04-28 18:56:47 |7363102061292765982 |fredylon   |fr3dylon  |7363016297233354027 |
+|SHES SO ICONIC                |en               |       5729|                  13|FALSE      |2024-04-28 13:32:38 |7363018484672791328 |meilospov ིྀ |owlrae    |7363016297233354027 |
+|ICONIC                        |en               |        143|                   2|FALSE      |2024-04-28 14:40:51 |7363036103747683077 |Luara      |luara     |7363016297233354027 |
+
