@@ -1,23 +1,21 @@
 ---
 title: Web Scraping
 author: twg
-date: '2023-09-17'
-slug: web-scraping
+date: '2024-05-18'
 categories:
   - rvest
   - scraping
 tags:
   - rvest
   - scraping
-subtitle: ''
-summary: 'Code for scraping various sites'
+slug: web-scraping
+summary: Code for scraping various sites
 lastmod: '2023-09-17T14:35:55-07:00'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
-projects: []
 ---
 
 
@@ -623,7 +621,7 @@ fetch_tt_comments <- function(post_id) {
 }
 ```
 
-We'll run it and provide a random sample of 5 comments.
+We'll run it and provide the first 5 comments.
 
 
 ```r
