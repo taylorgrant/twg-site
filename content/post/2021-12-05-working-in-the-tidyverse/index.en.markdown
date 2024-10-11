@@ -1,7 +1,7 @@
 ---
 title: Working in the tidyverse
 author: twg
-date: '2022-11-04'
+date: '2024-10-11'
 categories:
   - dplyr
   - tidy
@@ -29,7 +29,7 @@ image:
 This requires authorization, hopefully the Oauth token can be auto-refreshed. 
 
 
-```r
+``` r
 # write this to Google Sheets 
 pacman::p_load(googlesheets4, googledrive)
 # if want to write multiple sheets
@@ -43,7 +43,7 @@ ss4 <- googlesheets4::gs4_create(
 ## Removing empty tibble from a list of tibbles
 
 
-```r
+``` r
 Filter(nrow, my_list)
 
 # or if list of lists
@@ -55,7 +55,7 @@ Filter(length, my_list)
 This is using the `data.table` package
 
 
-```r
+``` r
 # named list
 ll <- mtcars %>%
     group_by(cyl) %>%
@@ -84,7 +84,7 @@ ll
 ## 1  18.7   360   175  3.15  3.44  17.0     0     0     3     2
 ```
 
-```r
+``` r
 data.table::rbindlist(ll, idcol = 'make') %>% tibble()
 ```
 
@@ -100,7 +100,7 @@ data.table::rbindlist(ll, idcol = 'make') %>% tibble()
 ## Using setNames to change column names
 
 
-```r
+``` r
 names <- c("name1", "name2", "name3", "name4")
 
 df <- tibble(
@@ -117,16 +117,45 @@ df %>% setNames(names)
 ## # A tibble: 4 × 4
 ##   name1 name2 name3 name4
 ##   <chr> <int> <int> <chr>
-## 1 o        51    32 a    
-## 2 u        61    67 y    
-## 3 v        48     4 h    
-## 4 f        38    58 n
+## 1 o        43    89 o    
+## 2 i         1    54 i    
+## 3 l        95    36 y    
+## 4 d        34     6 n
 ```
+
+## Renaming columns via pipe 
+
+The `rename_with()` function is very helpful...
+
+
+``` r
+df <- tibble(
+  a_1 = sample(letters, 4),
+  b_2 = sample(1:100, 4),
+  c_3 = sample(1:100, 4),
+  d_4 = sample(letters, 4)
+)
+
+df |> 
+  rename_with(~ gsub("\\_.*", "", .) , .cols = everything()) |> 
+  rename_with(~ paste0(., "_24"), .cols = everything())
+```
+
+```
+## # A tibble: 4 × 4
+##   a_24   b_24  c_24 d_24 
+##   <chr> <int> <int> <chr>
+## 1 p        46    66 d    
+## 2 n         1     7 r    
+## 3 u        10    25 s    
+## 4 g        60    40 n
+```
+
 
 ## Using map to create named lists
 
 
-```r
+``` r
 fn <- function(x) {
   paste0('test-',x)
 }
@@ -150,7 +179,7 @@ input %>% set_names() %>% map(fn)
 Occasionally, you'll only want to rename certain columns and the `rename_with` function offers this capability.
 
 
-```r
+``` r
 df <- tibble(
   maa_1 = sample(letters, 4),
   maa_2 = sample(1:100, 4),
@@ -166,10 +195,10 @@ df %>%
 ## # A tibble: 4 × 4
 ##   ma_1   ma_2  ma_3 ma_4 
 ##   <chr> <int> <int> <chr>
-## 1 t        72    88 t    
-## 2 y        77    92 e    
-## 3 l        35    91 d    
-## 4 q        68    26 k
+## 1 r        93    44 k    
+## 2 v        28    58 g    
+## 3 o        80    81 s    
+## 4 q        42     1 u
 ```
 
 ## piping and dplyr verbs with lists and purrr 
@@ -177,7 +206,7 @@ df %>%
 Assume a list with data.frames and I want to use a dplyr verb (or apply any function) within it
 
 
-```r
+``` r
 list_object %>% 
   map(~ clean_names(.)) %>% 
   map(~ mutate(., new_var = colA + colB))
@@ -189,7 +218,7 @@ list_object %>%
 This is well documented [here](https://dplyr.tidyverse.org/reference/across.html), but a few examples are below. When using `across()` with we need to wrap the variables in quotes if we're mentioning multiple. And if we're using multiple functions they need to be put into a `list()`. To keep tabs on the results, name the function output. 
 
 
-```r
+``` r
 mtcars %>%
   group_by(cyl) %>%
   summarise(across(c("disp", "drat", "mpg"), list(mean = mean, sd = sd)))
@@ -207,7 +236,7 @@ mtcars %>%
 The [helper functions](https://dplyr.tidyverse.org/reference/select_helpers.html) for `select()` are also useful for selecting variables. Though note that when using helpers such as `contains()` that you can only include one string. For instance, this will work.
 
 
-```r
+``` r
 mtcars %>% 
   summarise(across(contains("ar"), mean))
 ```
@@ -220,7 +249,7 @@ mtcars %>%
 But this won't
 
 
-```r
+``` r
 mtcars %>%
   summarise(across(contains("ar|mp"), mean))
 ```
@@ -232,7 +261,7 @@ mtcars %>%
 If you want to match across multiple strings, the `matches()` function will do the trick. 
 
 
-```r
+``` r
 mtcars %>%
   summarise(across(matches("ar|mp"), mean))
 ```
@@ -247,28 +276,28 @@ mtcars %>%
 It's always possible to use multiple `left_join` functions, but the easiest way to do merge multiple data sets together may be to put everything into a list and then use the `Reduce` function. I had used `map` to work over a lot of data, so everything was in a list. I then took the data I wanted to use as my base and concatenated it to the list. 
 
 
-```r
+``` r
 tmp <- c(list(df), original_list)
 ```
 
 Then, using dplyr commands was able to join all of the data. In this case, my original list had 30 separate dataframes.
 
 
-```r
+``` r
 mass_df <- tmp %>% Reduce(function(df1, df2), left_join(df1, df2), .)
 ```
 
 The `left_join` command can be further defined to specify what we're joining by, or to select only specific columns that will be joined. 
 
 
-```r
+``` r
 # using "matches" to pull out specific variables
 mass_df <- tmp %>% 
   Reduce(function(df1, df2), left_join(df1, select(df2, matches("avar|bvar"))), .)
 ```
 
 
-```r
+``` r
 # specifying what the join is by
 mass_df <- tmp %>% Reduce(function(df1, df2), left_join(df1, df2, by = "index"), .)
 ```
@@ -276,7 +305,7 @@ mass_df <- tmp %>% Reduce(function(df1, df2), left_join(df1, df2, by = "index"),
 ## Calculating quantiles in tidy fashion 
 
 
-```r
+``` r
 pacman::p_load(tidyverse)
 # set up quantiles we want 
 p <- c(.2, .4, .6, .8)
@@ -307,7 +336,7 @@ When using either `select()` or wanting to `mutate(across())` there are lots of 
 `contains()` only works on a single, specific request, whereas `matches()` allows for an OR. 
 
 
-```r
+``` r
 tmp <- tibble(g1_letters = sample(letters, 5), 
               g1_num = sample(1:600000, 5),
               g2_letters = sample(letters, 5),
@@ -324,17 +353,17 @@ tmp
 ## # A tibble: 5 × 4
 ##   g1_letters g1_num h1_letters h1_num
 ##   <chr>       <int> <chr>       <int>
-## 1 c          500667 r           18493
-## 2 v          484425 s           39526
-## 3 z           67023 l           36516
-## 4 g          404841 p           53658
-## 5 f          487789 w           13608
+## 1 h           91961 l            5263
+## 2 f           95551 q           58515
+## 3 n          203957 a            2203
+## 4 t          118099 r           46583
+## 5 j           54905 k           39347
 ```
 
 But we can also use the `intersect()` function to create an AND statement
 
 
-```r
+``` r
 tmp <- tibble(g1_letters = sample(letters, 5), 
               g1_num = sample(1:600000, 5),
               g1_weighted = g1_num*.4,
@@ -355,13 +384,13 @@ tmp %>%
 ## # A tibble: 1 × 6
 ##    g1_num g1_weighted   g2_num g2_weighted h1_num h1_weighted
 ##     <int> <chr>          <int>       <dbl>  <int>       <dbl>
-## 1 1137369 454947.6----> 104305       41722 135048      54019.
+## 1 1278472 511388.8----> 185276      74110. 150962      60385.
 ```
 
 ## Piping into a t.test
 
 
-```r
+``` r
 tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
        group = c(rep("green", 100), rep("blue", 100))) %>%
   t.test(a ~ group, data = ., var.equal = TRUE)
@@ -372,13 +401,13 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ## 	Two Sample t-test
 ## 
 ## data:  a by group
-## t = 14.251, df = 198, p-value < 2.2e-16
+## t = 11.788, df = 198, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group blue and group green is not equal to 0
 ## 95 percent confidence interval:
-##   8.823405 11.657487
+##   7.394397 10.365370
 ## sample estimates:
 ##  mean in group blue mean in group green 
-##            59.92855            49.68810
+##            59.16839            50.28851
 ```
 
 ## Piping into a cor.test
@@ -386,7 +415,7 @@ tibble(a = c(rnorm(100, mean = 50, sd = 5),rnorm(100, mean = 60, sd = 5)),
 ### Method 1 (no group_by)
 Using the [exposition pipe](https://magrittr.tidyverse.org/reference/exposition.html) from the `magrittr` package.
 
-```r
+``` r
 library(magrittr)
 mtcars %$%
   cor.test(mpg, hp) %>% 
@@ -404,7 +433,7 @@ mtcars %$%
 Using a `nest-map-unnest` workflow:
 
 
-```r
+``` r
 mtcars %>% 
   nest(data = -cyl) %>% 
   mutate(test = map(data, ~ cor.test(.x$mpg, .x$hp)), # S3 list-col
@@ -426,7 +455,7 @@ mtcars %>%
 ## Arranging within a group
 
 
-```r
+``` r
 library(tidyverse)
 ToothGrowth %>%
     group_by(supp) %>%
@@ -456,7 +485,7 @@ ToothGrowth %>%
 The `cross()` function is similar to `expand.grid`. Here, we create a list and use `map` to paste it together where each in a separate list. 
 
 
-```r
+``` r
 data <- list(qq = "Q",
              q = 1:4,
              hyphen = "-",
@@ -491,7 +520,7 @@ data %>%
 But we can use `setNames` and then reduce put it into a data.frame. 
 
 
-```r
+``` r
 data <- list(qq = "Q",
              q = 1:4,
              hyphen = "-",
@@ -521,7 +550,7 @@ data %>%
 
 Assume we have a tibble like so
 
-```r
+``` r
 tibble(letter = rep(letters[1:2], each = 6),
        state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
                  rep(c(state.abb[c(25,38,43)]), each = 2)))
@@ -548,7 +577,7 @@ tibble(letter = rep(letters[1:2], each = 6),
 and we want to create a group index for each letter. A simple way of doing this is to use factor conversion. 
 
 
-```r
+``` r
 tibble(letter = rep(letters[1:2], each = 6),
        state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
                  rep(c(state.abb[c(25,38,43)]), each = 2))) |> 
@@ -578,7 +607,7 @@ tibble(letter = rep(letters[1:2], each = 6),
 Assume we have a data set with a nested group structures like so. 
 
 
-```r
+``` r
 tibble(letter = rep(letters[1:2], each = 6),
        state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
                  rep(c(state.abb[c(25,38,43)]), each = 2)))
@@ -606,7 +635,7 @@ Our goal is to produce a repeating id for each state within each letter group, s
 
 But using the `group_indices()` function doesn't help us here (note I'm suppressing warnings because I have no idea how to use `group_by()` first with this function).
 
-```r
+``` r
 tibble(letter = rep(letters[1:2], each = 6),
        state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
                  rep(c(state.abb[c(25,38,43)]), each = 2))) %>%
@@ -633,7 +662,7 @@ tibble(letter = rep(letters[1:2], each = 6),
 ```
 But we can get to what we want by using `cumsum` and `!duplicated`...
 
-```r
+``` r
 tibble(letter = rep(letters[1:2], each = 6),
        state = c(rep(c(state.abb[c(1,4,5)]), each = 2),
                  rep(c(state.abb[c(25,38,43)]), each = 2))) %>%
@@ -665,7 +694,7 @@ tibble(letter = rep(letters[1:2], each = 6),
 This has nothing to do with the tidyverse, but just want to put it here
 
 
-```r
+``` r
 norm <- function(x) (x - min(x)) / (max(x) - min(x))
 ```
 

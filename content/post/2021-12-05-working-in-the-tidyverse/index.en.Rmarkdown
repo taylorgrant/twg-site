@@ -1,7 +1,7 @@
 ---
 title: Working in the tidyverse
 author: twg
-date: '2022-11-04'
+date: '2024-10-11'
 categories:
   - dplyr
   - tidy
@@ -91,6 +91,24 @@ df <- tibble(
 
 df %>% setNames(names)
 ```
+
+## Renaming columns via pipe 
+
+The `rename_with()` function is very helpful...
+
+```{r}
+df <- tibble(
+  a_1 = sample(letters, 4),
+  b_2 = sample(1:100, 4),
+  c_3 = sample(1:100, 4),
+  d_4 = sample(letters, 4)
+)
+
+df |> 
+  rename_with(~ gsub("\\_.*", "", .) , .cols = everything()) |> 
+  rename_with(~ paste0(., "_24"), .cols = everything())
+```
+
 
 ## Using map to create named lists
 
