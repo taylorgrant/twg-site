@@ -55,7 +55,7 @@ devtools::source_url("https://raw.githubusercontent.com/taylorgrant/sandbox/mast
 
 With grouped bar charts `position = "dodge"` is used and the `geom_text` function also needs to be put into the same position. 
 
-```{r, dodge_bar}
+```{r, dodge_bar, cache = TRUE}
 set.seed(23)
 tibble(type = rep(c('a','b'), each = 4),
          cat = rep(c('cat', 'dog', 'bird', 'snake'),2),
@@ -83,7 +83,7 @@ tibble(type = rep(c('a','b'), each = 4),
 ## Adding text labels to stacked bar or ggchicklet
 
 `geom_chicklet()` defaults to `reverse = TRUE` so have to do it with label as well.
-```{r, stack}
+```{r, stack, cache = TRUE}
 tibble(grp = rep("Group", 5), 
        var = letters[1:5],
        frac = c(.1, .3,.2, .3 ,.1)) %>% 
@@ -99,7 +99,7 @@ Pie charts are generally not that helpful, but occasionally someone wants one. A
 
 This was the old way of having to make pie charts with ggplot and it still works really well. 
 
-```{r, facet_pie}
+```{r, facet_pie, cache = TRUE}
 set.seed(23)
 tibble(type = rep(c('a','b', 'c'), each = 4),
          cat = rep(c('cat', 'dog', 'bird', 'snake'),3),
@@ -128,7 +128,7 @@ tibble(type = rep(c('a','b', 'c'), each = 4),
 
 Note that you can turn these pie charts into donut plots by adding `xlim(4,8)` within the code. The first number decides the thickness of the donut (larger = thicker); the second number dictates the size of the donut (smaller equals larger). 
 
-```{r, facet_donut, echo = FALSE}
+```{r, facet_donut, echo = FALSE, cache = TRUE}
 set.seed(23)
 tibble(type = rep(c('a','b', 'c'), each = 4),
          cat = rep(c('cat', 'dog', 'bird', 'snake'),3),
@@ -160,7 +160,7 @@ tibble(type = rep(c('a','b', 'c'), each = 4),
 
 We can either create a new dataframe with the specific names of the facets and the values, or we can use an in-block calculation using `data = .`. 
 
-```{r, facet_line, message = FALSE, warning = FALSE}
+```{r, facet_line, message = FALSE, warning = FALSE, cache = TRUE}
 mtcars %>%
   rownames_to_column("model") %>%
   group_by(model, cyl) %>%
@@ -183,7 +183,7 @@ mtcars %>%
 
 Sometimes you want to make a point about how certain factors are always larger or smaller than another across multiple groups. It can all be plotted out on the same graph, but it's difficult to draw attention to the groupings - ggplot doesn't add space between groups on its own. But if we facet by group, we can gain a little breathing room between each group. And by using `facet_grid` we can rotate the graph. 
 
-```{r , facet_bar}
+```{r , facet_bar, cache = TRUE}
 tibble(group = c('Group A', 'Group A', 
                  'Group B', 'Group B', 
                  'Group C', 'Group C'), 
@@ -210,7 +210,7 @@ tibble(group = c('Group A', 'Group A',
 
 Scale the dates being used in the axis with `scale_x_date` and rotate the label in the them. 
 
-```{r, rotate_text}
+```{r, rotate_text, cache = TRUE}
 tibble(date = seq.Date(as.Date("2019-01-01"), as.Date("2019-12-01"), by = "week"),
        value = sample(1:100, 48)/100) %>%
   ggplot(aes(x = date, y = value)) + 
@@ -226,7 +226,7 @@ tibble(date = seq.Date(as.Date("2019-01-01"), as.Date("2019-12-01"), by = "week"
 
 Heatmaps are simple to make. In this case, we have data at the monthly level with some missing data. Options are used within the fill command to ensure the lower and upper extremes aren't too dark or light;  `na.value` allows us to change the values of our NA months. Additionally, the plot margins are altered to give more room around the plot while leaving the left margin untouched to give it sense of width. 
 
-```{r, heatmap, message=FALSE}
+```{r, heatmap, message=FALSE, cache = TRUE}
 library(viridis)
 tibble(date = seq.Date(as.Date("2014-01-01"), as.Date("2019-12-01"), "month"),
        value = c(sample(10000:100000, 63), rep(NA_integer_, 9))) %>% 
@@ -250,7 +250,7 @@ tibble(date = seq.Date(as.Date("2014-01-01"), as.Date("2019-12-01"), "month"),
 
 We'll assume that each bar is a category with a separate benchmark and we'll have different groups so we'll also add in facets. 
 
-```{r, benchmark, message = FALSE}
+```{r, benchmark, message = FALSE, cache = TRUE}
 # build a dataset 
 data <- tibble(component = c("A", "B", "C", 
                              "D", "E", "F", "G"),
@@ -289,7 +289,7 @@ data %>%
 
 If you manually specify colors and add shapes in a scatterplot, two legends are created (left plot). You can unify them by naming them the same thing, or naming them both as `NULL` (right plot).
 
-```{r, legend}
+```{r, legend, cache = TRUE}
 library(patchwork)
 
 p1 <- ggplot(mtcars, aes(x = hp, y = mpg, group = factor(gear), 
@@ -311,7 +311,7 @@ p1 | p2
 
 Sometimes you want to call attention to some, but not all series in a plot. This is easily done by setting the breaks and labels. 
 
-```{r, drop_legend}
+```{r, drop_legend, cache = TRUE}
 ggplot(iris, aes(x=Petal.Length, y = Petal.Width, group = Species, col = Species)) + 
   geom_point() + 
   scale_color_manual(values = my_pal("bly"),
@@ -410,7 +410,7 @@ ggplot() +
        caption = "Source: Bureau of Labor Statistics")
 ```
 
-```{r, dumbbell, echo = FALSE, fig.height = 7}
+```{r, dumbbell, echo = FALSE, fig.height = 7, cache = TRUE}
 tmp_median <- readRDS(here("static", "data", "median_salary.rds"))
 
 ggplot() + 
@@ -457,7 +457,7 @@ ggplot() +
 
 This uses the `ggchicklet` package from [github.com/hrbrmstr/ggchicklet](https://github.com/hrbrmstr/ggchicklet). In this case, we'll take some data from a Morning Consult [poll](https://assets.morningconsult.com/wp-uploads/2021/10/18170121/2110046_crosstabs_MC_ENTERTAINMENT_PRESTIGE_TV_Adults_v1_DM-1-1.pdf) that asks people their opinion of the reputation of various streaming services.
 
-```{r, streaming, fig.height = 8}
+```{r, streaming, fig.height = 8, cache = TRUE}
 library(ggchicklet)
 tmp <- readRDS(here("static", "data", "streaming.rds"))
 title <- "Thinking about the quality of each streaming service, do you consider each of the following\nto have above average, average, or below average reputation?"
@@ -497,7 +497,7 @@ tmp %>%
 
 Dates can take up quite a bit of space on an axis. But we can split out the month and year on separate lines. Here, `labels` can take a function that uses a simple ifelse logic. 
 
-```{r, split-axis}
+```{r, split-axis, cache = TRUE}
 tibble(date = seq.Date(as.Date("2018-01-01"), as.Date("2022-01-01"), by = "month"),
       t = seq(0,10, length.out = 49), 
       y = sin(t)) %>% 
@@ -513,7 +513,7 @@ tibble(date = seq.Date(as.Date("2018-01-01"), as.Date("2022-01-01"), by = "month
 
 ## Using boxplots 
 
-```{r, boxplot, fig.height = 8}
+```{r, boxplot, fig.height = 8, cache = TRUE}
 library(rvest)
 pg <- session("https://www.cnbc.com/2023/07/11/americas-top-states-for-business-2023-the-full-rankings.html")
 
@@ -546,7 +546,7 @@ cnbc |>
 ## Adding linking colors to plot titles instead of a legend
 
 Using the [ggtext](https://wilkelab.org/ggtext/) package to edit the subtitle via `plot.subtitle = element_markdown()`
-```{r, subtitle-color, warning = FALSE}
+```{r, subtitle-color, warning = FALSE, cache = TRUE}
 library(ggplot2) # For plotting
 library(palmerpenguins) # For the example penguin dataset
 library(ggtext) # For HTML rendering of text to support colour
@@ -576,7 +576,7 @@ ggplot(data = penguins,
 
 Rather than using a single color line segment between points, let's create a gradient that fits the two dumbbell points. 
 
-```{r, gradient-segment}
+```{r, gradient-segment, cache = TRUE}
 # function to create the gradient
 create_gradient_segment <- function(x, y1, y2, n_points = 100) {
   tibble(
