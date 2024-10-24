@@ -29,7 +29,7 @@ image:
 I've borrowed heavily from the `hrbrthemes` and `myriad` packages to create a clean theme. If I need to source it, it's available at github. 
 
 
-```r
+``` r
 devtools::source_url("https://raw.githubusercontent.com/taylorgrant/sandbox/master/theme_twg.R")
 ```
 
@@ -38,7 +38,7 @@ devtools::source_url("https://raw.githubusercontent.com/taylorgrant/sandbox/mast
 With grouped bar charts `position = "dodge"` is used and the `geom_text` function also needs to be put into the same position. 
 
 
-```r
+``` r
 set.seed(23)
 tibble(type = rep(c('a','b'), each = 4),
          cat = rep(c('cat', 'dog', 'bird', 'snake'),2),
@@ -76,7 +76,7 @@ tibble(type = rep(c('a','b'), each = 4),
 
 `geom_chicklet()` defaults to `reverse = TRUE` so have to do it with label as well.
 
-```r
+``` r
 tibble(grp = rep("Group", 5), 
        var = letters[1:5],
        frac = c(.1, .3,.2, .3 ,.1)) %>% 
@@ -95,7 +95,7 @@ Pie charts are generally not that helpful, but occasionally someone wants one. A
 This was the old way of having to make pie charts with ggplot and it still works really well. 
 
 
-```r
+``` r
 set.seed(23)
 tibble(type = rep(c('a','b', 'c'), each = 4),
          cat = rep(c('cat', 'dog', 'bird', 'snake'),3),
@@ -133,7 +133,7 @@ Note that you can turn these pie charts into donut plots by adding `xlim(4,8)` w
 We can either create a new dataframe with the specific names of the facets and the values, or we can use an in-block calculation using `data = .`. 
 
 
-```r
+``` r
 mtcars %>%
   rownames_to_column("model") %>%
   group_by(model, cyl) %>%
@@ -159,7 +159,7 @@ mtcars %>%
 Sometimes you want to make a point about how certain factors are always larger or smaller than another across multiple groups. It can all be plotted out on the same graph, but it's difficult to draw attention to the groupings - ggplot doesn't add space between groups on its own. But if we facet by group, we can gain a little breathing room between each group. And by using `facet_grid` we can rotate the graph. 
 
 
-```r
+``` r
 tibble(group = c('Group A', 'Group A', 
                  'Group B', 'Group B', 
                  'Group C', 'Group C'), 
@@ -189,7 +189,7 @@ tibble(group = c('Group A', 'Group A',
 Scale the dates being used in the axis with `scale_x_date` and rotate the label in the them. 
 
 
-```r
+``` r
 tibble(date = seq.Date(as.Date("2019-01-01"), as.Date("2019-12-01"), by = "week"),
        value = sample(1:100, 48)/100) %>%
   ggplot(aes(x = date, y = value)) + 
@@ -208,7 +208,7 @@ tibble(date = seq.Date(as.Date("2019-01-01"), as.Date("2019-12-01"), by = "week"
 Heatmaps are simple to make. In this case, we have data at the monthly level with some missing data. Options are used within the fill command to ensure the lower and upper extremes aren't too dark or light;  `na.value` allows us to change the values of our NA months. Additionally, the plot margins are altered to give more room around the plot while leaving the left margin untouched to give it sense of width. 
 
 
-```r
+``` r
 library(viridis)
 tibble(date = seq.Date(as.Date("2014-01-01"), as.Date("2019-12-01"), "month"),
        value = c(sample(10000:100000, 63), rep(NA_integer_, 9))) %>% 
@@ -235,7 +235,7 @@ tibble(date = seq.Date(as.Date("2014-01-01"), as.Date("2019-12-01"), "month"),
 We'll assume that each bar is a category with a separate benchmark and we'll have different groups so we'll also add in facets. 
 
 
-```r
+``` r
 # build a dataset 
 data <- tibble(component = c("A", "B", "C", 
                              "D", "E", "F", "G"),
@@ -284,9 +284,15 @@ data %>%
 If you manually specify colors and add shapes in a scatterplot, two legends are created (left plot). You can unify them by naming them the same thing, or naming them both as `NULL` (right plot).
 
 
-```r
+``` r
 library(patchwork)
+```
 
+```
+## Warning: package 'patchwork' was built under R version 4.3.3
+```
+
+``` r
 p1 <- ggplot(mtcars, aes(x = hp, y = mpg, group = factor(gear), 
                          col = factor(gear), shape = factor(gear))) + 
   geom_point() + 
@@ -309,7 +315,7 @@ p1 | p2
 Sometimes you want to call attention to some, but not all series in a plot. This is easily done by setting the breaks and labels. 
 
 
-```r
+``` r
 ggplot(iris, aes(x=Petal.Length, y = Petal.Width, group = Species, col = Species)) + 
   geom_point() + 
   scale_color_manual(values = my_pal("bly"),
@@ -324,7 +330,7 @@ ggplot(iris, aes(x=Petal.Length, y = Petal.Width, group = Species, col = Species
 Let's compare the median salary of a police officer in each state to the median salary in that state. 
 
 
-```r
+``` r
 pacman::p_load(tidyverse, readxl, janitor, here, glue, httr, rvest)
 
 ## get police officer salary data ## 
@@ -411,6 +417,12 @@ ggplot() +
        caption = "Source: Bureau of Labor Statistics")
 ```
 
+
+```
+## Warning in geom_rect(data = tmp_median, aes(ymin = 120000, ymax = 124000, : All aesthetics have length 1, but the data has 49 rows.
+## ℹ Please consider using `annotate()` or provide this layer with data containing a single row.
+```
+
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/dumbbell-1.png" width="1104" style="display: block; margin: auto;" />
 
 ## Creating a grouped, faceted, chicklet plot
@@ -418,7 +430,7 @@ ggplot() +
 This uses the `ggchicklet` package from [github.com/hrbrmstr/ggchicklet](https://github.com/hrbrmstr/ggchicklet). In this case, we'll take some data from a Morning Consult [poll](https://assets.morningconsult.com/wp-uploads/2021/10/18170121/2110046_crosstabs_MC_ENTERTAINMENT_PRESTIGE_TV_Adults_v1_DM-1-1.pdf) that asks people their opinion of the reputation of various streaming services.
 
 
-```r
+``` r
 library(ggchicklet)
 tmp <- readRDS(here("static", "data", "streaming.rds"))
 title <- "Thinking about the quality of each streaming service, do you consider each of the following\nto have above average, average, or below average reputation?"
@@ -461,7 +473,7 @@ tmp %>%
 Dates can take up quite a bit of space on an axis. But we can split out the month and year on separate lines. Here, `labels` can take a function that uses a simple ifelse logic. 
 
 
-```r
+``` r
 tibble(date = seq.Date(as.Date("2018-01-01"), as.Date("2022-01-01"), by = "month"),
       t = seq(0,10, length.out = 49), 
       y = sin(t)) %>% 
@@ -480,7 +492,7 @@ tibble(date = seq.Date(as.Date("2018-01-01"), as.Date("2022-01-01"), by = "month
 ## Using boxplots 
 
 
-```r
+``` r
 library(rvest)
 pg <- session("https://www.cnbc.com/2023/07/11/americas-top-states-for-business-2023-the-full-rankings.html")
 
@@ -516,7 +528,7 @@ cnbc |>
 
 Using the [ggtext](https://wilkelab.org/ggtext/) package to edit the subtitle via `plot.subtitle = element_markdown()`
 
-```r
+``` r
 library(ggplot2) # For plotting
 library(palmerpenguins) # For the example penguin dataset
 library(ggtext) # For HTML rendering of text to support colour
@@ -543,4 +555,48 @@ ggplot(data = penguins,
 ```
 
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/subtitle-color-1.png" width="1104" style="display: block; margin: auto;" />
+
+## Using gradient segments in a dumbbell plot
+
+Rather than using a single color line segment between points, let's create a gradient that fits the two dumbbell points. 
+
+
+``` r
+# function to create the gradient
+create_gradient_segment <- function(x, y1, y2, n_points = 100) {
+  tibble(
+    x = x,
+    y = seq(y1, y2, length.out = n_points),
+    yend = lead(y),
+    value = seq(0, 1, length.out = n_points)  # For color gradient
+  ) |> 
+    na.omit()  # Remove the last NA row from lead()
+}
+
+# data frame
+df <- tibble(
+  Category = factor(c("Unaided Awareness", "Aided Awareness", "Aided Ad Awareness", "Purchase Consideration", "Brand Momentum - Top 2 Box")),
+  control = c(0.530, 0.940, 0.424, 0.437, 0.523),
+  exposed = c(0.596, 0.964, 0.476, 0.537, 0.586)
+)
+
+# Apply the create_gradient_segment to each row of df
+segment_data <- df |> 
+  group_by(Category) %>%
+  do(create_gradient_segment(.$Category, .$control, .$exposed)) |> 
+  ungroup()
+
+# plot with gradient segments
+ggplot() + 
+  geom_segment(data = segment_data, aes(x = x, xend = x, y = y, yend = yend, color = value),
+               size = 1.5) +
+  geom_point(data = df, aes(x = Category, y = control), color = "blue", size = 4) + 
+  geom_point(data = df, aes(x = Category, y = exposed), color = "red", size = 4) + 
+  scale_color_gradient(low = "blue", high = "red", guide = "none") +
+  coord_flip() +
+  theme_twg() + 
+  labs(x = NULL, y = NULL)
+```
+
+<img src="{{< blogdown/postref >}}index.en_files/figure-html/gradient-segment-1.png" width="1104" style="display: block; margin: auto;" />
 

@@ -572,3 +572,44 @@ ggplot(data = penguins,
         legend.position = "none")
 ```
 
+## Using gradient segments in a dumbbell plot
+
+Rather than using a single color line segment between points, let's create a gradient that fits the two dumbbell points. 
+
+```{r, gradient-segment}
+# function to create the gradient
+create_gradient_segment <- function(x, y1, y2, n_points = 100) {
+  tibble(
+    x = x,
+    y = seq(y1, y2, length.out = n_points),
+    yend = lead(y),
+    value = seq(0, 1, length.out = n_points)  # For color gradient
+  ) |> 
+    na.omit()  # Remove the last NA row from lead()
+}
+
+# data frame
+df <- tibble(
+  Category = factor(c("Unaided Awareness", "Aided Awareness", "Aided Ad Awareness", "Purchase Consideration", "Brand Momentum - Top 2 Box")),
+  control = c(0.530, 0.940, 0.424, 0.437, 0.523),
+  exposed = c(0.596, 0.964, 0.476, 0.537, 0.586)
+)
+
+# Apply the create_gradient_segment to each row of df
+segment_data <- df |> 
+  group_by(Category) %>%
+  do(create_gradient_segment(.$Category, .$control, .$exposed)) |> 
+  ungroup()
+
+# plot with gradient segments
+ggplot() + 
+  geom_segment(data = segment_data, aes(x = x, xend = x, y = y, yend = yend, color = value),
+               size = 1.5) +
+  geom_point(data = df, aes(x = Category, y = control), color = "blue", size = 4) + 
+  geom_point(data = df, aes(x = Category, y = exposed), color = "red", size = 4) + 
+  scale_color_gradient(low = "blue", high = "red", guide = "none") +
+  coord_flip() +
+  theme_twg() + 
+  labs(x = NULL, y = NULL)
+```
+
