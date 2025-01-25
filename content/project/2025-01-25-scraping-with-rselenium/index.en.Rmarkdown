@@ -220,3 +220,13 @@ If I run this across the 98105 zip code, this is what I get.
 readRDS("~/R/twg-site/static/data/kawi_91805.rds") |> 
   select(name = Name, address_line1 = AddressLine1, address_line2 = AddressLine2, phone = Phone)
 ```
+
+## Close the session
+
+Don't forget to close the RSelenium session 
+
+```{r, eval = FALSE}
+remDr$close()
+rD$server$stop()
+```
+

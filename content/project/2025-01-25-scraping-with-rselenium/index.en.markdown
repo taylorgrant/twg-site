@@ -234,3 +234,14 @@ If I run this across the 98105 zip code, this is what I get.
 ##  9 SKAGIT VALLEY KAWASAKI           107 SUNDQUIST DR         MOUNT VERNON… (360…
 ## 10 PAULSON'S KAWASAKI               4402 6TH AVE SE          LACEY, WA 98… (360…
 ```
+
+## Close the session
+
+Don't forget to close the RSelenium session 
+
+
+``` r
+remDr$close()
+rD$server$stop()
+```
+
