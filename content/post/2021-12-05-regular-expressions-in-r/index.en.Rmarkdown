@@ -175,6 +175,16 @@ And if using this on a column in a dataframe
 df |> dplyr::mutate(col = sapply(col, function(x) paste(strwrap(x, 20), collapse = "\n")))
 ```
 
+## Line breaks after spaces 
+
+```{r, warning = FALSE}
+tibble(string = "This is a string") |> 
+  mutate(space_2 = glue::glue("{sub('^(\\\\S+\\\\s+\\\\S+\\\\s)', '\\\\1<br>', string, perl = TRUE)}"), # add break to second space
+  all_spaces = glue::glue("{gsub(' ', '<br>', string)}"), # add break to any space
+  last_space = glue::glue("{sub(' (?=[^ ]*$)', '<br>', string, perl = TRUE)}")) |> 
+  gather()
+```
+
 ## Counting words in a string
 
 Working with strings and trying to count either words or occurrences. 

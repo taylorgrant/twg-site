@@ -25,7 +25,7 @@ image:
 ## Extracting text before or after symbol or delimiter
 
 
-```r
+``` r
 # timestamp as example 
 stamp <- "2017-10-16T12:45:04PM"
 # time: extract time after the T
@@ -36,7 +36,7 @@ gsub(".*\\T", "", stamp)
 ## [1] "12:45:04PM"
 ```
 
-```r
+``` r
 # date: extract everything before the T
 gsub("\\T.*", "", stamp) 
 ```
@@ -48,7 +48,7 @@ gsub("\\T.*", "", stamp)
 ## Extracting everything up to the Nth occurrence
 
 
-```r
+``` r
 string <- "abc-def-ghi-jkl-mno"
 
 # up to 1st (not including it) 
@@ -59,7 +59,7 @@ sub("^(([^-]*-){0}[^-]*).*", "\\1", string)
 ## [1] "abc"
 ```
 
-```r
+``` r
 # up to the 2nd (not including it)
 sub("^(([^-]*-){1}[^-]*).*", "\\1", string)
 ```
@@ -68,7 +68,7 @@ sub("^(([^-]*-){1}[^-]*).*", "\\1", string)
 ## [1] "abc-def"
 ```
 
-```r
+``` r
 # up to 3rd (not including it)
 sub("^(([^-]*-){2}[^-]*).*", "\\1", string)
 ```
@@ -80,7 +80,7 @@ sub("^(([^-]*-){2}[^-]*).*", "\\1", string)
 ## Extracting before or after the first occurrence of symbol or delimeter
 
 
-```r
+``` r
 string <- "THIS_IS_A_STRING_WITH_A-DASH-SECOND-DASH"
 # extract everything after first "-"
 sub(".*?-", "", string)
@@ -90,7 +90,7 @@ sub(".*?-", "", string)
 ## [1] "DASH-SECOND-DASH"
 ```
 
-```r
+``` r
 # extract everything up to the first "-"
 stringr::str_extract(string, "[^-]+")
 ```
@@ -99,7 +99,7 @@ stringr::str_extract(string, "[^-]+")
 ## [1] "THIS_IS_A_STRING_WITH_A"
 ```
 
-```r
+``` r
 # or using sub
 sub("-.*", "", string)
 ```
@@ -111,7 +111,7 @@ sub("-.*", "", string)
 ## Extract the last occurrence in string with multiple occurrences
 
 
-```r
+``` r
 sub(".*[_]", "", "abc_def_ghi_jkl")
 ```
 
@@ -122,7 +122,7 @@ sub(".*[_]", "", "abc_def_ghi_jkl")
 ## Extract everything before last occurrence in string 
 
 
-```r
+``` r
 sub("_[^_]+$", "", "abc_def_ghi_jkl")
 ```
 
@@ -133,7 +133,7 @@ sub("_[^_]+$", "", "abc_def_ghi_jkl")
 ## Extract everything in between two strings
 
 
-```r
+``` r
 string <- c("The quick brown fox jumped over the lazy dog")
 gsub(".*quick (.+) jumped.*", "\\1", string)
 ```
@@ -145,7 +145,7 @@ gsub(".*quick (.+) jumped.*", "\\1", string)
 ## Extract hashtags and @handles
 
 
-```r
+``` r
 string <- c("I can't believe @user said #hashtag and #hashtag2")
 str_extract_all(string, "@\\w+")
 ```
@@ -155,7 +155,7 @@ str_extract_all(string, "@\\w+")
 ## [1] "@user"
 ```
 
-```r
+``` r
 str_extract_all(string, "#\\w+")
 ```
 
@@ -168,7 +168,7 @@ str_extract_all(string, "#\\w+")
 
 There are also pure regex ways of achieving the same ends, but `stringr` is so easy. 
 
-```r
+``` r
 library(stringr)
 # assume a url with the following path, and we want to pull out the info after the 2nd slash
 urlPath <- "/t5/Announcements-and-Info/Bixby-Button-Short-Press-The-choice-is-yours/m-p/168685/highlight/true#M210"
@@ -183,7 +183,7 @@ sapply(str_split(urlPath, "/"), "[[", 3)
 ## Remove commas and convert string to numeric
 
 
-```r
+``` r
 to_num <- function(x) { as.numeric(stringi::stri_replace_all_fixed(x, ",", "")) }
 stringnum <- "100,954"
 to_num(stringnum)
@@ -196,7 +196,7 @@ to_num(stringnum)
 ## Add commas and convert numeric to string
 
 
-```r
+``` r
 scales::comma_format()(10000000)
 ```
 
@@ -209,7 +209,7 @@ scales::comma_format()(10000000)
 The ```str_sub``` function from the ```stringr``` package is useful for this. There are three arguments (string, from = start, to = end) - if you don't include "from" and the "to" argument is positive, then it starts from character 1. If "from" is left out and the "to" argument is negative, it starts from the last character in the string. 
 
 
-```r
+``` r
 st <- "Thisstringhasnospaces"
 # Last word
 str_sub(st, -6)
@@ -219,7 +219,7 @@ str_sub(st, -6)
 ## [1] "spaces"
 ```
 
-```r
+``` r
 # First word  
 str_sub(st, 1, 4)
 ```
@@ -228,7 +228,7 @@ str_sub(st, 1, 4)
 ## [1] "This"
 ```
 
-```r
+``` r
 # In between
 str_sub(st, 5, 10)
 ```
@@ -241,7 +241,7 @@ str_sub(st, 5, 10)
 
 Found this useful when working with lots of data and using a function to parse the data and plot using ggplot. 
 
-```r
+``` r
 strfun <- function(str, n) {gsub(paste0("([^ ]+( +[^ ]+){",n-1,"}) +"),
                               "\\1\n", str)}
 
@@ -259,7 +259,7 @@ If you want to use characters instead...
 ## Adding line break after N characters 
 
 
-```r
+``` r
 string <- "As he crossed toward the pharmacy at the corner he involuntarily turned his head because of a burst of light that had ricocheted from his temple..."
 
 paste(strwrap(string, width = 80), collapse = "\n")
@@ -272,8 +272,29 @@ paste(strwrap(string, width = 80), collapse = "\n")
 And if using this on a column in a dataframe
 
 
-```r
+``` r
 df |> dplyr::mutate(col = sapply(col, function(x) paste(strwrap(x, 20), collapse = "\n")))
+```
+
+## Line breaks after spaces 
+
+
+``` r
+tibble(string = "This is a string") |> 
+  mutate(space_2 = glue::glue("{sub('^(\\\\S+\\\\s+\\\\S+\\\\s)', '\\\\1<br>', string, perl = TRUE)}"), # add break to second space
+  all_spaces = glue::glue("{gsub(' ', '<br>', string)}"), # add break to any space
+  last_space = glue::glue("{sub(' (?=[^ ]*$)', '<br>', string, perl = TRUE)}")) |> 
+  gather()
+```
+
+```
+## # A tibble: 4 × 2
+##   key        value                    
+##   <chr>      <chr>                    
+## 1 string     This is a string         
+## 2 space_2    This is <br>a string     
+## 3 all_spaces This<br>is<br>a<br>string
+## 4 last_space This is a<br>string
 ```
 
 ## Counting words in a string
@@ -281,7 +302,7 @@ df |> dplyr::mutate(col = sapply(col, function(x) paste(strwrap(x, 20), collapse
 Working with strings and trying to count either words or occurrences. 
 
 
-```r
+``` r
 library(stringr)
 # string with 19 
 string <- c("MTD Sales 415  2,667 1  2,014  46 24 52 472  3  2,200  2,256 2,963 25 511  207
@@ -295,7 +316,7 @@ str_count(string, '\\w+')
 ## [1] 25
 ```
 
-```r
+``` r
 # the above is counting commas as breaks, so remove the comma count
 str_count(string, '\\w+') - str_count(string, ",") 
 ```
@@ -310,7 +331,7 @@ str_count(string, '\\w+') - str_count(string, ",")
 In this case, we'll strip out periods before and after.
 
 
-```r
+``` r
 test <- c('.name.A.','name.B','.name.C.')
 gsub('^\\.|\\.$', '', test)
 ```
@@ -324,7 +345,7 @@ gsub('^\\.|\\.$', '', test)
 Working with text and there are different versions and misspellings of a term
 
 
-```r
+``` r
 string <- "i was buffereing but then buffered and buffering on the bluff"
 # assuming a consistent word stem
 str_replace_all(string, "buffer[a-z]+", "buffer")
@@ -337,7 +358,7 @@ str_replace_all(string, "buffer[a-z]+", "buffer")
 ## Iteratively replacing text in a string using a key 
 
 
-```r
+``` r
 sample_texts <- tibble(text = c("blah-blah-blah-value1_value1-value2_value2",
                                 "blah _value1-value2"))
 
@@ -364,7 +385,7 @@ sample_texts |>
 ## Splitting words on space or other character
 
 
-```r
+``` r
 string <- c("apple: banana: orange: kiwi")
 str_split(string, boundary('word'))
 ```
@@ -378,7 +399,7 @@ str_split(string, boundary('word'))
  
 Using the `separate()` function seems to work well here
 
-```r
+``` r
 tmp <- tibble(string = "abc-def-ghi-jkl-mno")
 tmp |> separate(string, c("part1", "part2"), "(?=jkl)")
 ```
@@ -395,7 +416,7 @@ tmp |> separate(string, c("part1", "part2"), "(?=jkl)")
 
 Assume we have to find the location of a specific word. In the line below if we search for "string" we're going to get two answers. 
 
-```r
+``` r
 string <- tibble(col = c("strings", "stringer", "word", "part", "string"))
 string$col[which(str_detect(string$col, "string"))]
 ```
@@ -404,7 +425,7 @@ string$col[which(str_detect(string$col, "string"))]
 ## [1] "strings"  "stringer" "string"
 ```
 
-```r
+``` r
 # setting the boundary and find only the exact match
 string$col[which(str_detect(string$col, "string\\b"))]
 ```
@@ -416,7 +437,7 @@ string$col[which(str_detect(string$col, "string\\b"))]
 ## Extracting all @mentions 
 
 
-```r
+``` r
 s <- tibble(text = "this is a string, @mention, with a mention")
 s |> 
   mutate(mentions = sapply(str_extract_all(text, "@\\w+"), function(x) paste(x, collapse = ", ")),)
@@ -432,7 +453,7 @@ s |>
 ## Extracting urls into new column in tibble
 
 
-```r
+``` r
 url_pattern <- "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 tibble(text = c("content with https://www.example.com url", "text in http://www.foo.com", "this string has no url")) |> mutate(url = str_extract(text, url_pattern))
 ```
