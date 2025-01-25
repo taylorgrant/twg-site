@@ -1,0 +1,222 @@
+---
+title: Scraping with RSelenium
+author: twg
+date: '2025-01-25'
+slug: scraping-with-rselenium
+categories:
+  - scraping
+  - R
+  - selenium
+tags:
+  - scraping
+  - selenium
+subtitle: ''
+summary: 'Using RSelenium to automate a browser and grab some data'
+authors: []
+lastmod: '2025-01-25T10:30:26-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  eval = TRUE, # Default: TRUE
+  include = TRUE, # Default: TRUE
+  echo = TRUE, # Default: TRUE
+  width = getOption("width"),
+  fig.align = "center",
+  fig.width = 11.5, # Default: 7
+  fig.height = 5.75)
+
+pacman::p_load(tidyverse, here, janitor, glue, RSelenium)
+```
+
+{{% toc %}}
+
+Normally, when data is loaded by a website with an identifiable script, it's pretty simple to get the data with code like [this](https://taylorgrant.netlify.app/post/web-scraping/#relying-on-data-loaded-by-javascript). It's also pretty simple to [get data](https://taylorgrant.netlify.app/project/consistent-signals/#getting-the-data) when it's being loaded via a GET request to an API, which can be found using developer tools. But I recently ran into an issue where a site was loading data dynamically, but wouldn't authorize my curl request. 
+
+I guess it's time to learn the basics of RSelenium. 
+
+## RSelenium needs java
+
+If the computer doesn't have java, it's easy to use homebrew to install it. From the terminal, check to see if java is installed 
+
+```{zsh, eval = FALSE}
+java -version
+```
+
+If java isn't found, use homebrew to install it. After install, homebrew provides you the code to set the path to java. 
+
+```{zsh, eval = FALSE}
+brew install openjdk
+# set the path
+sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+# check it can be found 
+java -version
+```
+
+Once that's done install RSelenium via CRAN or Github for the development version. 
+
+```{r, eval = FALSE}
+install.package("RSelenium")
+# install.packages("remotes")
+remotes::install_github("ropensci/RSelenium")
+```
+
+RSelenium has a helpful [vignette](https://docs.ropensci.org/RSelenium/articles/basics.html) that walks through the basics of use. The vignette says the recommended setup is to run a Selenium Server by running a Docker image. For whatever reason, I've been unable to get that working on a silicon mac. But the built in `rsDriver()` function does work. 
+
+## Why RSelenium
+
+I was trying to scrape Kawasaki dealer locations in the US. The site forces you to search with a zip code and then dynamically returns a list of 10 dealers. You can't expand the search criteria to return more than 10 listings. I can't find any script that loads the data nor can I find an API that's being queried. So I'll use RSelenium to hit the site, search for a specific zip code, and then scrape the results. Eventually, I'll do this for every zip code in a state. 
+
+## Using RSelenium
+
+The first thing to do is to instantiate a new remote driver. This will open up a new Firefox browser.  
+
+```{r, eval = FALSE}
+# start a session
+rD <- rsDriver(browser = "firefox", port = 4545L, verbose = FALSE)
+remDr <- rD$client
+```
+
+After starting, you have to direct your driver to a specific site. In this case, I want the kawasaki dealer locator. 
+
+```{r, eval = FALSE}
+remDr$navigate("https://www.kawasaki.com/en-us/research-tools/dealer-locator")
+```
+
+```{r, echo = FALSE, out.width = "80%", fig.cap = "Dealer locator with results", cache = TRUE}
+knitr::include_graphics("https://res.cloudinary.com/dn83gtg0l/image/upload/v1737837560/rselenium/kawi_dealer_locator.png")
+```
+
+The page has a text field where you have to enter the zip code. To the right of the text field is a search button. If I'm going to have my browser enter a zip code and search, I need to be able to tell it where to put the zip and which button to push. This requires me to specify the css locations and tell the browser what to do. 
+
+The css for the input and button can be found easily using developer tools. As you run each of these commands, you can reference the open Firefox browser, and see that it's directed to the page, the zip is filled, and then the button pushed with dealer information returned. 
+
+```{r, eval = FALSE}
+# Enter the zip code
+zip_input <- remDr$findElement(using = "css", "#dealerSearchInput")
+zip_input$clearElement() # Clear any pre-filled text
+zip_input$sendKeysToElement(list(as.character(98105)))
+  
+# Click the search button
+search_button <- remDr$findElement(using = "css", "#dealerSearchBtn")
+search_button$clickElement()
+```
+
+Now to get the dealer data, I also need to specify the css for each piece. 
+
+```{r, echo = FALSE, out.width = "80%", fig.cap = "View from Developer Tools", cache = TRUE}
+knitr::include_graphics("https://res.cloudinary.com/dn83gtg0l/image/upload/v1737837560/rselenium/kawi_css.png")
+```
+
+If I look at the developer tools, I can see that the dealer data is found in a list group with the id #dealerSearchResults.  
+
+```{r, eval = FALSE}
+dealers <- remDr$findElements(using = "css", "#dealerSearchResults > li") # Get all dealer result items
+```
+
+This returns a list of 10 items within my R environment, but in order to extract the data for each item, I need to specifyc the css of where each is found. If I highlight the row of data I'm interested in, e.g., "LAKE CITY KAWASAKI," and right-click on it, I can copy the selector, which will give me the css location of that data -- `#dealerSearchResults > li:nth-child(1) > a > h2`. I've already pulled the dealer info using `#dealerSearchResults > li` so I only need to use the second part. I'll do the same thing with the address and phone data. 
+
+Below will pull the results for the first of my 10 dealers returned. 
+
+```{r, eval = FALSE}
+# Extract dealer name
+name <- dealers[[1]]$findChildElement(using = "css", "a > h2")$getElementText() |> 
+  unlist()
+      
+# Extract address line 1
+address_line1 <- dealers[[1]]$findChildElement(using = "css", "a > p:nth-child(2)")$getElementText() |> 
+  unlist()
+      
+# Extract address line 2 (if available)
+address_line2 <- dealers[[1]]$findChildElement(using = "css", "a > p:nth-child(3)")$getElementText() |> 
+  unlist()
+      
+# Extract phone number
+phone <- dealers[[1]]$findChildElement(using = "css", "a > p:nth-child(4)")$getElementText() |> 
+  unlist()
+
+tibble(name = name, address_line1 = address_line1, address_line2 = address_line2, phone = phone)
+```
+
+```{r, echo = FALSE}
+readRDS("~/R/twg-site/static/data/kawi_91805.rds") |> 
+  select(name = Name, address_line1 = AddressLine1, address_line2 = AddressLine2, phone = Phone) |> 
+  slice(1)
+```
+
+## Putting this all into a function
+
+Now that I have everything working, I can put this into a function to run over multiple zip codes. 
+
+```{r, eval = FALSE}
+dealer_data <- map_dfr(zip_codes, function(zip) {
+  # Open the dealer locator page
+  remDr$navigate("https://www.kawasaki.com/en-us/research-tools/dealer-locator")
+  Sys.sleep(2) # Wait for the page to load
+  
+  # Enter the zip code
+  zip_input <- remDr$findElement(using = "css", "#dealerSearchInput")
+  zip_input$clearElement() # Clear any pre-filled text
+  zip_input$sendKeysToElement(list(as.character(zip)))
+  
+  # Click the search button
+  search_button <- remDr$findElement(using = "css", "#dealerSearchBtn")
+  search_button$clickElement()
+  
+  Sys.sleep(3) # Wait for results to load
+  
+  # Extract dealer information
+  dealers <- remDr$findElements(using = "css", "#dealerSearchResults > li") # Get all dealer result items
+  
+  if (length(dealers) == 0) {
+    # No dealers found, return a single row tibble with NA values
+    message(glue("No dealerships found for zip code: {zip}"))
+    return(tibble(
+      ZipCode = zip,
+      Name = NA_character_,
+      AddressLine1 = NA_character_,
+      AddressLine2 = NA_character_,
+      Phone = NA_character_
+    ))
+  } else {
+    # Map over each dealer element to extract data
+    map_dfr(dealers, function(dealer) {
+      # Extract dealer details
+      name <- dealer$findChildElement(using = "css", "a > h2")$getElementText() |> 
+        unlist()
+      address_line1 <- dealer$findChildElement(using = "css", "a > p:nth-child(2)")$getElementText() |> 
+        unlist()
+      address_line2 <- tryCatch(
+        dealer$findChildElement(using = "css", "a > p:nth-child(3)")$getElementText() |> unlist(),
+        error = function(e) NA_character_
+      )
+      phone <- tryCatch(
+        dealer$findChildElement(using = "css", "a > p:nth-child(4)")$getElementText() |> unlist(),
+        error = function(e) NA_character_
+      )
+      
+      # Return a tibble for each dealer
+      tibble(
+        query_zip = zip,
+        name = name,
+        address_line1 = address_line1,
+        address_line2 = address_line2,
+        phone = phone
+      )
+    })
+  }
+})
+```
+
+If I run this across the 98105 zip code, this is what I get. 
+
+```{r, echo = FALSE}
+readRDS("~/R/twg-site/static/data/kawi_91805.rds") |> 
+  select(name = Name, address_line1 = AddressLine1, address_line2 = AddressLine2, phone = Phone)
+```
