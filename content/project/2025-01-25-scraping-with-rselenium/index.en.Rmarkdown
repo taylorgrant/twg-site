@@ -120,7 +120,7 @@ If I look at the developer tools, I can see that the dealer data is found in a l
 dealers <- remDr$findElements(using = "css", "#dealerSearchResults > li") # Get all dealer result items
 ```
 
-This returns a list of 10 items within my R environment, but in order to extract the data for each item, I need to specifyc the css of where each is found. If I highlight the row of data I'm interested in, e.g., "LAKE CITY KAWASAKI," and right-click on it, I can copy the selector, which will give me the css location of that data -- `#dealerSearchResults > li:nth-child(1) > a > h2`. I've already pulled the dealer info using `#dealerSearchResults > li` so I only need to use the second part. I'll do the same thing with the address and phone data. 
+This returns a list of 10 items within my R environment, but in order to extract the data for each item, I need to specify the css of where each is found. If I highlight the row of data I'm interested in, e.g., "LAKE CITY KAWASAKI," and right-click on it, I can copy the selector, which will give me the css location of that data -- `#dealerSearchResults > li:nth-child(1) > a > h2`. I've already pulled the dealer info using `#dealerSearchResults > li` so I only need to use the second part. I'll do the same thing with the address and phone data. 
 
 Below will pull the results for the first of my 10 dealers returned. 
 
