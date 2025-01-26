@@ -40,7 +40,7 @@ Last, we need ripgrep to help to clean the text after download ("brew install ri
 These utilities function from the command line, but we can wrap our zsh commands in R's `system()` function to run in R. To get the subtitles, all we need is a YouTube url and the below. 
 
 
-```r
+``` r
 system("yt-dlp --sub-lang en --skip-download --write-auto-sub --sub-format vtt --write-info-json --write-comments 'https://www.youtube.com/watch?v=Lz33OZf4Yx0'")
 ```
 
@@ -74,7 +74,7 @@ If we read in the subtitles in .vtt format, we can see it's not in a clean forma
 We're going to use ffmpeg to convert these subtitles into a bit of a better format. Again, we're going to wrap our command line in our `system()` function to run it in R. As the code above is currently written, yt-dlp saves the data using the formal title of the video. So in the below code, the file name needs to be used. 
 
 
-```r
+``` r
 system("ffmpeg -i '[FILENAME].en.vtt' [FILENAME].srt")
 ```
 
@@ -102,7 +102,7 @@ ffmpeg has converted our .vtt format into .srt format, but we can see that it's 
 So now we're going to use ripgrep to clean this and make it readable. 
 
 
-```r
+``` r
 system("rg -v '^[[:digit:]]+$|^[[:digit:]]{2}:|^$', yt_data/ [FILENAME].srt | tr -d '\r' | rg -N '\\S' | uniq > [CLEAN_FILENAME].txt")
 ```
 
@@ -127,12 +127,12 @@ And now we have a clean text ready to read or use for further NLP analysis.
 ## [15] "four songs and we all said we decided"
 ```
 
-## Wrapping it in a function
+## Wrapping it in a function (Old, see Update at end of post)
 
 We have everything we need to put this into a usable function. By default, yt-dlp uses the formal title of the video for the filename, but we can change that with the `--output` command where we're going to pass through our own title as an argument.   
 
 
-```r
+``` r
 youtube_scrape <- function(link, title, comments=TRUE) {
   if (comments == TRUE) {
     x <- glue::glue("yt-dlp --sub-lang en --skip-download --write-auto-sub --sub-format vtt --write-info-json --write-comments --output 'yt_data/{title}' '{link}'")
@@ -153,7 +153,7 @@ youtube_scrape <- function(link, title, comments=TRUE) {
 The json file is also downloaded, and we can easily access that. Using `jsonlite` the returned data is a named list. 
 
 
-```r
+``` r
 out <- jsonlite::fromJSON(glue::glue("yt_data/{title}.info.json"))
 names(out)
 ```
@@ -185,7 +185,7 @@ names(out)
 From here we can easily pull the comment text. 
 
 
-```r
+``` r
 comments <- out$comments |> 
   mutate(text = str_replace_all(text, "\n", " "),
          text = str_replace_all(text, "  ", " "),
@@ -213,7 +213,7 @@ you would do it without using command line tools.
 First, this is the Python function to pass YouTube urls into in order to pull the comments. 
 
 
-```r
+``` r
 # python function 
 def get_yt_info(URL):
   import json
@@ -231,7 +231,7 @@ We're going to use the `purrr::map()` function to pass through multiple urls, wh
 So we're going to use this function to extract our comment data from the lists and put them into a single dataframe. We're going to add a column with the video title so that we can tell which comments are for which video. 
 
 
-```r
+``` r
 youtube_extract <- function(datalist) {
   # get summary data about the video
   summary <- purrr::map_dfr(datalist, 
@@ -262,7 +262,7 @@ youtube_extract <- function(datalist) {
 So, not the simplest, but absolutely works.  
 
 
-```r
+``` r
 # assuming we've saved the python function, we have to call it via reticulate
 reticulate::source_python(here::here('python_functions', 'get_yt_info.py'))
 urls <- c("url1", "url2", "url3", ...)
@@ -271,5 +271,117 @@ tmpdata <- urls |>
   purrr::map(get_yt_info)
 # clean and add to reactive values
 out <- youtube_extract(tmpdata)
+```
+
+## UPDATE
+
+The original `youtube_scrape()` function was a little brittle. It's been rewritten for better usage. 
+
+
+``` r
+youtube_scrape <- function(link, get_captions = TRUE, get_comments = TRUE, download_video = FALSE, output_dir = "youtube/yt_caption_data", cleanup_files = TRUE) {
+  # Create the base directory if it doesn't exist
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir, recursive = TRUE)
+  }
+  
+  # Step 1: Fetch video metadata to get the title
+  metadata_cmd <- glue::glue(
+    "yt-dlp --skip-download --print \"%(title)s\" \"{link}\""
+  )
+  message("Fetching video title...")
+  title <- system(metadata_cmd, intern = TRUE)
+  
+  if (length(title) == 0) {
+    stop("Failed to fetch the video title.")
+  }
+  
+  # Step 2: Shorten title (if needed)
+  max_length <- 50  # Define max length for the title
+  title <- gsub("[^a-zA-Z0-9_ -]", "", title)  # Remove problematic characters
+  if (nchar(title) > max_length) {
+    title <- substr(title, 1, max_length)
+  }
+  
+  message(glue::glue("Using title: {title}"))
+  
+  # Step 3: Build yt-dlp command
+  yt_dlp_cmd <- glue::glue(
+    "yt-dlp --output '{output_dir}/{title}'"
+  )
+  
+  # Add options for captions
+  if (get_captions) {
+    yt_dlp_cmd <- glue::glue(
+      "{yt_dlp_cmd} --sub-lang en --write-auto-sub --sub-format vtt"
+    )
+  }
+  
+  # Add options for comments
+  if (get_comments) {
+    yt_dlp_cmd <- glue::glue(
+      "{yt_dlp_cmd} --write-comments"
+    )
+  }
+  
+  # Add options for video download
+  if (download_video) {
+    yt_dlp_cmd <- glue::glue(
+      "{yt_dlp_cmd} --format 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' --merge-output-format mp4"
+    )
+  } else {
+    yt_dlp_cmd <- glue::glue(
+      "{yt_dlp_cmd} --skip-download"
+    )
+  }
+  
+  # Add the video link
+  yt_dlp_cmd <- glue::glue(
+    "{yt_dlp_cmd} '{link}'"
+  )
+  
+  # Step 4: Run yt-dlp command
+  message("Running yt-dlp command...")
+  system(yt_dlp_cmd)
+  
+  # Step 5: Process captions into .srt if captions were requested
+  if (get_captions) {
+    vtt_file <- glue::glue("{output_dir}/{title}.en.vtt")
+    srt_file <- glue::glue("{output_dir}/{title}.srt")
+    clean_txt_file <- glue::glue("{output_dir}/{title}.txt")
+    
+    if (file.exists(vtt_file)) {
+      # Convert VTT to SRT using ffmpeg
+      ffmpeg_cmd <- glue::glue("ffmpeg -i '{vtt_file}' '{srt_file}'")
+      message("Converting VTT to SRT...")
+      system(ffmpeg_cmd)
+      
+      # Clean and extract plain text from the SRT file
+      if (file.exists(srt_file)) {
+        clean_cmd <- paste0(
+          "rg -v '^[[:digit:]]+$|^[[:digit:]]{2}:|^$', ",
+          "'", srt_file, "' | tr -d '\\r' | rg -N '\\S' | uniq > ",
+          "'", clean_txt_file, "'"
+        )
+        message("Cleaning SRT file and extracting text...")
+        system(clean_cmd)
+        message(glue::glue("Cleaned captions saved to: {clean_txt_file}"))
+        
+        # Delete .vtt and .srt files if cleanup is enabled
+        if (cleanup_files) {
+          message("Deleting temporary files (.vtt and .srt)...")
+          if (file.exists(vtt_file)) file.remove(vtt_file)
+          if (file.exists(srt_file)) file.remove(srt_file)
+        }
+      } else {
+        warning("SRT file not found after conversion.")
+      }
+    } else {
+      warning("VTT file not found. Skipping caption processing.")
+    }
+  }
+  
+  message("YouTube scraping complete!")
+}
 ```
 
