@@ -45,6 +45,8 @@ out <- readRDS("~/R/twg-site/static/data/ig_scrape.rds")
 
 ## Scraping Instagram
 
+### Profile Data
+
 This is a function to scrape the user data and the last 12 posts from that user. Set this up as a recurring cron job and it could scrape multiple users and store the data. R code is adapted from [this post](https://scrapfly.io/blog/how-to-scrape-instagram/), which was written in python. We're also using the ```rjsoncons``` package, which allows for [JMESpath](https://jmespath.org/) subsetting of JSON data. Since we're adding headers to the GET request, we'll use the ```httr``` package, rather than ```rvest```. 
 
 ```{r, eval = FALSE}
@@ -151,6 +153,62 @@ out$post_data |>
   head(3) |> 
   knitr::kable()
 ```
+
+### Scraping Post Data
+
+We can also scrape post level data. The wrapper function is written in R, but a lot of the work is done via Python scripts. All that the user has to provide is the user_name and number of pages to return. Each page contains 12 posts. 
+
+```{r, eval = FALSE}
+scrape_instagram <- function(user_name, max_pages) {
+  
+  pacman::p_load(tidyverse, janitor, here, glue, reticulate)
+  
+  if (max_pages > 10) {
+    sleep_time <- 5L
+  } else {
+    sleep_time <- 2L
+  }
+  
+  # LOAD FUNCTIONS ----------------------------------------------------------
+  # R FUNCTIONS
+  source("~/R/scrapper/instagram/R/ig_scrape_user.R") # scrapes the user
+  source("~/R/scrapper/instagram/R/ig_parse_user.R") # parsed the user data into a list 
+  source("~/R/scrapper/instagram/R/ig_clean_posts.R")
+  # PYTHON FUNCTIONS
+  source_python("~/R/scrapper/instagram/python/ig_parse_post.py")
+  source_python("~/R/scrapper/instagram/python/ig_scrape_single_post.py")
+  source_python("~/R/scrapper/instagram/python/ig_scrape_user_posts_detail.py")
+  
+  # 1. GET USER DATA --------------------------------------------------------
+  # this is necessary to get the user ID 
+  user <- ig_scrape_user(user_name)
+  parsed_user <- ig_parse_user(user)
+  
+  # 2. GET POST DATA --------------------------------------------------------
+  httpx <- import("httpx") # Create a Python session using httpx
+  session <- httpx$Client(timeout = httpx$Timeout(20.0)) # Create an HTTPX session object in Python
+  post_df <- ig_scrape_user_posts_detail(
+    user_id = parsed_user$account_data$id,
+    session = session,
+    page_size = 12L,
+    max_pages = max_pages,            # Optional: Limit the number of pages to scrape
+    sleep_time = sleep_time
+  )
+  session$close()
+  # 3. CLEAN THE DATA AND RETURN  -------------------------------------------
+  clean_posts <- ig_clean_posts(post_df)
+  return(clean_posts)
+}
+
+out <- scrape_instagram("bmw", max_pages = 2)
+out[c(1:2, 15:16)]
+```
+
+```{r, echo = FALSE}
+readRDS("~/R/twg-site/static/data/bmw_ig_posts.rds")[c(1:2,15:16),] |> 
+  data.frame()
+```
+
 
 ## Scraping hidden data
 
@@ -506,13 +564,13 @@ single_post |>
   knitr::kable()
 ```
 
-#### Comment data
+#### Comment data (This is broken for the time being....)
 
 Finally, we'll pull the comments from a post. Comments aren't found in a hidden script, but are loaded dynamically through hidden APIs as a user scrolls. We're going to call the hidden API directly, and iterate through all of the comments to pull them. We can get 50 comments per API call, and one of the API parameters is `cursor`, which identifies where in the number of comments we want to start to pull our next 50. 
 
 There are several functions that will all be used in our convenience wrapper function. We're going to use the same post as above. 
 
-```{r}
+```{r, eval = FALSE}
 parse_comments <- purrr::possibly(function(l){
   # putting comment data into a cleaned tibble
   tibble::tibble(
@@ -587,7 +645,7 @@ fetch_tt_comments <- function(post_id) {
 
 We'll run it and provide the first 5 comments.
 
-```{r}
+```{r, eval = FALSE}
 fetch_tt_comments("7363016297233354027") |> 
   head(5) |> 
   knitr::kable()
