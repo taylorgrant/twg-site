@@ -1,14 +1,14 @@
 ---
 title: General Tips for R
 author: twg
-date: '2024-02-24'
+date: '2025-03-08'
 categories:
   - R
 tags:
   - R
 slug: general-tips-for-r
 summary: Tips and Tricks for R and RStudio
-lastmod: '2021-12-05T22:08:17-08:00'
+lastmod: '2025-03-08T22:08:17-08:00'
 featured: no
 image:
   caption: ''
@@ -17,6 +17,34 @@ image:
 ---
 
 
+
+## Installing Packages after R Update
+
+Updating from R version 4.3 to 4.4 and only base packages are installed. To find and install what was in 4.3: 
+
+
+``` r
+package_df <- as.data.frame(installed.packages("/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library"))
+
+install.packages(pkg)
+```
+
+Some packages are installed from Bioconductor or various Github pages. So after installing packages from cran, use this to check for differences. 
+
+
+``` r
+package_df <- as.data.frame(installed.packages("/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library"))
+package_df2 <- as.data.frame(installed.packages("/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library"))
+pkg <- package_df$Package
+pkg2 <- package_df2$Package
+
+setdiff(pkg, pkg2)
+```
+
+```
+##  [1] "Biobase"      "BiocGenerics" "BiocVersion"  "capture"      "klippy"      
+##  [6] "littleboxes"  "newsapi"      "newsflash"    "strcode"      "wayback"
+```
 
 
 ## Keyboard Shortcuts for Mac
@@ -29,7 +57,7 @@ Rename all instances of variable: `Option`+`Shift`+`Cmd`+`m` (Code > Rename in S
 
 Assume a data frame that has NAs and you want to set any NA to zero, it is straightforward to do so. 
 
-```r
+``` r
 df = tibble(
   x = c(1,NA,3,NA,5), 
   y = c(1:5), 
@@ -53,7 +81,7 @@ head(df)
 
 We can also selectively choose the column to change by referencing it specifically 
 
-```r
+``` r
 df = tibble(
   x = c(1,NA,3,NA,5), 
   y = c(1,NA,3,NA,5),
@@ -77,7 +105,7 @@ head(df)
 
 Or, within a dplyr pipe, we can use this, and this will work across the entire data frame 
 
-```r
+``` r
 df = tibble(
   x = c(1,NA,3,NA,5), 
   y = c(1,NA,3,NA,5),
@@ -104,7 +132,7 @@ Occasionally, a datset will contain cells that, rather than simply being left em
 This is a quick function to overwrite all 'NULL' values and then replace with NA. 
 
 
-```r
+``` r
 #function 
 rm_null <- function(x){
   str_replace_all(x, "NULL", "")
@@ -131,7 +159,7 @@ df_clean
 ## 5 5     "5"   5
 ```
 
-```r
+``` r
 # replace with NA
 df_clean[df_clean == ""] <- NA
 ```
@@ -139,7 +167,7 @@ df_clean[df_clean == ""] <- NA
 ## Finding NULL values in a list 
 
 
-```r
+``` r
 # are there any 
 any(sapply(list(1, NULL, 3), is.null))
 ```
@@ -148,7 +176,7 @@ any(sapply(list(1, NULL, 3), is.null))
 ## [1] TRUE
 ```
 
-```r
+``` r
 # where is it 
 which(sapply(list(1, NULL, 3), is.null))
 ```
@@ -163,7 +191,7 @@ which(sapply(list(1, NULL, 3), is.null))
 Here is a function that provides an easy way of seeing a color palette and retrieving the hexcodes. 
 
 
-```r
+``` r
 show_pal <- function(pal, labels = TRUE, label_size = 1, label_color = "#000000") {
   library(gplots)
   pal <- gplots::col2hex(pal)
@@ -195,7 +223,7 @@ This is especially useful when using a dev version of a package. Often, there ar
 For example, let's look at the functions available within the spotifyR package. 
 
 
-```r
+``` r
 library(spotifyr)
 fns <- unclass(lsf.str(envir = asNamespace("spotifyr"), all = T))
 
@@ -258,7 +286,7 @@ If in RStudio, you can simply use `data(package = "package_name")` and a new win
 Or by using the `data()` function we can find datasets and information about each. 
 
 
-```r
+``` r
 d <- data(package = "dplyr")
 # names can be pulled 
 d$results[, 'Item']
@@ -272,7 +300,7 @@ d$results[, 'Item']
 While it's probably not necessary to do this, it's also possible to pull the dimensions for the promised data. 
 
 
-```r
+``` r
 d <- data(package = "dplyr")
 # assign 
 nm <- d$results[, 'Item']
@@ -302,7 +330,7 @@ lapply(mget(nm), dim)
 The `vcdExtra` package actually does all of the above very nicely. 
 
 
-```r
+``` r
 vcdExtra::datasets("dplyr")
 ```
 
@@ -320,7 +348,7 @@ vcdExtra::datasets("dplyr")
 I want a dataset from a package, but loading that package sometimes interferes with functions from another package. Load only the dataset with 
 
 
-```r
+``` r
 data(Howell1, package = "rethinking")
 ```
 
@@ -329,7 +357,7 @@ data(Howell1, package = "rethinking")
 The `utils` package comes to the rescue. It searches all packages that have been installed for any function you provide. This even seems to find functions that are directly loaded by the package, which is really helpful 
 
 
-```r
+``` r
 utils::getAnywhere("FUNCTION_NAME")
 
 # if more than one function by the name is found, it returns multiple; then just subset by location
@@ -342,7 +370,7 @@ utils::getAnywhere("FUNCTION_NAME")[2]
 The `R.utils` package also has a command for this, but this is a simple way to source all of your functions at once. 
 
 
-```r
+``` r
 # set directory location, or use here() rather than glue
 # load functions
 file.sources = list.files(path = glue(dir, "functions"), pattern="*.R")
@@ -354,6 +382,6 @@ sapply(glue("{dir}functions/{file.sources}"), source, .GlobalEnv)
 If there is a function that is failing for some reason, it can be edited with the `trace()` function.
 
 
-```r
+``` r
 trace("[function_name]", edit = TRUE)
 ```

@@ -1,14 +1,14 @@
 ---
 title: General Tips for R
 author: twg
-date: '2024-02-24'
+date: '2025-03-08'
 categories:
   - R
 tags:
   - R
 slug: general-tips-for-r
 summary: Tips and Tricks for R and RStudio
-lastmod: '2021-12-05T22:08:17-08:00'
+lastmod: '2025-03-08T22:08:17-08:00'
 featured: no
 image:
   caption: ''
@@ -27,6 +27,28 @@ knitr::opts_chunk$set(
   fig.height = 5.75)
 
 pacman::p_load(tidyverse, here, knitr, vcdExtra, spotifyr)
+```
+
+## Installing Packages after R Update
+
+Updating from R version 4.3 to 4.4 and only base packages are installed. To find and install what was in 4.3: 
+
+```{r, eval = FALSE}
+package_df <- as.data.frame(installed.packages("/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library"))
+
+install.packages(pkg)
+
+```
+
+Some packages are installed from Bioconductor or various Github pages. So after installing packages from cran, use this to check for differences. 
+
+```{r}
+package_df <- as.data.frame(installed.packages("/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library"))
+package_df2 <- as.data.frame(installed.packages("/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library"))
+pkg <- package_df$Package
+pkg2 <- package_df2$Package
+
+setdiff(pkg, pkg2)
 ```
 
 
